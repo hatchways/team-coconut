@@ -7,7 +7,7 @@ function AuthContextProvider({ children }) {
 
   async function registerUser(newUserData) {
     try {
-      const response = await fetch("/api/signup", {
+      const response = await fetch("/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,7 +25,7 @@ function AuthContextProvider({ children }) {
 
   async function loginUser(loginData) {
     try {
-      const response = await fetch("/api/signin", {
+      const response = await fetch("/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

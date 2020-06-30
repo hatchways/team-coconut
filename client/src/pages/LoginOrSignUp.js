@@ -21,19 +21,19 @@ function LoginOrSignUp({ type }) {
     const emailRegex = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     // Validation for the name field
-    if (!credentials.name) {
-      errors.name = "Field is required";
-      isError = true;
-    }
-    // Validation for the email field -- ONLY for user registration
     if (type === "register") {
-      if (!credentials.email) {
-        errors.email = "Field is required";
-        isError = true;
-      } else if (!emailRegex.test(credentials.email)) {
-        errors.email = "Invalid email address";
+      if (!credentials.name) {
+        errors.name = "Field is required";
         isError = true;
       }
+    }
+    // Validation for the email field -- ONLY for user registration
+    if (!credentials.email) {
+      errors.email = "Field is required";
+      isError = true;
+    } else if (!emailRegex.test(credentials.email)) {
+      errors.email = "Invalid email address";
+      isError = true;
     }
     // Validation for the password field
     if (!credentials.password) {
@@ -72,7 +72,7 @@ function LoginOrSignUp({ type }) {
         registerUser(newUserData);
       } else {
         const loginData = {
-          name: credentials.name,
+          email: credentials.email,
           password: credentials.password,
         };
         loginUser(loginData);
@@ -87,56 +87,56 @@ function LoginOrSignUp({ type }) {
     }
   }
 
+  // Component rendering is as follows:
+  // MUI Container (top level container, centers component on screen)
+  // MUI Paper component (background for login form)
+  // HTML form with MUI typography, inputs, and helperText components
+  // MUI Button, then horizontal rule, then a link to the other version of the form
+
   return (
-    <>
-      <Container
-        className={classes.mainContainer}
-        component="main"
-        maxWidth="sm"
-      >
-        <Paper className={classes.paper} elevation={3}>
-          <Typography className={classes.heading}>
-            {type === "register" ? "Register" : "Sign In"}
-          </Typography>
-          <form className={classes.form} onSubmit={handleSubmit} noValidate>
+    <Container className={classes.mainContainer} component="main" maxWidth="sm">
+      <Paper className={classes.paper} elevation={3}>
+        <Typography className={classes.heading}>
+          {type === "register" ? "Register" : "Sign In"}
+        </Typography>
+        <form className={classes.form} onSubmit={handleSubmit} noValidate>
+          {type === "register" && (
             <FormInput
               label="name"
               error={credentials.errors.name}
               handleChange={handleChange}
             />
-            {type === "register" && (
-              <FormInput
-                label="email"
-                error={credentials.errors.email}
-                handleChange={handleChange}
-              />
-            )}
-            <FormInput
-              label="password"
-              error={credentials.errors.password}
-              handleChange={handleChange}
-            />
-            <div className={classes.buttonContainer}>
-              <GenericButton handleClick={handleSubmit}>
-                {type === "register" ? "Sign Up" : "Sign In"}
-              </GenericButton>
-            </div>
-          </form>
-          <hr className={classes.divider} />
-          <div className={classes.redirect}>
-            {type === "register"
-              ? "Already have an account? "
-              : "Don't have an account? "}
-            <Link
-              className={classes.link}
-              to={type === "register" ? "/login" : "/register"}
-            >
-              {type === "register" ? "Sign In" : "Sign Up"}
-            </Link>
+          )}
+          <FormInput
+            label="email"
+            error={credentials.errors.email}
+            handleChange={handleChange}
+          />
+          <FormInput
+            label="password"
+            error={credentials.errors.password}
+            handleChange={handleChange}
+          />
+          <div className={classes.buttonContainer}>
+            <GenericButton handleClick={handleSubmit}>
+              {type === "register" ? "Sign Up" : "Sign In"}
+            </GenericButton>
           </div>
-        </Paper>
-      </Container>
-    </>
+        </form>
+        <hr className={classes.divider} />
+        <div className={classes.redirect}>
+          {type === "register"
+            ? "Already have an account? "
+            : "Don't have an account? "}
+          <Link
+            className={classes.link}
+            to={type === "register" ? "/login" : "/register"}
+          >
+            {type === "register" ? "Sign In" : "Sign Up"}
+          </Link>
+        </div>
+      </Paper>
+    </Container>
   );
 }
 
