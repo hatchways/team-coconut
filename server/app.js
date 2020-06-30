@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
+const authRouter = require("./routes/auth");
 
 const { json, urlencoded } = express;
 
