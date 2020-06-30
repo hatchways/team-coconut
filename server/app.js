@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
-const usersRouter = require("./routes/users");
+const authRouter = require("./routes/auth");
 
 const { json, urlencoded } = express;
 
@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
 // MongoDB config
-const mongoUri = process.env.MONGO_URI;
+const mongoUri = process.env.MONGO_DB_ATLAS_URI;
 mongoose
   .connect(mongoUri, {
     useNewUrlParser: true,
@@ -32,7 +32,7 @@ mongoose
 
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
-app.use("/api", usersRouter);
+app.use("/auth", authRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
