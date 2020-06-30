@@ -10,10 +10,10 @@ const authService = new AuthService();
 // @param email
 // @param password
 
-router.post("/signup", function (req, res, next) {
+router.post("/signup", async function (req, res, next) {
   try {
-    const { newUser, token, cookieConfig } = authService.signUpUser(req.body);
-    return res.status(201).json(newUser).cookie("token", token, cookieConfig);
+    const { newUser, token, cookieConfig } = await authService.signUpUser(req.body);
+    return res.status(201).cookie("token", token, cookieConfig).json(newUser);
   } catch (error) {
     next(error);
   }

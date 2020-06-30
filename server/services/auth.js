@@ -24,6 +24,6 @@ module.exports = class AuthService {
     const token = createToken(tokenPayload);
     const cookieConfig = getCookieConfig();
 
-    return { newUser, token, cookieConfig };
+    return { newUser: { name, email }, token, cookieConfig };
   }
 };
