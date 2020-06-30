@@ -14,16 +14,30 @@ module.exports = class AuthService {
     user.password = await bcrypt.hash(password, salt);
 
     const newUser = await user.save();
+    const { token, cookieConfig } = this._createTokenAndCookieConfig(
+      newUser._id
+    );
 
+    return { newUser: { name, email }, token, cookieConfig };
+  }
+
+  async signInUser({ email }) {
+    const user = await User.findOne({ email }, 'email name');
+    const { token, cookieConfig } = this._createTokenAndCookieConfig(user._id);
+    console.log(user);
+    return { user, token, cookieConfig };
+  }
+
+  _createTokenAndCookieConfig(userId) {
     //creating token for user
     const tokenPayload = {
       user: {
-        id: newUser._id,
+        id: userId,
       },
     };
     const token = createToken(tokenPayload);
+    //creating cookie config
     const cookieConfig = getCookieConfig();
-
-    return { newUser: { name, email }, token, cookieConfig };
+    return { token, cookieConfig };
   }
 };
