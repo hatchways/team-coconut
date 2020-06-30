@@ -29,7 +29,6 @@ router.post("/signin", signin, async function (req, res, next) {
     );
     return res.cookie("token", token, cookieConfig).json(user);
   } catch (error) {
-      console.log(error)
     next(error);
   }
 });
