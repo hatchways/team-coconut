@@ -7,49 +7,12 @@ import GenericButton from "../components/GenericButton";
 
 function LoginOrSignUp({ type }) {
   const classes = useStyles();
-  const { registerUser, loginUser } = useContext(AuthContext);
+  const { errors, registerUser, loginUser } = useContext(AuthContext);
   const [credentials, setCredentials] = useState({
     name: "",
     email: "",
     password: "",
-    errors: {},
   });
-
-  function validateForm() {
-    let isError = false;
-    const errors = {};
-    const emailRegex = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    // Validation for the name field
-    if (type === "register") {
-      if (!credentials.name) {
-        errors.name = "Field is required";
-        isError = true;
-      }
-    }
-    // Validation for the email field -- ONLY for user registration
-    if (!credentials.email) {
-      errors.email = "Field is required";
-      isError = true;
-    } else if (!emailRegex.test(credentials.email)) {
-      errors.email = "Invalid email address";
-      isError = true;
-    }
-    // Validation for the password field
-    if (!credentials.password) {
-      errors.password = "Field is required";
-      isError = true;
-    } else if (credentials.password.length < 6) {
-      errors.password = "Must be at least 6 characters";
-      isError = true;
-    }
-    // Set Error messages in state
-    if (isError) {
-      setCredentials((prev) => ({ ...prev, errors }));
-    }
-
-    return isError;
-  }
 
   function handleChange(event) {
     const { id, value } = event.target;
@@ -58,29 +21,19 @@ function LoginOrSignUp({ type }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    const error = validateForm(); // Client-side validation before sending a request to server
-    if (!error) {
-      if (type === "register") {
-        const newUserData = {
-          name: credentials.name,
-          email: credentials.email,
-          password: credentials.password,
-        };
-        registerUser(newUserData);
-      } else {
-        const loginData = {
-          email: credentials.email,
-          password: credentials.password,
-        };
-        loginUser(loginData);
-      }
-      // clear form
-      setCredentials({
-        name: "",
-        email: "",
-        password: "",
-        errors: {},
-      });
+    if (type === "register") {
+      const newUserData = {
+        name: credentials.name,
+        email: credentials.email,
+        password: credentials.password,
+      };
+      registerUser(newUserData);
+    } else {
+      const loginData = {
+        email: credentials.email,
+        password: credentials.password,
+      };
+      loginUser(loginData);
     }
   }
 
@@ -100,18 +53,18 @@ function LoginOrSignUp({ type }) {
           {type === "register" && (
             <FormInput
               label="name"
-              error={credentials.errors.name}
+              error={errors.name}
               handleChange={handleChange}
             />
           )}
           <FormInput
             label="email"
-            error={credentials.errors.email}
+            error={errors.email}
             handleChange={handleChange}
           />
           <FormInput
             label="password"
-            error={credentials.errors.password}
+            error={errors.password}
             handleChange={handleChange}
           />
           <div className={classes.buttonContainer}>

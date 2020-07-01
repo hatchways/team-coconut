@@ -4,6 +4,12 @@ const AuthContext = createContext();
 
 function AuthContextProvider({ children }) {
   const [auth, setAuth] = useState(false);
+  const [user, setUser] = useState(null);
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   async function registerUser(newUserData) {
     try {
@@ -14,7 +20,15 @@ function AuthContextProvider({ children }) {
         },
         body: JSON.stringify(newUserData),
       });
-      if (!response.ok) throw new Error(response.status);
+      if (!response.ok) {
+        const { errors } = await response.json();
+        errors.map((error) =>
+          setErrors((prev) => ({ ...prev, [error.param]: error.msg }))
+        );
+        throw new Error(response.status);
+      }
+      const json = await response.json();
+      setUser(json);
       setAuth(true);
     } catch (error) {
       console.error(error);
@@ -30,7 +44,15 @@ function AuthContextProvider({ children }) {
         },
         body: JSON.stringify(loginData),
       });
-      if (!response.ok) throw new Error(response.status);
+      if (!response.ok) {
+        const { errors } = await response.json();
+        errors.map((error) =>
+          setErrors((prev) => ({ ...prev, [error.param]: error.msg }))
+        );
+        throw new Error(response.status);
+      }
+      const json = await response.json();
+      setUser(json);
       setAuth(true);
     } catch (error) {
       return error;
@@ -44,7 +66,9 @@ function AuthContextProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ auth, registerUser, loginUser, logoutUser }}>
+    <AuthContext.Provider
+      value={{ auth, user, errors, registerUser, loginUser, logoutUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
