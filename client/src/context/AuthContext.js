@@ -22,14 +22,26 @@ function AuthContextProvider({ children }) {
       });
       if (!response.ok) {
         const { errors } = await response.json();
-        errors.map((error) =>
-          setErrors((prev) => ({ ...prev, [error.param]: error.msg }))
-        );
+        // clear errors first before setting up new error messages
+        setErrors({
+          name: "",
+          email: "",
+          password: "",
+        });
+        errors.forEach((error) => {
+          setErrors((prev) => ({ ...prev, [error.param]: error.msg }));
+        });
         throw new Error(response.status);
       }
       const json = await response.json();
       setUser(json);
       setAuth(true);
+      // clear errors after successful signup
+      setErrors({
+        name: "",
+        email: "",
+        password: "",
+      });
     } catch (error) {
       console.error(error);
     }
@@ -46,16 +58,22 @@ function AuthContextProvider({ children }) {
       });
       if (!response.ok) {
         const { errors } = await response.json();
-        errors.map((error) =>
-          setErrors((prev) => ({ ...prev, [error.param]: error.msg }))
-        );
+        errors.forEach((error) => {
+          setErrors((prev) => ({ ...prev, [error.param]: error.msg }));
+        });
         throw new Error(response.status);
       }
       const json = await response.json();
       setUser(json);
       setAuth(true);
+      // clear errors after successful login
+      setErrors({
+        name: "",
+        email: "",
+        password: "",
+      });
     } catch (error) {
-      return error;
+      console.error(error);
     }
   }
 
