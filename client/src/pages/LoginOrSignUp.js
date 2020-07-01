@@ -97,15 +97,15 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
-  heading: {
-    margin: "3rem auto 0",
-    textAlign: "center",
-  },
   paper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+  },
+  heading: {
+    margin: "3rem auto 0",
+    textAlign: "center",
   },
   form: {
     width: "70%",

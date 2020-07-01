@@ -23,9 +23,7 @@ function FormInput({ label, error, handleChange }) {
           fullWidth
         />
       </div>
-      {error && (
-        <FormHelperText className={classes.helperText}>{error}</FormHelperText>
-      )}
+      {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
   );
 }
@@ -35,20 +33,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "2em",
     marginBottom: "0.5em",
     fontWeight: "bold",
-    letterSpacing: "1px",
+    letterSpacing: theme.spacing(0.5),
     color: "rgba(255,255,255,0.3)",
     textTransform: "uppercase",
   },
   inputContainer: {
     backgroundColor: "#FFFFFF",
-    borderRadius: "5px",
+    borderRadius: theme.overrides.MuiOutlinedInput.notchedOutline.borderRadius,
   },
   inputText: {
     color: "#000000",
-  },
-  helperText: {
-    fontSize: "0.825rem",
-    fontWeight: "bold",
   },
 }));
 

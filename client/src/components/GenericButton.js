@@ -18,10 +18,11 @@ const useStyles = makeStyles((theme) => ({
   button: {
     padding: "1em 3em",
     color: theme.palette.text.primary,
+    letterSpacing: theme.spacing(0.3),
+    borderRadius: "8px",
     // orange linear gradient for all buttons
     background:
       "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
-    borderRadius: "8px",
   },
 }));
 
