@@ -56,12 +56,9 @@ function LoginOrSignUp({ type }) {
     setCredentials((prev) => ({ ...prev, [id]: value }));
   }
 
-  console.log(credentials);
-
   function handleSubmit(event) {
     event.preventDefault();
-    // Client-side validation before sending a request to server
-    const error = validateForm();
+    const error = validateForm(); // Client-side validation before sending a request to server
     if (!error) {
       if (type === "register") {
         const newUserData = {

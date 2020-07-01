@@ -15,9 +15,7 @@ function AuthContextProvider({ children }) {
         body: JSON.stringify(newUserData),
       });
       if (!response.ok) throw new Error(response.status);
-      const json = await response.json();
       setAuth(true);
-      console.log(json);
     } catch (error) {
       console.error(error);
     }
@@ -33,20 +31,16 @@ function AuthContextProvider({ children }) {
         body: JSON.stringify(loginData),
       });
       if (!response.ok) throw new Error(response.status);
-      const json = await response.json();
-      console.log(json);
       setAuth(true);
     } catch (error) {
-      console.error(error);
+      return error;
     }
   }
 
   async function logoutUser() {
-    try {
-      setAuth(false);
-    } catch (error) {
-      console.error(error);
-    }
+    setAuth(false);
+    // Implement try catch block to request
+    // deletion of cookie
   }
 
   return (
