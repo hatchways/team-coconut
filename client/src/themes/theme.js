@@ -4,18 +4,20 @@ export const theme = createMuiTheme({
   typography: {
     fontFamily: '"Roboto"',
     fontSize: 12,
-    h1: {
-      // could customize the h1 variant as well
+    button: {
+      letterSpacing: "1.5px", // increased letter spacing for readability
     },
   },
   palette: {
     text: {
-      primary: "#FFFFFF",
-      secondary: "#FF701C",
+      primary: "#FFFFFF", // primary font color is white
+      secondary: "#FF701C", // accent font color is a dark orange
     },
     background: {
-      paper: "#232549",
-      default: "#292E59",
+      paper: "#232549", // all paper components are a dark blue
     },
+  },
+  shape: {
+    borderRadius: 20,
   },
 });

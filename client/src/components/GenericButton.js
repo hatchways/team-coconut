@@ -17,8 +17,8 @@ function GenericButton({ children, handleClick }) {
 const useStyles = makeStyles((theme) => ({
   button: {
     padding: "1em 3em",
-    color: "#FFFFFF",
-    letterSpacing: "1.5px",
+    color: theme.palette.text.primary,
+    // orange linear gradient for all buttons
     background:
       "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
     borderRadius: "8px",

@@ -45,8 +45,8 @@ function LoginOrSignUp({ type }) {
 
   return (
     <Container className={classes.mainContainer} component="main" maxWidth="sm">
-      <Paper className={classes.paper} elevation={3}>
-        <Typography className={classes.heading}>
+      <Paper className={classes.paper} elevation={5}>
+        <Typography className={classes.heading} variant="h3" component="p">
           {type === "register" ? "Register" : "Sign In"}
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
@@ -100,14 +100,11 @@ const useStyles = makeStyles((theme) => ({
   heading: {
     margin: "3rem auto 0",
     textAlign: "center",
-    color: "white",
-    fontSize: "2em",
   },
   paper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    borderRadius: "20px",
     width: "100%",
   },
   form: {
@@ -118,6 +115,7 @@ const useStyles = makeStyles((theme) => ({
     width: "max-content",
   },
   divider: {
+    // styles for standard <hr />, not using Mui Divider Component
     height: "1px",
     width: "100%",
     backgroundColor: "rgba(255, 255, 255, 0.15)",
@@ -128,6 +126,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   link: {
+    // styles for react-router Link, not using Mui Link Component
     textDecoration: "none",
     color: "#FF701C",
     fontWeight: "bold",
