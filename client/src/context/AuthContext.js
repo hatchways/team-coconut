@@ -57,6 +57,12 @@ function AuthContextProvider({ children }) {
       });
       if (!response.ok) {
         const { errors } = await response.json();
+        // clear errors first before setting up new error messages
+        setErrors({
+          name: "",
+          email: "",
+          password: "",
+        });
         errors.forEach((error) => {
           setErrors((prev) => ({ ...prev, [error.param]: error.msg }));
         });
