@@ -24,8 +24,7 @@ class Game {
    * Init & Restart Game
    */
   initGame() {
-    // Get Array Data
-    this.wordArray = this.initWords(this.players);
+    this.wordArray = this.initWords();
     this.guesser = this.players[0];
     this.word = this.wordArray[0];
     this.point = 0;
@@ -34,10 +33,8 @@ class Game {
 
   /**
    * Get Words Array for game
-   * @param {array} players 
    */
-  initWords(players) {
-    // Determine Word Array length by players.length
+  initWords() {
     let shuffledWords = this.shuffle(wordArray);
 
     return shuffledWords.slice(0, this.maxRound);
