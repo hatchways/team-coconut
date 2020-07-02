@@ -1,23 +1,19 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Container, Paper, Typography, makeStyles } from "@material-ui/core";
 import { AuthContext } from "../context/AuthContext";
 import FormInput from "../components/FormInput";
 import GenericButton from "../components/GenericButton";
+import useForm from "../utils/hooks/useForm";
 
 function LoginOrSignUp({ type }) {
   const classes = useStyles();
   const { errors, registerUser, loginUser } = useContext(AuthContext);
-  const [credentials, setCredentials] = useState({
+  const [credentials, setCredentials] = useForm({
     name: "",
     email: "",
     password: "",
   });
-
-  function handleChange(event) {
-    const { id, value } = event.target;
-    setCredentials((prev) => ({ ...prev, [id]: value }));
-  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -54,18 +50,18 @@ function LoginOrSignUp({ type }) {
             <FormInput
               label="name"
               error={errors.name}
-              handleChange={handleChange}
+              handleChange={setCredentials}
             />
           )}
           <FormInput
             label="email"
             error={errors.email}
-            handleChange={handleChange}
+            handleChange={setCredentials}
           />
           <FormInput
             label="password"
             error={errors.password}
-            handleChange={handleChange}
+            handleChange={setCredentials}
           />
           <div className={classes.buttonContainer}>
             <GenericButton handleClick={handleSubmit}>
@@ -129,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     // styles for react-router Link, not using Mui Link Component
     textDecoration: "none",
     color: "#FF701C",
-    fontWeight: "bold",
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 

@@ -4,14 +4,17 @@ import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import "./App.css";
 
 import { theme } from "./themes/theme";
+import { AuthContext } from "./context/AuthContext";
+
 import LoginOrSignUp from "./pages/LoginOrSignUp";
 import CreateOrJoinGame from "./pages/CreateOrJoinGame";
 import PageNotFound from "./pages/PageNotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { AuthContext } from "./context/AuthContext";
+import PreGameLobby from "./pages/PreGameLobby";
 
 function App() {
   const { auth } = useContext(AuthContext);
+
   return (
     <MuiThemeProvider theme={theme}>
       <BrowserRouter>
@@ -34,6 +37,12 @@ function App() {
             exact
             path="/create-game"
             component={CreateOrJoinGame}
+            auth={auth}
+          />
+          <ProtectedRoute
+            exact
+            path="/lobby"
+            component={PreGameLobby}
             auth={auth}
           />
 

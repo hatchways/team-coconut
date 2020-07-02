@@ -8,6 +8,9 @@ export const theme = createMuiTheme({
   typography: {
     fontFamily: '"Roboto"',
     fontSize: 12,
+    h6: {
+      fontWeight: 300,
+    },
   },
   palette: {
     text: {
@@ -38,6 +41,11 @@ export const theme = createMuiTheme({
         color: orange,
         fontSize: "0.825rem",
         fontWeight: "bold",
+      },
+    },
+    MuiSvgIcon: {
+      root: {
+        fontSize: "100px",
       },
     },
   },

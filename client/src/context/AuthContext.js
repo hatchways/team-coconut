@@ -3,8 +3,7 @@ import React, { createContext, useState } from "react";
 const AuthContext = createContext();
 
 function AuthContextProvider({ children }) {
-  const [auth, setAuth] = useState(false);
-  const [user, setUser] = useState(null);
+  const [auth, setAuth] = useState(localStorage.getItem("user") ? true : false);
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -34,7 +33,7 @@ function AuthContextProvider({ children }) {
         throw new Error(response.status);
       }
       const json = await response.json();
-      setUser(json);
+      localStorage.setItem("user", JSON.stringify(json));
       setAuth(true);
       // clear errors after successful signup
       setErrors({
@@ -64,7 +63,7 @@ function AuthContextProvider({ children }) {
         throw new Error(response.status);
       }
       const json = await response.json();
-      setUser(json);
+      localStorage.setItem("user", JSON.stringify(json));
       setAuth(true);
       // clear errors after successful login
       setErrors({
@@ -79,13 +78,12 @@ function AuthContextProvider({ children }) {
 
   async function logoutUser() {
     setAuth(false);
-    // Implement try catch block to request
-    // deletion of cookie
+    localStorage.removeItem("user");
   }
 
   return (
     <AuthContext.Provider
-      value={{ auth, user, errors, registerUser, loginUser, logoutUser }}
+      value={{ auth, errors, registerUser, loginUser, logoutUser }}
     >
       {children}
     </AuthContext.Provider>

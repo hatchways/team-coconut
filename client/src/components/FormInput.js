@@ -5,9 +5,18 @@ import {
   FormControl,
   OutlinedInput,
   FormHelperText,
+  InputAdornment,
 } from "@material-ui/core";
+import GenericButton from "./GenericButton";
 
-function FormInput({ label, error, handleChange }) {
+function FormInput({
+  label,
+  error,
+  handleChange,
+  hasAdornment,
+  adornmentText,
+  onClick,
+}) {
   const classes = useStyles();
   return (
     <FormControl fullWidth required>
@@ -21,6 +30,15 @@ function FormInput({ label, error, handleChange }) {
           type={label}
           onChange={handleChange}
           fullWidth
+          endAdornment={
+            hasAdornment && (
+              <InputAdornment position="end">
+                <GenericButton handleClick={onClick} isAdornment>
+                  {adornmentText}
+                </GenericButton>
+              </InputAdornment>
+            )
+          }
         />
       </div>
       {error && <FormHelperText>{error}</FormHelperText>}
