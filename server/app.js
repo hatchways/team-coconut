@@ -4,6 +4,7 @@ const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+require('express-async-errors');
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
