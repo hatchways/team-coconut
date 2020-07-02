@@ -1,12 +1,12 @@
 const wordArray = require('./Words');
 
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
-
 class Game {
   ADD_POINT = 100;
 
+  /**
+   * @param {string} id : Room Name 
+   * @param {array} players : game players array
+   */
   constructor(id, players) {
     this.roomName = id;
     this.guesser = '';
@@ -15,7 +15,7 @@ class Game {
     this.round = 0;
     this.wordArray = [];
     this.players = players;
-    this.totalRound = players.length * 2;
+    this.maxRound = players.length * 2;
 
     this.initGame();
   }
@@ -38,9 +38,9 @@ class Game {
    */
   initWords(players) {
     // Determine Word Array length by players.length
-    let shuffledWords = shuffle(wordArray);
+    let shuffledWords = this.shuffle(wordArray);
 
-    return shuffledWords.slice(0, this.totalRound);
+    return shuffledWords.slice(0, this.maxRound);
   }
 
   /**
@@ -112,7 +112,15 @@ class Game {
    * Check Last Round
    */
   checkLastRound() {
-    return this.round + 1 === this.totalRound ? true : false;
+    return this.round + 1 === this.maxRound ? true : false;
+  }
+
+  /**
+   * Shuffle Array
+   * @param {array} array 
+   */
+  shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
   }
 }
 

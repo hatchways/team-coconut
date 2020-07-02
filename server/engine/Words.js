@@ -8,4 +8,8 @@ module.exports = [
   'computer',
   'java',
   'react',
+  'sea',
+  'toronto',
+  'new york',
+  'game',
 ];
