@@ -69,6 +69,7 @@ function AuthContextProvider({ children }) {
         throw new Error(response.status);
       }
       const json = await response.json();
+      console.log(response);
       localStorage.setItem("user", JSON.stringify(json));
       setAuth(true);
       // clear errors after successful login

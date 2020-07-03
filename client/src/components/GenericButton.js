@@ -23,8 +23,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     color: theme.palette.text.primary,
     // orange linear gradient for all buttons
-    background:
-      "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
+    background: theme.gradient.background,
   },
 }));
 

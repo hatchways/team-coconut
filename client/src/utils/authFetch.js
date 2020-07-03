@@ -6,7 +6,14 @@ export async function getProtectedData(path) {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) throw new Error(response.status);
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem("user");
+      } else {
+        const { errors } = await response.json();
+        return errors;
+      }
+    }
     const json = await response.json();
     return json;
   } catch (error) {

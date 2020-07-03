@@ -24,6 +24,10 @@ export const theme = createMuiTheme({
   shape: {
     borderRadius: 20,
   },
+  gradient: {
+    background:
+      "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
+  },
   overrides: {
     MuiOutlinedInput: {
       root: {
