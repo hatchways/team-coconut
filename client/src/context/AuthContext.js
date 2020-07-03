@@ -84,8 +84,19 @@ function AuthContextProvider({ children }) {
   }
 
   async function logoutUser() {
-    setAuth(false);
-    localStorage.removeItem("user");
+    try {
+      const response = await fetch("/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error(response.status);
+      setAuth(false);
+      localStorage.removeItem("user");
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
