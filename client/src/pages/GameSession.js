@@ -23,7 +23,7 @@ function GameSession() {
         alignItems="center"
       >
         <Grid item>{isGuesser ? <GuessPanel /> : <CluePanel />}</Grid>
-        <Grid item>
+        <Grid item lg>
           <PlayerPanel />
         </Grid>
       </Grid>
