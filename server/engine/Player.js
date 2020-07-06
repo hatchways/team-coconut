@@ -1,7 +1,7 @@
 class Player {
-  constructor(player) {
-    this.email = player.email;
-    this.name = player.name;
+  constructor(id, name) {
+    this.id = id;
+    this.name = name;
     this.point = 0;
     this.isGuesser = false;
     this.isGiver = false; // who is not giving duplicated words.
