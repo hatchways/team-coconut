@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     textTransform: "uppercase",
     fontWeight: theme.typography.fontWeightBold,
-    background: theme.gradient.background,
+    background: theme.gradient.orange.background,
   },
 }));
 

@@ -21,7 +21,7 @@ function CreateOrJoinGame() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log("join");
+    console.log(`joined with link: ${sessionLink}`);
   }
 
   return (
@@ -109,9 +109,11 @@ const useStyles = makeStyles((theme) => ({
   },
   createIcon: {
     marginBottom: "3.5rem",
+    fontSize: theme.icon.large.fontSize,
   },
   joinIcon: {
     margin: "0",
+    fontSize: theme.icon.large.fontSize,
   },
   createBtn: {
     marginBottom: "3rem",
@@ -122,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     textTransform: "uppercase",
     fontWeight: theme.typography.fontWeightBold,
-    background: theme.gradient.background,
+    background: theme.gradient.orange.background,
   },
   form: {
     marginBottom: "3rem",

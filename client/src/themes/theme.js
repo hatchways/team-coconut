@@ -24,9 +24,28 @@ export const theme = createMuiTheme({
   shape: {
     borderRadius: 20,
   },
+  logo: {
+    fontSize: "2em",
+    fontWeight: "800",
+    color: white,
+  },
   gradient: {
-    background:
-      "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
+    blue: {
+      background:
+        "linear-gradient(90deg, rgba(86,96,255,1) 0%, rgba(86,151,255,1) 100%)",
+    },
+    orange: {
+      background:
+        "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
+    },
+  },
+  icon: {
+    small: {
+      fontSize: "25px",
+    },
+    large: {
+      fontSize: "100px",
+    },
   },
   overrides: {
     MuiOutlinedInput: {
@@ -45,11 +64,6 @@ export const theme = createMuiTheme({
         color: orange,
         fontSize: "0.825rem",
         fontWeight: "bold",
-      },
-    },
-    MuiSvgIcon: {
-      root: {
-        fontSize: "100px",
       },
     },
   },

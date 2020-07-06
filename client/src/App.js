@@ -11,6 +11,7 @@ import CreateOrJoinGame from "./pages/CreateOrJoinGame";
 import PageNotFound from "./pages/PageNotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PreGameLobby from "./pages/PreGameLobby";
+import GameSession from "./pages/GameSession";
 
 function App() {
   const { auth } = useContext(AuthContext);
@@ -43,6 +44,12 @@ function App() {
             exact
             path="/lobby"
             component={PreGameLobby}
+            auth={auth}
+          />
+          <ProtectedRoute
+            exact
+            path="/session"
+            component={GameSession}
             auth={auth}
           />
 
