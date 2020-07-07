@@ -17,11 +17,11 @@ class Game {
     this.initGame();
   }
 
+
   /**
    * Init & Restart Game
    */
   initGame() {
-    console.log(this.players)
     // Get Array Data
     this.wordArray = this.initWords();
     this.players[0].isGuesser = true;
@@ -35,14 +35,14 @@ class Game {
   initWords() {
     return this.shuffle(wordArray).slice(0, this.maxRound);
   }
-  
+
   /**
    * init Players Roles
    */
   initPlayerRoles() {
     this.players.map((player) => {
-       player.isGuesser = false;
-       player.isGiver = false;
+      player.isGuesser = false;
+      player.isGiver = false;
     });
   }
 
@@ -51,7 +51,7 @@ class Game {
    * @param {string} answer
    */
   checkAnswer(answer) {
-    return this.word === answer ? true : false;
+    return this.word === answer;
   }
 
   /**
@@ -82,11 +82,7 @@ class Game {
    * @param {number} nextRound
    */
   setNextGuesser(nextRound) {
-    if (nextRound >= this.players.length) {
-      this.players[nextRound - this.players.length].isGuesser = true;
-    } else {
-      this.players[nextRound].isGuesser = true;
-    }
+    this.players[nextRound % this.player.length].isGuesser = true;
   }
 
   /**
@@ -95,10 +91,10 @@ class Game {
   givePoints() {
     this.players.map((player) => {
       // Guesser gets 200 points
-      if (player.isGuesser === true) player.addPoint(this.GUESS_POINT);
+      if (player.isGuesser) player.addPoint(this.GUESS_POINT);
 
       // Givers who gives not duplicated words get 100 points
-      if (player.isGiver === true) player.addPoint(this.CLUE_POINT);
+      if (player.isGiver) player.addPoint(this.CLUE_POINT);
     });
   }
 
