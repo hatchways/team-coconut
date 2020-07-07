@@ -37,8 +37,8 @@ mongoose
 
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
-app.use("/auth", authRouter)
-app.use("/game", gameRouter)
+app.use("/auth", authRouter);
+app.use("/game", gameRouter);
 
 // error handler
 app.use(errorMiddleware);
