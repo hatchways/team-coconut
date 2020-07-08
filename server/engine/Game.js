@@ -122,6 +122,13 @@ class Game {
   }
 
   /**
+   * Get Number of Players
+   */
+  getNumberOfPlayers() {
+    return this.players.length;
+  }
+
+  /**
    * Shuffle Array
    * @param {array} array
    */
