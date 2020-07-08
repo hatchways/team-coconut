@@ -4,7 +4,6 @@ class Player {
     this.name = name;
     this.point = 0;
     this.isGuesser = false;
-    this.isGiver = false; // who is not giving duplicated words.
   }
 
   /**

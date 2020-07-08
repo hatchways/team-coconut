@@ -4,25 +4,18 @@ class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
 
-  /**
-   * @param {array} players : game players array
-   */
-  constructor(players) {
+  constructor() {
     this.word = '';
     this.round = 0;
     this.wordArray = [];
-    this.players = players;
+    this.players = [];
     this.maxRound = this.players.length * 2;
-
-    this.initGame();
   }
-
 
   /**
    * Init & Restart Game
    */
   initGame() {
-    // Get Array Data
     this.wordArray = this.initWords();
     this.players[0].isGuesser = true;
     this.word = this.wordArray[0];
@@ -34,16 +27,6 @@ class Game {
    */
   initWords() {
     return this.shuffle(wordArray).slice(0, this.maxRound);
-  }
-
-  /**
-   * init Players Roles
-   */
-  initPlayerRoles() {
-    this.players.map((player) => {
-      player.isGuesser = false;
-      player.isGiver = false;
-    });
   }
 
   /**
@@ -59,7 +42,6 @@ class Game {
    */
   nextRound() {
     this.round = this.round + 1;
-    this.initPlayerRoles();
     this.setNextGuesser(this.round);
     this.setNextWord(this.round);
 
@@ -82,19 +64,29 @@ class Game {
    * @param {number} nextRound
    */
   setNextGuesser(nextRound) {
-    this.players[nextRound % this.player.length].isGuesser = true;
+    const numberOfPlayers = this.players.length;
+
+    this.players[(nextRound - 1) % numberOfPlayers].isGuesser = false;
+    this.players[nextRound % numberOfPlayers].isGuesser = true;
   }
 
   /**
-   * Give Point when answer is correct
+   * Give points
+   * @param {array} clues
    */
-  givePoints() {
-    this.players.map((player) => {
-      // Guesser gets 200 points
-      if (player.isGuesser) player.addPoint(this.GUESS_POINT);
+  givePoints(clues) {
+    const uniqueClueGivers = getPlayerUniqueClues(clues);
 
-      // Givers who gives not duplicated words get 100 points
-      if (player.isGiver) player.addPoint(this.CLUE_POINT);
+    this.players.map((player) => {
+      if (player.isGuesser) {
+        // Guesser gets 200 points
+        player.addPoint(this.GUESS_POINT);
+      }
+
+      if (uniqueClueGivers.includes(player.id)) {
+        // Clue Givers get 100 points
+        player.addPoint(this.CLUE_POINT);
+      }
     });
   }
 
@@ -107,20 +99,26 @@ class Game {
   }
 
   /**
-   * Set clue giver
-   * @param {string} id
-   */
-  setGiver(id) {
-    this.players.map((player) => {
-      if (player.id === id) player.isGiver = true;
-    });
-  }
-
-  /**
    * Check Last Round
    */
   checkLastRound() {
-    return this.round + 1 === this.maxRound ? true : false;
+    return this.round + 1 === this.maxRound;
+  }
+
+  /**
+   * Join New Player
+   * @param {object} player
+   */
+  addPlayer(player) {
+    this.players.push(player);
+  }
+
+  /**
+   * Leave Player
+   * @param {object} outPlayer
+   */
+  leavePlayer(outPlayer) {
+    this.players = this.players.filter((player) => player.id !== outPlayer.id);
   }
 
   /**
@@ -129,6 +127,22 @@ class Game {
    */
   shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
+  }
+
+  /**
+   * Get player giving unique clue
+   * @param {array} array
+   */
+  getPlayerUniqueClues(array) {
+    const uniqueClues = array
+      .map((clue) => clue['msg'])
+      .filter((msg, index, a) => {
+        return a.indexOf(msg) === a.lastIndexOf(msg);
+      });
+
+    return array
+      .filter((clue) => uniqueClues.includes(clue.msg))
+      .map((c) => c.id);
   }
 }
 
