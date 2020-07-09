@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Container,
   Grid,
@@ -9,19 +9,34 @@ import {
 import SportsEsportsOutlinedIcon from "@material-ui/icons/SportsEsportsOutlined";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import { AuthContext } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { GameContext } from "../context/GameContext";
+import { Redirect } from "react-router-dom";
 import GenericButton from "../components/GenericButton";
 import FormInput from "../components/FormInput";
-import useForm from "../utils/hooks/useForm";
 
 function CreateOrJoinGame() {
   const classes = useStyles();
   const { logoutUser } = useContext(AuthContext);
-  const [sessionLink, setSessionLink] = useForm({ link: "" });
+  const [gameId, setGameId] = useState("");
+  const { errors, createGame, joinGame } = useContext(GameContext)
+  const [redirect, setRedirect] = useState(false);
 
-  function handleSubmit(event) {
+  async function joinGameSubmit(event) {
     event.preventDefault();
-    console.log(`joined with link: ${sessionLink}`);
+    await joinGame(gameId);
+    setRedirect(true);
+  }
+
+  async function newGameClick(event) {
+    event.preventDefault();
+    const id = await createGame();
+    setGameId(id);
+    setRedirect(true);
+  }
+
+  //redirect user to lobby if game is created
+  if (!errors.joinError && redirect && gameId) {
+    return <Redirect to={`/lobby/${gameId}`} />
   }
 
   return (
@@ -50,9 +65,9 @@ function CreateOrJoinGame() {
                 Create Game
               </Typography>
               <SportsEsportsOutlinedIcon className={classes.createIcon} />
-              <Link className={classes.createBtn} to="/lobby">
+              <GenericButton className={classes.createBtn} handleClick={newGameClick}>
                 New Game
-              </Link>
+              </GenericButton>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -66,14 +81,14 @@ function CreateOrJoinGame() {
                 Join
               </Typography>
               <PeopleAltOutlinedIcon className={classes.joinIcon} />
-              <form className={classes.form} onSubmit={handleSubmit} noValidate>
+              <form className={classes.form} onSubmit={joinGameSubmit} noValidate>
                 <FormInput
-                  label="link"
-                  error={""}
-                  handleChange={setSessionLink}
+                  label="game"
+                  error={errors.joinError}
+                  handleChange={(e) => setGameId(e.target.value)}
                   hasAdornment
                   adornmentText="Join"
-                  onClick={handleSubmit}
+                  onClick={joinGameSubmit}
                 />
               </form>
             </Paper>

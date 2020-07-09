@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Container,
   Paper,
@@ -7,35 +7,36 @@ import {
   Grid,
 } from "@material-ui/core";
 import { AuthContext } from "../context/AuthContext";
+import { GameContext } from "../context/GameContext";
 import FormInput from "../components/FormInput";
 import GenericButton from "../components/GenericButton";
 import useForm from "../utils/hooks/useForm";
+import Notification from '../components/Notification'
+import PlayerStatus from '../components/PlayerStatus'
 
-function PreGameLobby() {
+
+function PreGameLobby({ match }) {
+  const queryGameId = match.params.gameId;
   const classes = useStyles();
   const { logoutUser } = useContext(AuthContext);
-
+  const { game, gameNotification, errors,
+    sendInvitation, joinGame, closeGameNotification, isCurrentUserHost } = useContext(GameContext);
   const [playerEmail, setPlayerEmail] = useForm({ email: "" });
-  const [errorMsg, setErrorMsg] = useState("");
-  const [players, setPlayers] = useState([]);
-  // Using set to display email addresses
-  // In case the same user is invited many times
-  const invitedPlayers = [...new Set(players)];
+  const { players } = game;
+
+  useEffect(() => {
+    if (!game.gameId) {
+      joinGame(queryGameId);
+    }
+  }, [joinGame, queryGameId, game]);
 
   function startGame() {
     console.log("start");
   }
 
-  // Invite new players to lobby -- up to 4 players can join
-  function handleSubmit(event) {
+  function inviteClick(event) {
     event.preventDefault();
-    const regex = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    setErrorMsg(""); // clear previous errors first
-    if (!regex.test(playerEmail.email)) {
-      setErrorMsg("Invalid email");
-    } else {
-      setPlayers((prev) => [...prev, playerEmail.email]);
-    }
+    sendInvitation(playerEmail.email)
   }
 
   return (
@@ -49,20 +50,23 @@ function PreGameLobby() {
         <Typography className={classes.heading} variant="h3" component="p">
           Invite Friends
         </Typography>
-        <form className={classes.form} onSubmit={handleSubmit} noValidate>
+        <Typography className={classes.subHeading} variant="h6" component="p">
+          Game Id: {queryGameId}
+        </Typography>
+        <form className={classes.form} onSubmit={inviteClick} noValidate>
           <FormInput
             label="email"
-            error={errorMsg}
+            error={errors.inviteError}
             handleChange={setPlayerEmail}
             hasAdornment
             adornmentText="Invite"
-            onClick={handleSubmit}
+            onClick={inviteClick}
           />
         </form>
-        {invitedPlayers &&
-          invitedPlayers.map((player, index) => (
+        {players &&
+          players.map((player) => (
             <Container
-              key={index}
+              key={player.email}
               className={classes.invitedPlayerContainer}
               component="div"
               maxWidth="xs"
@@ -79,20 +83,23 @@ function PreGameLobby() {
                   variant="h6"
                   component="p"
                 >
-                  {player}
+                  {player.email}
                 </Typography>
                 <div className={classes.indicator}>
-                  <Typography variant="h6" component="p">
-                    Sent
-                  </Typography>
+                  <PlayerStatus status={player.status} />
                 </div>
               </Grid>
               <hr className={classes.divider} />
             </Container>
           ))}
         <div className={classes.buttonContainer}>
-          <GenericButton handleClick={startGame}>Start Game</GenericButton>
+          {
+            isCurrentUserHost() &&
+            <GenericButton handleClick={startGame}>Start Game</GenericButton>
+          }
         </div>
+
+        <Notification open={gameNotification.open} msg={gameNotification.msg} handleClose={closeGameNotification} />
       </Paper>
     </Container>
   );
@@ -119,6 +126,10 @@ const useStyles = makeStyles((theme) => ({
   },
   heading: {
     margin: "3rem auto 0",
+    textAlign: "center",
+  },
+  subHeading: {
+    margin: "1rem auto 0",
     textAlign: "center",
   },
   form: {

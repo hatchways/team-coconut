@@ -16,6 +16,7 @@ function FormInput({
   hasAdornment,
   adornmentText,
   onClick,
+  ...props
 }) {
   const classes = useStyles();
   return (
@@ -25,6 +26,7 @@ function FormInput({
       </Typography>
       <div className={classes.inputContainer}>
         <OutlinedInput
+          {...props}
           classes={{ input: classes.inputText }}
           id={label}
           type={label}

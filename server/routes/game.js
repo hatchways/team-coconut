@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const auth = require("../middlewares/auth");
-const { sendInvitation } = require("../services/game");
-const { gameInvitation } = require("../validators/game");
+const { sendInvitation, createGame, getGame, joinGame } = require("../services/game");
+const { gameInvitation, gameJoin } = require("../validators/game");
 
 // @route POST game/:gameId/invite
 // @desc Invitation to the game via email
@@ -16,8 +16,29 @@ router.post("/:gameId/invite", [auth, gameInvitation], async function (
 ) {
   const { gameId } = req.params;
   const { email } = req.body;
-  await sendInvitation(req.userId, gameId, email);
-  return res.send();
+  const result = await sendInvitation(req.userId, gameId, email);
+  return res.json(result);
 });
+
+router.post("/create",
+  auth,
+  async function (req, res) {
+    const result = await createGame(req.userId);
+    return res.json(result);
+  });
+
+router.get("/:gameId",
+  auth,
+  async function (req, res) {
+    const result = await getGame(req.params.gameId);
+    return res.json(result);
+  });
+
+router.post("/:gameId/join",
+  [auth, gameJoin],
+  async function (req, res) {
+    const result = await joinGame(req.params.gameId, req.userId);
+    return res.json(result);
+  });
 
 module.exports = router;
