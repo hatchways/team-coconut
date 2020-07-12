@@ -9,17 +9,18 @@ class Game {
     this.round = 0;
     this.wordArray = [];
     this.players = [];
-    this.maxRound = this.players.length * 2;
+    this.maxRound = 0;
   }
 
   /**
    * Init & Restart Game
    */
   initGame() {
-    this.wordArray = this.initWords();
-    this.players[0].isGuesser = true;
-    this.word = this.wordArray[0];
+    this.initGuesser();
     this.round = 0;
+    this.maxRound = this.players.length * 2;
+    this.wordArray = this.initWords();
+    this.word = this.wordArray[0];
   }
 
   /**
@@ -27,6 +28,17 @@ class Game {
    */
   initWords() {
     return this.shuffle(wordArray).slice(0, this.maxRound);
+  }
+
+  /**
+   * Initializae player isGuesser property 
+   */
+  initGuesser() {
+    this.players.map((player) => {
+      player.isGuesser = false;
+    });
+
+    this.players[0].isGuesser = true;
   }
 
   /**
@@ -75,7 +87,7 @@ class Game {
    * @param {array} clues
    */
   givePoints(clues) {
-    const uniqueClueGivers = getPlayerUniqueClues(clues);
+    const uniqueClueGivers = this.getPlayerUniqueClues(clues);
 
     this.players.map((player) => {
       if (player.isGuesser) {
