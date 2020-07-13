@@ -102,9 +102,7 @@ function RTCContextProvider({ children }) {
   }
 
   return (
-    <RTCContext.Provider
-      value={{ peers, userMediaRef, getMediaStream, initCall, answerCall }}
-    >
+    <RTCContext.Provider value={{ peers, userMediaRef }}>
       {children}
     </RTCContext.Provider>
   );
