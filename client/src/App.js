@@ -5,6 +5,7 @@ import "./App.css";
 
 import { theme } from "./themes/theme";
 import { AuthContext } from "./context/AuthContext";
+import { RTCContextProvider } from "./context/RTCContext";
 
 import LoginOrSignUp from "./pages/LoginOrSignUp";
 import CreateOrJoinGame from "./pages/CreateOrJoinGame";
@@ -18,13 +19,13 @@ function App() {
   const [redirectPath, setRedirectPath] = useState("/create-game");
 
   const path = window.location.pathname;
-  
+
   //saving initial path to state. Then use it after user is logged in.
   useEffect(() => {
-    if (!['/login', '/register'].includes(path)) {
+    if (!["/login", "/register"].includes(path)) {
       setRedirectPath(path);
     }
-  }, [path])
+  }, [path]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -37,8 +38,8 @@ function App() {
             {auth ? (
               <Redirect to="/create-game" />
             ) : (
-                <LoginOrSignUp type="register" />
-              )}
+              <LoginOrSignUp type="register" />
+            )}
           </Route>
           <Route path="/login">
             {auth ? <Redirect to={redirectPath} /> : <LoginOrSignUp />}
@@ -56,12 +57,14 @@ function App() {
             component={PreGameLobby}
             auth={auth}
           />
-          <ProtectedRoute
-            exact
-            path="/session"
-            component={GameSession}
-            auth={auth}
-          />
+          <RTCContextProvider>
+            <ProtectedRoute
+              exact
+              path="/session"
+              component={GameSession}
+              auth={auth}
+            />
+          </RTCContextProvider>
 
           <Route component={PageNotFound} />
         </Switch>
