@@ -37,8 +37,42 @@ sockets.init = function (server) {
 
     //host starts the game
     socket.on("start-game", (gameId) => {
+      // Start Game
       const gameState = Match.startGame(gameId);
+
+      console.log(gameState);
+
       socket.broadcast.to(gameId).emit("game-started", gameState);
+    });
+
+    // Send Clues
+    socket.on("BE-send-clue", ({ gameId, player }) => {
+      console.log(`Clue is ${player.msg} from ${player.name}`);
+
+      io.sockets.in(gameId).emit("FE-send-clue", player);
+    });
+
+    // Send Answer
+    socket.on("BE-send-answer", (gameId) => {
+      const gameState = Match.endRound(roomName, answer, clues);
+
+      console.log("End Round : ", gameState.state.players);
+
+      socket.broadcast.to(gameId).emit("FE-send-answer", gameState);
+    });
+
+    // Next Round
+    socket.on("BE-move-round", (gameId) => {
+      const gameState = Match.moveToNextRound(gameId);
+
+      io.sockets.in(gameId).emit("FE-move-round", gameState);
+    });
+
+    // Reset game
+    socket.on("BE-reset-game", (gameId) => {
+      const gameState = Match.startGame(gameId);
+
+      io.sockets.in(gameId).emit("FE-reset-game", gameState);
     });
   });
   console.log("Sockets Initialized");
