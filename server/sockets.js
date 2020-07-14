@@ -1,5 +1,5 @@
-const MatchManager = require('./engine/MatchManager');
-const Player = require('./engine/Player');
+const MatchManager = require("./engine/MatchManager");
+const Player = require("./engine/Player");
 
 const sockets = {};
 
@@ -22,7 +22,7 @@ sockets.init = function (server) {
     socket.on("BE-user-joined", async ({ gameId, player }) => {
       const newPlayer = new Player(player.email, player.name);
 
-      if(!Match.checkRoomExist(gameId)) {
+      if (!Match.checkRoomExist(gameId)) {
         Match.createRoom(gameId);
       }
 
@@ -37,9 +37,7 @@ sockets.init = function (server) {
 
     //host starts the game
     socket.on("start-game", (gameId) => {
-      // Start Game
       const gameState = Match.startGame(gameId);
-
       socket.broadcast.to(gameId).emit("game-started", gameState);
     });
   });

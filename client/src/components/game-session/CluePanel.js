@@ -4,7 +4,7 @@ import useForm from "../../utils/hooks/useForm";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
 import GenericButton from "../GenericButton";
 
-function CluePanel() {
+function CluePanel({ wordToGuess }) {
   const classes = useStyles();
   const [clue, setClue] = useForm({ clue: "" });
 
@@ -37,7 +37,7 @@ function CluePanel() {
             variant="h4"
             component="p"
           >
-            Word to Guess
+            {wordToGuess}
           </Typography>
         </Container>
         <Container component="div" maxWidth="xs">

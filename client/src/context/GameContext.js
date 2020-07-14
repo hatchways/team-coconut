@@ -4,7 +4,12 @@ import sockets from "../utils/sockets";
 const GameContext = createContext();
 
 const GameContextProvider = ({ children }) => {
-  const [game, setGame] = useState({ gameId: null, players: [], round: 0, word: '' });
+  const [game, setGame] = useState({
+    gameId: null,
+    players: [],
+    round: 0,
+    word: "",
+  });
   const [errors, setErrors] = useState({
     inviteError: "",
     joinError: "",
@@ -138,7 +143,6 @@ const GameContextProvider = ({ children }) => {
 
   //checks if the user is the host of the game
   const isCurrentUserHost = () => {
-    console.log("Game", game);
     const currentUser = JSON.parse(sessionStorage.getItem("user"));
     if (game.players[0] && game.players[0].email === currentUser.email) {
       return true;

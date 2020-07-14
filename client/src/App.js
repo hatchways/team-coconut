@@ -5,6 +5,7 @@ import "./App.css";
 
 import { theme } from "./themes/theme";
 import { AuthContext } from "./context/AuthContext";
+import { GameplayContextProvider } from "./context/GameplayContext";
 
 import LoginOrSignUp from "./pages/LoginOrSignUp";
 import CreateOrJoinGame from "./pages/CreateOrJoinGame";
@@ -50,18 +51,20 @@ function App() {
             component={CreateOrJoinGame}
             auth={auth}
           />
-          <ProtectedRoute
-            exact
-            path="/lobby/:gameId"
-            component={PreGameLobby}
-            auth={auth}
-          />
-          <ProtectedRoute
-            exact
-            path="/session/:gameId"
-            component={GameSession}
-            auth={auth}
-          />
+          <GameplayContextProvider>
+            <ProtectedRoute
+              exact
+              path="/lobby/:gameId"
+              component={PreGameLobby}
+              auth={auth}
+            />
+            <ProtectedRoute
+              exact
+              path="/session/:gameId"
+              component={GameSession}
+              auth={auth}
+            />
+          </GameplayContextProvider>
 
           <Route component={PageNotFound} />
         </Switch>

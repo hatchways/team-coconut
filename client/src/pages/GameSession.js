@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 import PlayerPanel from "../components/game-session/PlayerPanel";
 import CluePanel from "../components/game-session/CluePanel";
 import GuessPanel from "../components/game-session/GuessPanel";
 import Settings from "../components/Settings";
+import { GameplayContext } from "../context/GameplayContext";
 
 function GameSession() {
   const classes = useStyles();
-  const isGuesser = true;
+  const [isGuesser, setIsGuesser] = useState(false);
+  const { gameReady, gameState, guesser } = useContext(GameplayContext);
+
+  if (gameReady) {
+    const { email } = sessionStorage.getItem("user");
+    if (guesser[0].id === email) setIsGuesser(true);
+  }
+
+  console.log(gameState);
+  console.log(isGuesser);
+
   return (
     <main className={classes.mainContainer}>
       <span className={classes.logo}>
@@ -22,7 +33,15 @@ function GameSession() {
         justify="space-between"
         alignItems="center"
       >
-        <Grid item>{isGuesser ? <GuessPanel /> : <CluePanel />}</Grid>
+        {gameReady && (
+          <Grid item>
+            {isGuesser ? (
+              <GuessPanel />
+            ) : (
+              <CluePanel wordToGuess={gameState.word} />
+            )}
+          </Grid>
+        )}
         <Grid item lg>
           <PlayerPanel />
         </Grid>

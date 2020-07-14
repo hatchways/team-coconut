@@ -3,7 +3,9 @@ import React, { createContext, useState } from "react";
 const AuthContext = createContext();
 
 function AuthContextProvider({ children }) {
-  const [auth, setAuth] = useState(sessionStorage.getItem("user") ? true : false);
+  const [auth, setAuth] = useState(
+    sessionStorage.getItem("user") ? true : false
+  );
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -69,7 +71,6 @@ function AuthContextProvider({ children }) {
         throw new Error(response.status);
       }
       const json = await response.json();
-      console.log(response);
       sessionStorage.setItem("user", JSON.stringify(json));
       setAuth(true);
       // clear errors after successful login
