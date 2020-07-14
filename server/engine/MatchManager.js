@@ -19,8 +19,6 @@ class MatchManager {
     const newPlayer = new Player(player.id, player.name);
 
     game.addPlayer(newPlayer);
-
-    return game.getState();
   }
 
   startGame(gameId) {
