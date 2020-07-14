@@ -12,7 +12,7 @@ function GameSession() {
   const { gameReady, gameState, guesser } = useContext(GameplayContext);
 
   if (gameReady) {
-    const { email } = sessionStorage.getItem("user");
+    const { email } = localStorage.getItem("user");
     if (guesser[0].id === email) setIsGuesser(true);
   }
 
