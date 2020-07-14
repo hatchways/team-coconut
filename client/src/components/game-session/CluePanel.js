@@ -45,7 +45,9 @@ function CluePanel() {
             <FormInput label="clue" error="" handleChange={setClue} />
           </form>
           <div className={classes.submitBtn}>
-            <GenericButton handleClick={submitClue}>Submit</GenericButton>
+            <GenericButton handleClick={submitClue} isSubmit>
+              Submit
+            </GenericButton>
           </div>
         </Container>
       </Grid>

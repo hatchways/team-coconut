@@ -27,7 +27,9 @@ function GuessPanel() {
             <FormInput label="guess" error="" handleChange={setGuess} />
           </form>
           <div className={classes.submitBtn}>
-            <GenericButton handleClick={submitGuess}>Submit</GenericButton>
+            <GenericButton handleClick={submitGuess} isSubmit>
+              Submit
+            </GenericButton>
           </div>
         </Container>
       </Grid>

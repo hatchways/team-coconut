@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, makeStyles } from "@material-ui/core";
 
-function GenericButton({ children, handleClick, isAdornment }) {
+function GenericButton({ children, handleClick, isSubmit, isAdornment }) {
   const classes = useStyles();
   return (
     <Button
@@ -13,6 +13,7 @@ function GenericButton({ children, handleClick, isAdornment }) {
       className={classes.button}
       variant="contained"
       onClick={handleClick}
+      type={isSubmit ? "submit" : "button"}
     >
       {children}
     </Button>

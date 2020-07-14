@@ -35,7 +35,7 @@ function FormInput({
           endAdornment={
             hasAdornment && (
               <InputAdornment position="end">
-                <GenericButton handleClick={onClick} isAdornment>
+                <GenericButton handleClick={onClick} isSubmit isAdornment>
                   {adornmentText}
                 </GenericButton>
               </InputAdornment>
