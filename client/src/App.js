@@ -18,13 +18,13 @@ function App() {
   const [redirectPath, setRedirectPath] = useState("/create-game");
 
   const path = window.location.pathname;
-  
+
   //saving initial path to state. Then use it after user is logged in.
   useEffect(() => {
-    if (!['/login', '/register'].includes(path)) {
+    if (!["/login", "/register"].includes(path)) {
       setRedirectPath(path);
     }
-  }, [path])
+  }, [path]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -37,8 +37,8 @@ function App() {
             {auth ? (
               <Redirect to="/create-game" />
             ) : (
-                <LoginOrSignUp type="register" />
-              )}
+              <LoginOrSignUp type="register" />
+            )}
           </Route>
           <Route path="/login">
             {auth ? <Redirect to={redirectPath} /> : <LoginOrSignUp />}
@@ -58,7 +58,7 @@ function App() {
           />
           <ProtectedRoute
             exact
-            path="/session"
+            path="/session/:gameId"
             component={GameSession}
             auth={auth}
           />
