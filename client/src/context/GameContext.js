@@ -4,7 +4,7 @@ import sockets from "../utils/sockets";
 const GameContext = createContext();
 
 const GameContextProvider = ({ children }) => {
-  const [game, setGame] = useState({ gameId: null, players: [] });
+  const [game, setGame] = useState({ gameId: null, players: [], round: 0, word: '' });
   const [errors, setErrors] = useState({
     inviteError: "",
     joinError: "",
@@ -50,7 +50,7 @@ const GameContextProvider = ({ children }) => {
       setGame((game) => ({ ...game, gameId: _id, players }));
       sockets.emit("BE-user-joined", {
         gameId: _id,
-        userEmail: currentUser.email,
+        player: currentUser,
       });
       return _id;
     } catch (error) {
@@ -93,7 +93,7 @@ const GameContextProvider = ({ children }) => {
       const currentUser = JSON.parse(localStorage.getItem("user"));
       sockets.emit("BE-user-joined", {
         gameId: _id,
-        userEmail: currentUser.email,
+        player: currentUser,
       });
     } catch (error) {
       console.log(error);
@@ -138,6 +138,7 @@ const GameContextProvider = ({ children }) => {
 
   //checks if the user is the host of the game
   const isCurrentUserHost = () => {
+    console.log("Game", game);
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (game.players[0] && game.players[0].email === currentUser.email) {
       return true;

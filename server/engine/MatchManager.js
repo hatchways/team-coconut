@@ -7,12 +7,21 @@ class MatchManager {
     this.matchManager = new Map();
   }
 
+  /**
+   * Create New Room
+   * @param {string} gameId 
+   */
   createRoom(gameId) {
     this.matchManager.set(gameId, new Game());
   }
 
+  /**
+   * Join Room
+   * @param {string} gameId 
+   * @param {object} player 
+   */
   joinRoom(gameId, player) {
-    if (!checkRoomExist(gameId))
+    if (!this.checkRoomExist(gameId))
       throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
@@ -21,8 +30,12 @@ class MatchManager {
     game.addPlayer(newPlayer);
   }
 
+  /**
+   * Start Game
+   * @param {string} gameId 
+   */
   startGame(gameId) {
-    if (!checkRoomExist(gameId))
+    if (!this.checkRoomExist(gameId))
       throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
@@ -37,8 +50,14 @@ class MatchManager {
     return game.getState();
   }
 
+  /**
+   * End Round
+   * @param {string} gameId 
+   * @param {string} answer 
+   * @param {array} clues 
+   */
   endRound(gameId, answer, clues) {
-    if (!checkRoomExist(gameId))
+    if (!this.checkRoomExist(gameId))
       throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
@@ -54,8 +73,12 @@ class MatchManager {
     };
   }
 
+  /**
+   * Move To Next Round
+   * @param {string} gameId 
+   */
   moveToNextRound(gameId) {
-    if (!checkRoomExist(gameId))
+    if (!this.checkRoomExist(gameId))
       throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
@@ -65,8 +88,12 @@ class MatchManager {
     return game.getState();
   }
 
+  /**
+   * Player leaves game
+   * @param {object} player 
+   */
   leavePlayer(player) {
-    if (!checkRoomExist(gameId))
+    if (!this.checkRoomExist(gameId))
       throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
@@ -76,13 +103,20 @@ class MatchManager {
     return game.getState();
   }
 
+  /**
+   * End Game
+   */
   endGame() {
-    if (!checkRoomExist(gameId))
+    if (!this.checkRoomExist(gameId))
       throw new ClientError('', 'Room Not Found', 404);
 
     this.matchManager.delete(gameId);
   }
 
+  /**
+   * Check Room is Exist in a Match Map
+   * @param {string} gameId 
+   */
   checkRoomExist(gameId) {
     return this.matchManager.has(gameId);
   }
