@@ -47,9 +47,7 @@ function PreGameLobby({ match }) {
     sockets.emit("start-game", queryGameId);
   }
 
-  if (isCurrentUserHost() && gameStart) {
-    return <Redirect to={`/session/${queryGameId}`} />;
-  } else if (!isCurrentUserHost() && gameStart) {
+  if (gameStart) {
     return <Redirect to={`/session/${queryGameId}`} />;
   }
 
