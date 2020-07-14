@@ -3,7 +3,7 @@ import React, { createContext, useState } from "react";
 const AuthContext = createContext();
 
 function AuthContextProvider({ children }) {
-  const [auth, setAuth] = useState(sessionStorage.getItem("user") ? true : false);
+  const [auth, setAuth] = useState(localStorage.getItem("user") ? true : false);
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -33,7 +33,7 @@ function AuthContextProvider({ children }) {
         throw new Error(response.status);
       }
       const json = await response.json();
-      sessionStorage.setItem("user", JSON.stringify(json));
+      localStorage.setItem("user", JSON.stringify(json));
       setAuth(true);
       // clear errors after successful signup
       setErrors({
@@ -70,7 +70,7 @@ function AuthContextProvider({ children }) {
       }
       const json = await response.json();
       console.log(response);
-      sessionStorage.setItem("user", JSON.stringify(json));
+      localStorage.setItem("user", JSON.stringify(json));
       setAuth(true);
       // clear errors after successful login
       setErrors({
@@ -93,7 +93,7 @@ function AuthContextProvider({ children }) {
       });
       if (!response.ok) throw new Error(response.status);
       setAuth(false);
-      sessionStorage.removeItem("user");
+      localStorage.removeItem("user");
     } catch (error) {
       console.error(error);
     }

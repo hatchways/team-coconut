@@ -8,7 +8,7 @@ export async function getProtectedData(path) {
     });
     if (!response.ok) {
       if (response.status === 401) {
-        sessionStorage.removeItem("user");
+        localStorage.removeItem("user");
       } else {
         const { errors } = await response.json();
         return errors;

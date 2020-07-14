@@ -45,7 +45,7 @@ const GameContextProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-      const currentUser = JSON.parse(sessionStorage.getItem("user"));
+      const currentUser = JSON.parse(localStorage.getItem("user"));
       const { _id, players } = await response.json();
       setGame((game) => ({ ...game, gameId: _id, players }));
       sockets.emit("BE-user-joined", {
@@ -90,7 +90,7 @@ const GameContextProvider = ({ children }) => {
       const { _id, players } = await response.json();
       setGame((game) => ({ ...game, gameId: _id, players }));
       //notify other players
-      const currentUser = JSON.parse(sessionStorage.getItem("user"));
+      const currentUser = JSON.parse(localStorage.getItem("user"));
       sockets.emit("BE-user-joined", {
         gameId: _id,
         player: currentUser,
@@ -138,8 +138,7 @@ const GameContextProvider = ({ children }) => {
 
   //checks if the user is the host of the game
   const isCurrentUserHost = () => {
-    console.log("Game", game);
-    const currentUser = JSON.parse(sessionStorage.getItem("user"));
+    const currentUser = JSON.parse(localStorage.getItem("user"));
     if (game.players[0] && game.players[0].email === currentUser.email) {
       return true;
     }
