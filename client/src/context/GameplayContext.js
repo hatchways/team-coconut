@@ -51,8 +51,6 @@ function GameplayContextProvider({ children }) {
     sockets.emit("BE-send-clue", { gameId, player });
   }
 
-  // currently there is an issue when emitting this event
-  // the backend throws a client Error, room not found
   function sendGuessToBE(gameId, answer, clues) {
     console.log(gameId, answer, clues);
     sockets.emit("BE-send-answer", { gameId, answer, clues });
