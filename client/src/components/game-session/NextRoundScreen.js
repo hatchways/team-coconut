@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles, Container, Typography, Paper } from "@material-ui/core";
+import { GameplayContext } from "../../context/GameplayContext";
 
-function NextRoundScreen({ players }) {
+function NextRoundScreen() {
   const classes = useStyles();
+  const { gameState } = useContext(GameplayContext);
+  const { players } = gameState;
+  console.log(players);
   return (
     <div className={classes.overlay}>
       <Container className={classes.nextRoundContainer} component="div">
@@ -14,7 +18,7 @@ function NextRoundScreen({ players }) {
         <Paper className={classes.scoresPaper} elevation={5}>
           {testPlayers.map((player) => (
             <Container
-              key={player}
+              key={player.id}
               className={classes.scoreSection}
               component="section"
             >
@@ -33,10 +37,10 @@ function NextRoundScreen({ players }) {
 }
 
 const testPlayers = [
-  { name: "Darren", point: "100" },
-  { name: "Aecio", point: "500" },
-  { name: "Hyunse", point: "300" },
-  { name: "Insaf", point: "500" },
+  { id: "1", name: "Darren", point: "100" },
+  { id: "2", name: "Aecio", point: "500" },
+  { id: "3", name: "Hyunse", point: "300" },
+  { id: "4", name: "Insaf", point: "500" },
 ];
 
 const useStyles = makeStyles((theme) => ({

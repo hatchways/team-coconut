@@ -8,7 +8,7 @@ function GameplayContextProvider({ children }) {
   const [gameReady, setGameReady] = useState(false);
   const [guesser, setGuesser] = useState();
   const [clues, setClues] = useState([]);
-  const [showNextRoundScreen, setShowNextRoundScreen] = useState(true);
+  const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
 
   useEffect(() => {
     sockets.on("game-started", (gameState) => {

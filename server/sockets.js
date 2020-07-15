@@ -70,14 +70,15 @@ sockets.init = function (server) {
       io.sockets.in(gameId).emit("FE-send-answer", { gameId, gameState });
     });
 
-    // Next Round Screen
+    /**
+     * Open Next Round Screen Overlay
+     */
     socket.on("BE-show-next-round-screen", (gameId) => {
-      console.log(`show next round screen in ${gameId}`);
       io.sockets.in(gameId).emit("FE-show-next-round-screen");
     });
 
     /**
-     * Movee to Next Round
+     * Move to Next Round
      */
     socket.on("BE-move-round", (gameId) => {
       const gameState = Match.moveToNextRound(gameId);
