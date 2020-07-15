@@ -53,8 +53,9 @@ sockets.init = function (server) {
     });
 
     // Send Answer
-    socket.on("BE-send-answer", (gameId) => {
-      const gameState = Match.endRound(roomName, answer, clues);
+    socket.on("BE-send-answer", (gameId, answer, clues) => {
+      console.log(answer);
+      const gameState = Match.endRound(gameId, answer, clues);
 
       console.log("End Round : ", gameState.state.players);
 

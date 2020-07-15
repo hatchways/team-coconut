@@ -1,17 +1,29 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import FormInput from "../FormInput";
 import useForm from "../../utils/hooks/useForm";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
 import GenericButton from "../GenericButton";
+import { GameplayContext } from "../../context/GameplayContext";
+import { useParams } from "react-router-dom";
 
 function CluePanel({ wordToGuess }) {
   const classes = useStyles();
   const [clue, setClue] = useForm({ clue: "" });
+  const { sendClueToBE } = useContext(GameplayContext);
+  const { gameId } = useParams();
+  const { name } = JSON.parse(localStorage.getItem("user"));
+  const [btnDisable, setBtnDisable] = useState(false);
 
   function submitClue(event) {
     event.preventDefault();
-    console.log(`submitted ${clue.clue}`);
+    setBtnDisable(true);
+    const player = {
+      msg: clue.clue,
+      name,
+    };
+    sendClueToBE(gameId, player);
   }
+
   return (
     <Container className={classes.sectionContainer} component="section">
       <Grid
@@ -45,7 +57,11 @@ function CluePanel({ wordToGuess }) {
             <FormInput label="clue" error="" handleChange={setClue} />
           </form>
           <div className={classes.submitBtn}>
-            <GenericButton handleClick={submitClue} isSubmit>
+            <GenericButton
+              handleClick={submitClue}
+              isSubmit
+              isDisabled={btnDisable}
+            >
               Submit
             </GenericButton>
           </div>

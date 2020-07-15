@@ -1,17 +1,23 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
 import FormInput from "../FormInput";
 import GenericButton from "../GenericButton";
 import { Container, Grid, makeStyles } from "@material-ui/core";
 import useForm from "../../utils/hooks/useForm";
+import { GameplayContext } from "../../context/GameplayContext";
 
 function GuessPanel() {
   const classes = useStyles();
   const [guess, setGuess] = useForm({ guess: "" });
+  const { clues, sendGuessToBE } = useContext(GameplayContext);
+  const { gameId } = useParams();
 
   function submitGuess(event) {
     event.preventDefault();
-    console.log(`submitted ${guess.guess}`);
+    const answer = guess.guess;
+    sendGuessToBE(gameId, answer, clues);
   }
+
   return (
     <Container className={classes.sectionContainer} component="section">
       <Grid
