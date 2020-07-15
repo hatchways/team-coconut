@@ -5,11 +5,14 @@ import CluePanel from "../components/game-session/CluePanel";
 import GuessPanel from "../components/game-session/GuessPanel";
 import Settings from "../components/Settings";
 import { GameplayContext } from "../context/GameplayContext";
+import NextRoundScreen from "../components/game-session/NextRoundScreen";
 
 function GameSession() {
   const classes = useStyles();
   const [isGuesser, setIsGuesser] = useState(false);
-  const { gameReady, gameState, guesser } = useContext(GameplayContext);
+  const { gameReady, gameState, guesser, showNextRoundScreen } = useContext(
+    GameplayContext
+  );
 
   useEffect(() => {
     if (gameReady) {
@@ -19,33 +22,36 @@ function GameSession() {
   }, [gameReady, guesser]);
 
   return (
-    <main className={classes.mainContainer}>
-      <span className={classes.logo}>
-        <strong className={classes.logoStrong}>Just</strong>One
-      </span>
-      <nav className={classes.settings}>
-        <Settings />
-      </nav>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="center"
-      >
-        {gameReady && (
-          <Grid item>
-            {isGuesser ? (
-              <GuessPanel />
-            ) : (
-              <CluePanel wordToGuess={gameState.word} />
-            )}
+    <>
+      <main className={classes.mainContainer}>
+        <span className={classes.logo}>
+          <strong className={classes.logoStrong}>Just</strong>One
+        </span>
+        <nav className={classes.settings}>
+          <Settings />
+        </nav>
+        <Grid
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="center"
+        >
+          {gameReady && (
+            <Grid item>
+              {isGuesser ? (
+                <GuessPanel />
+              ) : (
+                <CluePanel wordToGuess={gameState.word} />
+              )}
+            </Grid>
+          )}
+          <Grid item lg>
+            <PlayerPanel />
           </Grid>
-        )}
-        <Grid item lg>
-          <PlayerPanel />
         </Grid>
-      </Grid>
-    </main>
+      </main>
+      {showNextRoundScreen && <NextRoundScreen />}
+    </>
   );
 }
 

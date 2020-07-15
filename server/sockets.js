@@ -59,7 +59,13 @@ sockets.init = function (server) {
 
       console.log("End Round : ", gameState.state.players);
 
-      io.sockets.in(gameId).emit("FE-send-answer", gameState);
+      io.sockets.in(gameId).emit("FE-send-answer", { gameId, gameState });
+    });
+
+    // Next Round Screen
+    socket.on("BE-show-next-round-screen", (gameId) => {
+      console.log(`show next round screen in ${gameId}`);
+      io.sockets.in(gameId).emit("FE-show-next-round-screen");
     });
 
     // Next Round

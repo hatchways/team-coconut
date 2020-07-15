@@ -39,6 +39,9 @@ export const theme = createMuiTheme({
         "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
     },
   },
+  modal: {
+    background: "#323232",
+  },
   icon: {
     small: {
       fontSize: "25px",

@@ -8,6 +8,7 @@ function GameplayContextProvider({ children }) {
   const [gameReady, setGameReady] = useState(false);
   const [guesser, setGuesser] = useState();
   const [clues, setClues] = useState([]);
+  const [showNextRoundScreen, setShowNextRoundScreen] = useState(true);
 
   useEffect(() => {
     sockets.on("game-started", (gameState) => {
@@ -26,8 +27,14 @@ function GameplayContextProvider({ children }) {
       setClues((prevClues) => [...prevClues, player]);
     });
 
-    sockets.on("FE-send-answer", (gameState) => {
+    sockets.on("FE-send-answer", ({ gameId, gameState }) => {
       console.log(gameState);
+      setGameState(gameState);
+      sockets.emit("BE-show-next-round-screen", gameId);
+    });
+
+    sockets.on("FE-show-next-round-screen", () => {
+      setShowNextRoundScreen(true);
     });
 
     sockets.on("FE-move-round", (gameState) => {
@@ -56,6 +63,7 @@ function GameplayContextProvider({ children }) {
         gameState,
         guesser,
         clues,
+        showNextRoundScreen,
         sendClueToBE,
         sendGuessToBE,
       }}
