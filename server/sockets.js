@@ -54,7 +54,7 @@ sockets.init = function (server) {
 
     // Send Answer
     socket.on("BE-send-answer", ({ gameId, answer, clues }) => {
-      console.log(answer);
+      console.log(answer, clues);
       const gameState = Match.endRound(gameId, answer, clues);
 
       console.log("End Round : ", gameState.state.players);

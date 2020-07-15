@@ -11,7 +11,7 @@ function CluePanel({ wordToGuess }) {
   const [clue, setClue] = useForm({ clue: "" });
   const { sendClueToBE } = useContext(GameplayContext);
   const { gameId } = useParams();
-  const { name } = JSON.parse(localStorage.getItem("user"));
+  const { email } = JSON.parse(localStorage.getItem("user"));
   const [btnDisable, setBtnDisable] = useState(false);
 
   function submitClue(event) {
@@ -19,7 +19,7 @@ function CluePanel({ wordToGuess }) {
     setBtnDisable(true);
     const player = {
       msg: clue.clue,
-      name,
+      id: email,
     };
     sendClueToBE(gameId, player);
   }

@@ -23,14 +23,7 @@ function GameplayContextProvider({ children }) {
     });
 
     sockets.on("FE-send-clue", (player) => {
-      // currently there is an issue that occurs as follows:
-      // playerOne submits a clue => clues = [playerOneClue]
-      // playerTwo submits a clue => clues = [playerOneClue, playerTwoClue, playerTwoClue]
-      // playerThree submits a clue => clues = [playerOneClue, playerTwoClue, playerTwoClue, playerThreeClue, playerThreeClue, playerThreeClue]
-      // maybe using a Set is an easy solution?
-      // but finding a way to prevent re-renders is probably the best solution
-      setClues((prevClues) => [...prevClues, player.msg]);
-      console.log(clues);
+      setClues((prevClues) => [...prevClues, player]);
     });
 
     sockets.on("FE-send-answer", (gameState) => {
@@ -44,7 +37,7 @@ function GameplayContextProvider({ children }) {
     sockets.on("FE-reset-game", (gameState) => {
       console.log(gameState);
     });
-  }, [clues]);
+  }, []);
 
   function sendClueToBE(gameId, player) {
     console.log(gameId, player);
