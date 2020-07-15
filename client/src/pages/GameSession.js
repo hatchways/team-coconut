@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 import PlayerPanel from "../components/game-session/PlayerPanel";
 import CluePanel from "../components/game-session/CluePanel";
@@ -11,13 +11,12 @@ function GameSession() {
   const [isGuesser, setIsGuesser] = useState(false);
   const { gameReady, gameState, guesser } = useContext(GameplayContext);
 
-  if (gameReady) {
-    const { email } = localStorage.getItem("user");
-    if (guesser[0].id === email) setIsGuesser(true);
-  }
-
-  console.log(gameState);
-  console.log(isGuesser);
+  useEffect(() => {
+    if (gameReady) {
+      const { email } = JSON.parse(localStorage.getItem("user"));
+      if (guesser[0].id === email) setIsGuesser(true);
+    }
+  }, [gameReady, guesser]);
 
   return (
     <main className={classes.mainContainer}>

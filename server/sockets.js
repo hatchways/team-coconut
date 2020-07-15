@@ -42,7 +42,7 @@ sockets.init = function (server) {
 
       console.log(gameState);
 
-      socket.broadcast.to(gameId).emit("game-started", gameState);
+      io.sockets.in(gameId).emit("game-started", gameState);
     });
 
     // Send Clues
