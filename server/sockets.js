@@ -58,7 +58,7 @@ sockets.init = function (server) {
 
       console.log("End Round : ", gameState.state.players);
 
-      socket.broadcast.to(gameId).emit("FE-send-answer", gameState);
+      io.sockets.in(gameId).emit("FE-send-answer", gameState);
     });
 
     // Next Round
