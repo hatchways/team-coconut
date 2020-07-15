@@ -46,7 +46,7 @@ class Game {
    * @param {string} answer
    */
   checkAnswer(answer) {
-    return this.word === answer;
+    return this.word.toLowerCase() === answer.toLowerCase();
   }
 
   /**

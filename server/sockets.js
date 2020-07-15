@@ -12,14 +12,19 @@ sockets.init = function (server) {
     pingTimeout: 10000,
   });
 
+  /**
+   * Socket Connect
+   */
   io.on("connect", (socket) => {
     console.log("connected", socket.id, new Date().toLocaleTimeString());
     socket.on("disconnect", () => {
       console.log("disconnected", socket.id, new Date().toLocaleTimeString());
     });
 
-    //joining the game (room)
-    socket.on("BE-user-joined", async ({ gameId, player }) => {
+    /**
+     * Join Room
+     */
+    socket.on("BE-user-joined", ({ gameId, player }) => {
       const newPlayer = new Player(player.email, player.name);
 
       if (!Match.checkRoomExist(gameId)) {
@@ -35,26 +40,29 @@ sockets.init = function (server) {
       socket.broadcast.to(gameId).emit("FE-user-joined", player.email);
     });
 
-    //host starts the game
+    /**
+     * Start Game
+     */
     socket.on("start-game", (gameId) => {
       // Start Game
       const gameState = Match.startGame(gameId);
 
-      console.log(gameState);
-
       io.sockets.in(gameId).emit("game-started", gameState);
     });
 
-    // Send Clues
+    /**
+     * Send Clues
+     */
     socket.on("BE-send-clue", ({ gameId, player }) => {
       console.log(`Clue is ${player.msg} from ${player.name}`);
 
       io.sockets.in(gameId).emit("FE-send-clue", player);
     });
 
-    // Send Answer
+    /**
+     * End of Round
+     */
     socket.on("BE-send-answer", ({ gameId, answer, clues }) => {
-      console.log(answer, clues);
       const gameState = Match.endRound(gameId, answer, clues);
 
       console.log("End Round : ", gameState.state.players);
@@ -62,18 +70,22 @@ sockets.init = function (server) {
       io.sockets.in(gameId).emit("FE-send-answer", gameState);
     });
 
-    // Next Round
+    /**
+     * Movee to Next Round
+     */
     socket.on("BE-move-round", (gameId) => {
       const gameState = Match.moveToNextRound(gameId);
 
       io.sockets.in(gameId).emit("FE-move-round", gameState);
     });
 
-    // Reset game
+    /**
+     * Restart Game
+     */
     socket.on("BE-reset-game", (gameId) => {
       const gameState = Match.startGame(gameId);
 
-      io.sockets.in(gameId).emit("FE-reset-game", gameState);
+      io.sockets.in(gameId).emit("game-started", gameState);
     });
   });
   console.log("Sockets Initialized");
