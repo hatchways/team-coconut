@@ -27,14 +27,16 @@ function GameplayContextProvider({ children }) {
       setClues((prevClues) => [...prevClues, player]);
     });
 
+    // get answer and game state, signal to show score screen
     sockets.on("FE-send-answer", ({ gameId, gameState }) => {
       console.log(gameState);
       setGameState(gameState);
-      sockets.emit("BE-show-next-round-screen", gameId);
+      setShowNextRoundScreen(true);
     });
 
-    sockets.on("FE-show-next-round-screen", () => {
-      setShowNextRoundScreen(true);
+    // close next round screen
+    sockets.on("FE-close-next-round-screen", () => {
+      setShowNextRoundScreen(false);
     });
 
     sockets.on("FE-move-round", (gameState) => {

@@ -71,10 +71,11 @@ sockets.init = function (server) {
     });
 
     /**
-     * Open Next Round Screen Overlay
+     * Close Next Round Screen Overlay
      */
-    socket.on("BE-show-next-round-screen", (gameId) => {
-      io.sockets.in(gameId).emit("FE-show-next-round-screen");
+    socket.on("BE-close-next-round-screen", (gameId) => {
+      io.sockets.in(gameId).emit("FE-close-next-round-screen");
+      io.sockets.in(gameId).emit("enable-clue-submit");
     });
 
     /**

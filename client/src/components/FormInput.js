@@ -16,6 +16,7 @@ function FormInput({
   hasAdornment,
   adornmentText,
   onClick,
+  isDisabled,
   ...props
 }) {
   const classes = useStyles();
@@ -32,6 +33,7 @@ function FormInput({
           type={label}
           onChange={handleChange}
           fullWidth
+          disabled={isDisabled}
           endAdornment={
             hasAdornment && (
               <InputAdornment position="end">

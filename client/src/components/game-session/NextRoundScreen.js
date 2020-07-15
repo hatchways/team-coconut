@@ -1,22 +1,44 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { makeStyles, Container, Typography, Paper } from "@material-ui/core";
 import { GameplayContext } from "../../context/GameplayContext";
+import sockets from "../../utils/sockets";
+import { useParams } from "react-router-dom";
 
 function NextRoundScreen() {
   const classes = useStyles();
   const { gameState } = useContext(GameplayContext);
-  const { players } = gameState;
-  console.log(players);
+  const {
+    state: { players },
+  } = gameState;
+  const { gameId } = useParams();
+  const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    let timerToClose;
+    if (countdown > 0) {
+      timerToClose = setTimeout(() => {
+        setCountdown((time) => time - 1);
+      }, 1000);
+    }
+    if (countdown === 0) {
+      sockets.emit("BE-close-next-round-screen", gameId);
+    }
+
+    return () => {
+      clearTimeout(timerToClose);
+    };
+  }, [countdown, gameId]);
+
   return (
     <div className={classes.overlay}>
       <Container className={classes.nextRoundContainer} component="div">
         <Paper className={classes.timerPaper} elevation={5}>
           <Typography className={classes.text} variant="h4" component="p">
-            Next Round In:
+            Next Round In: {countdown}
           </Typography>
         </Paper>
         <Paper className={classes.scoresPaper} elevation={5}>
-          {testPlayers.map((player) => (
+          {players.map((player) => (
             <Container
               key={player.id}
               className={classes.scoreSection}
@@ -35,13 +57,6 @@ function NextRoundScreen() {
     </div>
   );
 }
-
-const testPlayers = [
-  { id: "1", name: "Darren", point: "100" },
-  { id: "2", name: "Aecio", point: "500" },
-  { id: "3", name: "Hyunse", point: "300" },
-  { id: "4", name: "Insaf", point: "500" },
-];
 
 const useStyles = makeStyles((theme) => ({
   overlay: {
