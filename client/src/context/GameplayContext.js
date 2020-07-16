@@ -10,7 +10,6 @@ function GameplayContextProvider({ children }) {
   const [clues, setClues] = useState([]);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
-  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     /**
@@ -72,36 +71,15 @@ function GameplayContextProvider({ children }) {
     sockets.emit("BE-send-answer", { gameId, answer, clues });
   }
 
-  const closeNextRoundScreen = useCallback(() => {
+  const closeNextRoundScreen = useCallback((gameId) => {
     setShowNextRoundScreen(false);
+    sockets.emit("BE-move-round", gameId);
+    console.log("closed next round screen");
   }, []);
 
   const disableSubmitInputs = useCallback((bool) => {
     setSubmitDisable(bool);
   }, []);
-
-  useEffect(() => {
-    if (showNextRoundScreen) {
-      let timerToClose;
-      if (countdown > 0) {
-        timerToClose = setTimeout(() => {
-          setCountdown((time) => time - 1);
-        }, 1000);
-      }
-      if (countdown === 0) {
-        disableSubmitInputs(false);
-        closeNextRoundScreen();
-      }
-      return () => {
-        clearTimeout(timerToClose);
-      };
-    } else setCountdown(5);
-  }, [
-    countdown,
-    showNextRoundScreen,
-    closeNextRoundScreen,
-    disableSubmitInputs,
-  ]);
 
   return (
     <GameplayContext.Provider
@@ -112,7 +90,6 @@ function GameplayContextProvider({ children }) {
         clues,
         showNextRoundScreen,
         submitDisable,
-        countdown,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
