@@ -62,7 +62,7 @@ function NextRoundScreen() {
 
 const useStyles = makeStyles((theme) => ({
   overlay: {
-    background: "rgba(0,0,0,0.2)",
+    background: "rgba(0,0,0,0.5)",
     position: "absolute",
     height: "100vh",
     width: "100vw",

@@ -29,6 +29,9 @@ export const theme = createMuiTheme({
     fontWeight: "800",
     color: white,
   },
+  gameOverText: {
+    fontSize: "3em",
+  },
   gradient: {
     blue: {
       background:

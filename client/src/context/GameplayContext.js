@@ -8,6 +8,7 @@ function GameplayContextProvider({ children }) {
   const [gameReady, setGameReady] = useState(false);
   const [clues, setClues] = useState([]);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
+  const [showEndGameScreen, setShowEndGameScreen] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
   const [isGuesser, setIsGuesser] = useState(false);
 
@@ -44,7 +45,12 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
-      setShowNextRoundScreen(true);
+      if (gameState.state.round === gameState.state.players.length * 2 - 1) {
+        console.log("Final Round : ", gameState);
+        setShowEndGameScreen(true);
+      } else {
+        setShowNextRoundScreen(true);
+      }
     });
 
     /**
@@ -99,6 +105,7 @@ function GameplayContextProvider({ children }) {
         isGuesser,
         clues,
         showNextRoundScreen,
+        showEndGameScreen,
         submitDisable,
         closeNextRoundScreen,
         disableSubmitInputs,

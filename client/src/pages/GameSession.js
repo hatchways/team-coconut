@@ -6,12 +6,17 @@ import GuessPanel from "../components/game-session/GuessPanel";
 import Settings from "../components/Settings";
 import { GameplayContext } from "../context/GameplayContext";
 import NextRoundScreen from "../components/game-session/NextRoundScreen";
+import EndGameScreen from "../components/game-session/EndGameScreen";
 
 function GameSession() {
   const classes = useStyles();
-  const { gameReady, gameState, isGuesser, showNextRoundScreen } = useContext(
-    GameplayContext
-  );
+  const {
+    gameReady,
+    gameState,
+    isGuesser,
+    showNextRoundScreen,
+    showEndGameScreen,
+  } = useContext(GameplayContext);
 
   return (
     <>
@@ -43,6 +48,7 @@ function GameSession() {
         </Grid>
       </main>
       {showNextRoundScreen && <NextRoundScreen />}
+      {showEndGameScreen && <EndGameScreen />}
     </>
   );
 }
