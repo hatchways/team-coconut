@@ -2,6 +2,7 @@ const MatchManager = require("./engine/MatchManager");
 const Player = require("./engine/Player");
 
 const sockets = {};
+let playersCurrentlyReady = [];
 
 sockets.init = function (server) {
   // Create Match Manager
@@ -72,12 +73,14 @@ sockets.init = function (server) {
     /**
      * Move to Next Round
      */
-    socket.on("BE-move-round", (gameId) => {
-      const gameState = Match.moveToNextRound(gameId);
-
-      console.log("Next Round : ", gameState);
-
-      io.sockets.in(gameId).emit("FE-move-round", gameState);
+    socket.on("BE-move-round", ({ gameId, playerSocketId }) => {
+      playersCurrentlyReady.push(playerSocketId);
+      if (playersCurrentlyReady.length === 4) {
+        playersCurrentlyReady = []; // reset player ready list for the next round
+        const gameState = Match.moveToNextRound(gameId);
+        io.sockets.in(gameId).emit("FE-move-round", gameState);
+        console.log("Next Round : ", gameState);
+      }
     });
 
     /**

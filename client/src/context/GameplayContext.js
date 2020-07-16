@@ -6,12 +6,13 @@ const GameplayContext = createContext();
 function GameplayContextProvider({ children }) {
   const [gameState, setGameState] = useState();
   const [gameReady, setGameReady] = useState(false);
-  const [guesser, setGuesser] = useState();
   const [clues, setClues] = useState([]);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
+  const [isGuesser, setIsGuesser] = useState(false);
 
   useEffect(() => {
+    const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
     /**
      * Start Game
      */
@@ -19,10 +20,13 @@ function GameplayContextProvider({ children }) {
       setGameState(gameState);
       console.log("First Round : ", gameState);
 
+      // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
       );
-      setGuesser(currentGuesser);
+      if (currentGuesser[0].id === currentUser) {
+        setIsGuesser(true);
+      }
 
       // this is effectively a isLoading state variable
       setGameReady(true);
@@ -48,10 +52,14 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-move-round", (gameState) => {
       setGameState(gameState);
+      setIsGuesser(false); // reset guesser
+      // determine guesser on subsequent rounds
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
       );
-      setGuesser(currentGuesser);
+      if (currentGuesser[0].id === currentUser) {
+        setIsGuesser(true);
+      }
       console.log(gameState);
     });
 
@@ -72,9 +80,11 @@ function GameplayContextProvider({ children }) {
   }
 
   const closeNextRoundScreen = useCallback((gameId) => {
+    sockets.emit("BE-move-round", {
+      gameId,
+      playerSocketId: sockets.id,
+    });
     setShowNextRoundScreen(false);
-    sockets.emit("BE-move-round", gameId);
-    console.log("closed next round screen");
   }, []);
 
   const disableSubmitInputs = useCallback((bool) => {
@@ -86,7 +96,7 @@ function GameplayContextProvider({ children }) {
       value={{
         gameReady,
         gameState,
-        guesser,
+        isGuesser,
         clues,
         showNextRoundScreen,
         submitDisable,
