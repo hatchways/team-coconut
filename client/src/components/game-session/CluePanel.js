@@ -1,29 +1,23 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import FormInput from "../FormInput";
 import useForm from "../../utils/hooks/useForm";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
 import GenericButton from "../GenericButton";
 import { GameplayContext } from "../../context/GameplayContext";
 import { useParams } from "react-router-dom";
-import sockets from "../../utils/sockets";
 
 function CluePanel({ wordToGuess }) {
   const classes = useStyles();
   const [clue, setClue] = useForm({ clue: "" });
-  const { sendClueToBE } = useContext(GameplayContext);
+  const { sendClueToBE, submitDisable, disableSubmitInputs } = useContext(
+    GameplayContext
+  );
   const { gameId } = useParams();
   const { email } = JSON.parse(localStorage.getItem("user"));
-  const [submitDisable, setSubmitDisable] = useState(false);
-
-  useEffect(() => {
-    sockets.on("enable-clue-submit", () => {
-      setSubmitDisable(false);
-    });
-  }, []);
 
   function submitClue(event) {
     event.preventDefault();
-    setSubmitDisable(true);
+    disableSubmitInputs(true);
     const player = {
       msg: clue.clue,
       id: email,

@@ -15,6 +15,7 @@ function GameSession() {
   );
 
   useEffect(() => {
+    setIsGuesser(false);
     if (gameReady) {
       const { email } = JSON.parse(localStorage.getItem("user"));
       if (guesser[0].id === email) setIsGuesser(true);

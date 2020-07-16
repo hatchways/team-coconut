@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import sockets from "../utils/sockets";
 
 const GameplayContext = createContext();
@@ -9,10 +9,12 @@ function GameplayContextProvider({ children }) {
   const [guesser, setGuesser] = useState();
   const [clues, setClues] = useState([]);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
+  const [submitDisable, setSubmitDisable] = useState(false);
 
   useEffect(() => {
     sockets.on("game-started", (gameState) => {
       setGameState(gameState);
+      console.log("First Round : ", gameState);
 
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -28,18 +30,23 @@ function GameplayContextProvider({ children }) {
     });
 
     // get answer and game state, signal to show score screen
-    sockets.on("FE-send-answer", ({ gameId, gameState }) => {
-      console.log(gameState);
+    sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
       setShowNextRoundScreen(true);
     });
 
     // close next round screen
-    sockets.on("FE-close-next-round-screen", () => {
+    sockets.on("FE-close-next-round-screen", (gameId) => {
       setShowNextRoundScreen(false);
+      sockets.emit("BE-move-round", gameId);
     });
 
     sockets.on("FE-move-round", (gameState) => {
+      setGameState(gameState);
+      const currentGuesser = gameState.players.filter(
+        (player) => player.isGuesser === true
+      );
+      setGuesser(currentGuesser);
       console.log(gameState);
     });
 
@@ -49,14 +56,18 @@ function GameplayContextProvider({ children }) {
   }, []);
 
   function sendClueToBE(gameId, player) {
-    console.log(gameId, player);
     sockets.emit("BE-send-clue", { gameId, player });
   }
 
   function sendGuessToBE(gameId, answer, clues) {
-    console.log(gameId, answer, clues);
     sockets.emit("BE-send-answer", { gameId, answer, clues });
   }
+
+  function closeNextRoundScreen() {}
+
+  const disableSubmitInputs = useCallback((bool) => {
+    setSubmitDisable(bool);
+  }, []);
 
   return (
     <GameplayContext.Provider
@@ -66,6 +77,8 @@ function GameplayContextProvider({ children }) {
         guesser,
         clues,
         showNextRoundScreen,
+        submitDisable,
+        disableSubmitInputs,
         sendClueToBE,
         sendGuessToBE,
       }}

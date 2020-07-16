@@ -67,15 +67,14 @@ sockets.init = function (server) {
 
       console.log("End Round : ", gameState.state.players);
 
-      io.sockets.in(gameId).emit("FE-send-answer", { gameId, gameState });
+      io.sockets.in(gameId).emit("FE-send-answer", { gameState });
     });
 
     /**
      * Close Next Round Screen Overlay
      */
     socket.on("BE-close-next-round-screen", (gameId) => {
-      io.sockets.in(gameId).emit("FE-close-next-round-screen");
-      io.sockets.in(gameId).emit("enable-clue-submit");
+      io.sockets.in(gameId).emit("FE-close-next-round-screen", gameId);
     });
 
     /**
@@ -83,6 +82,8 @@ sockets.init = function (server) {
      */
     socket.on("BE-move-round", (gameId) => {
       const gameState = Match.moveToNextRound(gameId);
+
+      console.log("Next Round : ", gameState);
 
       io.sockets.in(gameId).emit("FE-move-round", gameState);
     });
