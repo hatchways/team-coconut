@@ -90,9 +90,10 @@ class MatchManager {
 
   /**
    * Player leaves game
+   * @param {string} gameId 
    * @param {object} player 
    */
-  leavePlayer(player) {
+  leavePlayer(gameId, player) {
     if (!this.checkRoomExist(gameId))
       throw new ClientError('', 'Room Not Found', 404);
 
