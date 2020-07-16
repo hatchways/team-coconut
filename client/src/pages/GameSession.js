@@ -42,9 +42,11 @@ function GameSession() {
               )}
             </Grid>
           )}
-          <Grid item lg>
-            <PlayerPanel />
-          </Grid>
+          {gameReady && (
+            <Grid item lg>
+              <PlayerPanel />
+            </Grid>
+          )}
         </Grid>
       </main>
       {showNextRoundScreen && <NextRoundScreen />}

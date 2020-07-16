@@ -31,12 +31,8 @@ function EndGameScreen() {
           </div>
           <Container component="div">
             {players.map((player, index) => (
-              <>
-                <Container
-                  key={player.id}
-                  className={classes.scoreSection}
-                  component="section"
-                >
+              <div key={player.id}>
+                <Container className={classes.scoreSection} component="section">
                   <Typography
                     className={classes.scoreText}
                     variant="h4"
@@ -56,7 +52,7 @@ function EndGameScreen() {
                   </Typography>
                 </Container>
                 <hr className={classes.divider} />
-              </>
+              </div>
             ))}
           </Container>
           <Container className={classes.endGameBtns} component="div">
