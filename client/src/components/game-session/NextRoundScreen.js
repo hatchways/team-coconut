@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { makeStyles, Container, Typography, Paper } from "@material-ui/core";
 import { GameplayContext } from "../../context/GameplayContext";
-import sockets from "../../utils/sockets";
 import { useParams } from "react-router-dom";
 
 function NextRoundScreen() {
   const classes = useStyles();
-  const { gameState, disableSubmitInputs } = useContext(GameplayContext);
+  const { gameState, closeNextRoundScreen, disableSubmitInputs } = useContext(
+    GameplayContext
+  );
   const {
     state: { players },
   } = gameState;
@@ -21,14 +22,14 @@ function NextRoundScreen() {
       }, 1000);
     }
     if (countdown === 0) {
-      sockets.emit("BE-close-next-round-screen", gameId);
+      closeNextRoundScreen(gameId);
       disableSubmitInputs(false);
     }
 
     return () => {
       clearTimeout(timerToClose);
     };
-  }, [countdown, gameId, disableSubmitInputs]);
+  }, [countdown, gameId, closeNextRoundScreen, disableSubmitInputs]);
 
   return (
     <div className={classes.overlay}>

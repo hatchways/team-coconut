@@ -12,6 +12,9 @@ function GameplayContextProvider({ children }) {
   const [submitDisable, setSubmitDisable] = useState(false);
 
   useEffect(() => {
+    /**
+     * Start Game
+     */
     sockets.on("game-started", (gameState) => {
       setGameState(gameState);
       console.log("First Round : ", gameState);
@@ -25,22 +28,24 @@ function GameplayContextProvider({ children }) {
       setGameReady(true);
     });
 
+    /**
+     * Send Clues
+     */
     sockets.on("FE-send-clue", (player) => {
       setClues((prevClues) => [...prevClues, player]);
     });
 
-    // get answer and game state, signal to show score screen
+    /**
+     * End of Round
+     */
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
       setShowNextRoundScreen(true);
     });
 
-    // close next round screen
-    sockets.on("FE-close-next-round-screen", (gameId) => {
-      setShowNextRoundScreen(false);
-      sockets.emit("BE-move-round", gameId);
-    });
-
+    /**
+     * Move to Next Round
+     */
     sockets.on("FE-move-round", (gameState) => {
       setGameState(gameState);
       const currentGuesser = gameState.players.filter(
@@ -50,6 +55,9 @@ function GameplayContextProvider({ children }) {
       console.log(gameState);
     });
 
+    /**
+     * Restart Game
+     */
     sockets.on("FE-reset-game", (gameState) => {
       console.log(gameState);
     });
@@ -63,7 +71,11 @@ function GameplayContextProvider({ children }) {
     sockets.emit("BE-send-answer", { gameId, answer, clues });
   }
 
-  function closeNextRoundScreen() {}
+  const closeNextRoundScreen = useCallback((gameId) => {
+    setShowNextRoundScreen(false);
+    sockets.emit("BE-move-round", gameId);
+    console.log("closed next round screen");
+  }, []);
 
   const disableSubmitInputs = useCallback((bool) => {
     setSubmitDisable(bool);
@@ -78,6 +90,7 @@ function GameplayContextProvider({ children }) {
         clues,
         showNextRoundScreen,
         submitDisable,
+        closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
         sendGuessToBE,

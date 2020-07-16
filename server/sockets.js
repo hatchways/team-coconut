@@ -44,7 +44,6 @@ sockets.init = function (server) {
      * Start Game
      */
     socket.on("start-game", (gameId) => {
-      // Start Game
       const gameState = Match.startGame(gameId);
 
       io.sockets.in(gameId).emit("game-started", gameState);
@@ -68,13 +67,6 @@ sockets.init = function (server) {
       console.log("End Round : ", gameState.state.players);
 
       io.sockets.in(gameId).emit("FE-send-answer", { gameState });
-    });
-
-    /**
-     * Close Next Round Screen Overlay
-     */
-    socket.on("BE-close-next-round-screen", (gameId) => {
-      io.sockets.in(gameId).emit("FE-close-next-round-screen", gameId);
     });
 
     /**
