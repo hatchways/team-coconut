@@ -9,6 +9,7 @@ function GameplayContextProvider({ children }) {
   const [clues, setClues] = useState([]);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [showEndGameScreen, setShowEndGameScreen] = useState(false);
+  const [showTypingNotification, setShowTypingNotification] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
   const [isGuesser, setIsGuesser] = useState(false);
 
@@ -19,8 +20,6 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("game-started", (gameState) => {
       setGameState(gameState);
-      console.log("First Round : ", gameState);
-
       // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -28,7 +27,6 @@ function GameplayContextProvider({ children }) {
       if (currentGuesser[0].id === currentUser) {
         setIsGuesser(true);
       }
-
       // this is effectively a isLoading state variable
       setGameReady(true);
     });
@@ -38,6 +36,15 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-send-clue", (player) => {
       setClues((prevClues) => [...prevClues, player]);
+      setShowTypingNotification(false);
+    });
+
+    /**
+     * Display Typing Notification
+     */
+    sockets.on("FE-display-typing-notification", (playerEmail) => {
+      setShowTypingNotification(true);
+      // use playerEmail to which player panel to display the notification?
     });
 
     /**
@@ -45,8 +52,8 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
+      setShowTypingNotification(false); // if the clue giver was still typing at the end of the first phase
       if (gameState.state.round === gameState.state.players.length * 2 - 1) {
-        console.log("Final Round : ", gameState);
         setShowEndGameScreen(true);
       } else {
         setShowNextRoundScreen(true);
@@ -66,7 +73,6 @@ function GameplayContextProvider({ children }) {
       if (currentGuesser[0].id === currentUser) {
         setIsGuesser(true);
       }
-      console.log(gameState);
     });
 
     /**
@@ -76,6 +82,8 @@ function GameplayContextProvider({ children }) {
       console.log(gameState);
     });
   }, []);
+
+  // ---------- ALL FUNCTION DECLARATIONS ---------- //
 
   function sendClueToBE(gameId, player) {
     sockets.emit("BE-send-clue", { gameId, player });
@@ -97,6 +105,13 @@ function GameplayContextProvider({ children }) {
     setSubmitDisable(bool);
   }, []);
 
+  function displayTypingNotification(gameId, email) {
+    sockets.emit("BE-display-typing-notification", {
+      gameId,
+      playerEmail: email,
+    });
+  }
+
   return (
     <GameplayContext.Provider
       value={{
@@ -106,11 +121,13 @@ function GameplayContextProvider({ children }) {
         clues,
         showNextRoundScreen,
         showEndGameScreen,
+        showTypingNotification,
         submitDisable,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
         sendGuessToBE,
+        displayTypingNotification,
       }}
     >
       {children}

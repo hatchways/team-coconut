@@ -9,10 +9,11 @@ import {
 } from "@material-ui/core";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { GameplayContext } from "../../context/GameplayContext";
+import TypingNotification from "./TypingNotification";
 
 function PlayerPanel() {
   const classes = useStyles();
-  const { gameState } = useContext(GameplayContext);
+  const { gameState, showTypingNotification } = useContext(GameplayContext);
   const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
 
   let players;
@@ -37,13 +38,13 @@ function PlayerPanel() {
                       {currentUser === player.id ? " — You" : ": "}
                     </Typography>
                     {currentUser !== player.id && (
-                      <Typography
-                        variant="h6"
-                        component="p"
-                        className={classes.clue}
-                      >
-                        Clue
-                      </Typography>
+                      <div className={classes.clue}>
+                        {showTypingNotification ? (
+                          <TypingNotification />
+                        ) : (
+                          <p>Clue</p>
+                        )}
+                      </div>
                     )}
                   </div>
                   <div className={classes.scoreText}>{player.point} pts</div>

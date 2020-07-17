@@ -9,9 +9,12 @@ import { useParams } from "react-router-dom";
 function CluePanel({ wordToGuess }) {
   const classes = useStyles();
   const [clue, setClue] = useForm({ clue: "" });
-  const { sendClueToBE, submitDisable, disableSubmitInputs } = useContext(
-    GameplayContext
-  );
+  const {
+    sendClueToBE,
+    submitDisable,
+    disableSubmitInputs,
+    displayTypingNotification,
+  } = useContext(GameplayContext);
   const { gameId } = useParams();
   const { email } = JSON.parse(localStorage.getItem("user"));
 
@@ -23,6 +26,11 @@ function CluePanel({ wordToGuess }) {
       id: email,
     };
     sendClueToBE(gameId, player);
+  }
+
+  function handleOnKeyUp(event) {
+    event.preventDefault();
+    displayTypingNotification(gameId, email);
   }
 
   return (
@@ -60,6 +68,7 @@ function CluePanel({ wordToGuess }) {
               error=""
               handleChange={setClue}
               isDisabled={submitDisable}
+              handleOnKeyUp={handleOnKeyUp}
             />
           </form>
           <div className={classes.submitBtn}>
