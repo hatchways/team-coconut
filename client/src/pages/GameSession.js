@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 import PlayerPanel from "../components/game-session/PlayerPanel";
 import CluePanel from "../components/game-session/CluePanel";
 import GuessPanel from "../components/game-session/GuessPanel";
 import Settings from "../components/Settings";
+import { GameContext } from "../context/GameContext";
 
-function GameSession() {
+function GameSession({match}) {
   const classes = useStyles();
   const isGuesser = true;
+  const { game: { players }, getGame } = useContext(GameContext);
+
+  const gameId = match.params.gameId;
+  useEffect(() => {
+    getGame(gameId);
+  }, [gameId, getGame]);
+
   return (
     <main className={classes.mainContainer}>
       <span className={classes.logo}>
@@ -24,7 +32,7 @@ function GameSession() {
       >
         <Grid item>{isGuesser ? <GuessPanel /> : <CluePanel />}</Grid>
         <Grid item lg>
-          <PlayerPanel />
+          <PlayerPanel players={players} gameId={gameId} />
         </Grid>
       </Grid>
     </main>

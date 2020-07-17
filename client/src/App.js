@@ -60,12 +60,11 @@ function App() {
           <RTCContextProvider>
             <ProtectedRoute
               exact
-              path="/session"
+              path="/session/:gameId"
               component={GameSession}
               auth={auth}
             />
           </RTCContextProvider>
-
           <Route component={PageNotFound} />
         </Switch>
       </BrowserRouter>

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import {
   Container,
   Paper,
@@ -11,18 +12,25 @@ import { GameContext } from "../context/GameContext";
 import FormInput from "../components/FormInput";
 import GenericButton from "../components/GenericButton";
 import useForm from "../utils/hooks/useForm";
-import Notification from '../components/Notification'
-import PlayerStatus from '../components/PlayerStatus'
-
+import Notification from "../components/Notification";
+import PlayerStatus from "../components/PlayerStatus";
 
 function PreGameLobby({ match }) {
   const queryGameId = match.params.gameId;
   const classes = useStyles();
   const { logoutUser } = useContext(AuthContext);
-  const { game, gameNotification, errors,
-    sendInvitation, joinGame, closeGameNotification, isCurrentUserHost } = useContext(GameContext);
+  const {
+    game,
+    gameNotification,
+    errors,
+    sendInvitation,
+    joinGame,
+    closeGameNotification,
+    isCurrentUserHost,
+    startGame
+  } = useContext(GameContext);
   const [playerEmail, setPlayerEmail] = useForm({ email: "" });
-  const { players } = game;
+  const { players, isStarted } = game;
 
   useEffect(() => {
     if (!game.gameId) {
@@ -30,13 +38,13 @@ function PreGameLobby({ match }) {
     }
   }, [joinGame, queryGameId, game]);
 
-  function startGame() {
-    console.log("start");
+  if (isStarted) {
+    return <Redirect to={`/session/${queryGameId}`} />;
   }
 
   function inviteClick(event) {
     event.preventDefault();
-    sendInvitation(playerEmail.email)
+    sendInvitation(playerEmail.email);
   }
 
   return (
@@ -93,13 +101,16 @@ function PreGameLobby({ match }) {
             </Container>
           ))}
         <div className={classes.buttonContainer}>
-          {
-            isCurrentUserHost() &&
+          {isCurrentUserHost() && (
             <GenericButton handleClick={startGame}>Start Game</GenericButton>
-          }
+          )}
         </div>
 
-        <Notification open={gameNotification.open} msg={gameNotification.msg} handleClose={closeGameNotification} />
+        <Notification
+          open={gameNotification.open}
+          msg={gameNotification.msg}
+          handleClose={closeGameNotification}
+        />
       </Paper>
     </Container>
   );
