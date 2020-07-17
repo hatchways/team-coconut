@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const auth = require("../middlewares/auth");
-const { sendInvitation, createGame, getGame, joinGame } = require("../services/game");
+const { sendInvitation, createGame, getGame, joinGame, saveGame } = require("../services/game");
 const { gameInvitation, gameJoin } = require("../validators/game");
 
 // @route POST game/:gameId/invite
@@ -41,4 +41,11 @@ router.post("/:gameId/join",
     return res.json(result);
   });
 
+  router.post("/:gameId/end",
+  [gameJoin],
+  async function (req, res) {
+    const {players} = req.body;
+    const result = await saveGame(req.params.gameId, players);
+    return res.json(result);
+  });
 module.exports = router;
