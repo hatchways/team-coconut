@@ -48,4 +48,5 @@ router.post("/:gameId/join",
     const result = await saveGame(req.params.gameId, players);
     return res.json(result);
   });
+  
 module.exports = router;

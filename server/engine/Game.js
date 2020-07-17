@@ -1,15 +1,17 @@
-const wordArray = require("./Words");
+const wordArray = require('./Words');
 
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
+  GAME_TIME = 10000;
 
   constructor() {
-    this.word = "";
+    this.word = '';
     this.round = 0;
     this.wordArray = [];
     this.players = [];
     this.maxRound = 0;
+    this.timer;
   }
 
   /**
@@ -154,7 +156,7 @@ class Game {
    */
   getPlayerUniqueClues(array) {
     const uniqueClues = array
-      .map((clue) => clue["msg"])
+      .map((clue) => clue['msg'])
       .filter((msg, index, a) => {
         return a.indexOf(msg) === a.lastIndexOf(msg);
       });
@@ -162,6 +164,14 @@ class Game {
     return array
       .filter((clue) => uniqueClues.includes(clue.msg))
       .map((c) => c.id);
+  }
+
+  startTimer(callback) {
+    this.timer = setTimeout(callback, this.GAME_TIME);
+  }
+
+  endTimer() {
+    clearTimeout(this.timer);
   }
 }
 
