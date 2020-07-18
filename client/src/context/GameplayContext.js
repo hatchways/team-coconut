@@ -112,6 +112,29 @@ function GameplayContextProvider({ children }) {
     });
   }
 
+  function endGame(gameId) {
+    sockets.emit("BE-end-game", gameId);
+  }
+
+  /**
+   * @param {object} gameData = {gameId, players}
+   */
+  async function saveGameToDB(gameData) {
+    try {
+      const response = await fetch(`/game/${gameData.gameId}/end`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(gameData),
+      });
+      const json = await response.json();
+      console.log("Saved Game : ", json); // do something with json object later?
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <GameplayContext.Provider
       value={{
@@ -128,6 +151,8 @@ function GameplayContextProvider({ children }) {
         sendClueToBE,
         sendGuessToBE,
         displayTypingNotification,
+        saveGameToDB,
+        endGame,
       }}
     >
       {children}

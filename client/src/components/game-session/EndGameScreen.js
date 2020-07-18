@@ -3,23 +3,57 @@ import { makeStyles, Container, Paper, Typography } from "@material-ui/core";
 import { GameplayContext } from "../../context/GameplayContext";
 import { GameContext } from "../../context/GameContext";
 import GenericButton from "../GenericButton";
-import { Redirect } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 
 function EndGameScreen() {
   const classes = useStyles();
-  const { gameState } = useContext(GameplayContext);
+  const { gameState, saveGameToDB, endGame } = useContext(GameplayContext);
   const {
     state: { players },
   } = gameState;
-  const { isCurrentUserHost } = useContext(GameContext);
+  const { isCurrentUserHost, errors, createGame, joinGame } = useContext(
+    GameContext
+  );
   const [redirect, setRedirect] = useState(false);
+  const [redirectNewGame, setRedirectNewGame] = useState(false);
+  const [redirectPath, setRedirectPath] = useState("");
+  const { gameId } = useParams();
 
   function leaveGame() {
+    // save game state to DB only if host
+    if (isCurrentUserHost()) {
+      const gameData = {
+        gameId: gameId,
+        players: players,
+      };
+      saveGameToDB(gameData);
+      endGame(gameId);
+    }
+    setRedirectPath("/create-game");
     setRedirect(true);
   }
 
+  async function playAgain() {
+    // save game state to DB
+    const gameData = {
+      gameId: gameId,
+      players: players,
+    };
+    saveGameToDB(gameData);
+    endGame(gameId);
+
+    // create new game
+    const newGameId = await createGame();
+    setRedirectPath(`/lobby/${newGameId}`);
+    setRedirectNewGame(true);
+  }
+
   if (redirect) {
-    return <Redirect to="/create-game" />;
+    return <Redirect to={redirectPath} />;
+  }
+
+  if (!errors.joinError && redirectNewGame && redirectPath) {
+    return <Redirect to={redirectPath} />;
   }
 
   return (
@@ -56,7 +90,9 @@ function EndGameScreen() {
             ))}
           </Container>
           <Container className={classes.endGameBtns} component="div">
-            {isCurrentUserHost() && <GenericButton>Play Again</GenericButton>}
+            {isCurrentUserHost() && (
+              <GenericButton handleClick={playAgain}>Play Again</GenericButton>
+            )}
             <GenericButton handleClick={leaveGame}>Leave</GenericButton>
           </Container>
         </Paper>
