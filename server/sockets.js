@@ -106,15 +106,6 @@ sockets.init = function (server) {
     });
 
     /**
-     * Restart Game
-     */
-    socket.on("BE-reset-game", (gameId) => {
-      const gameState = Match.startGame(gameId);
-
-      io.sockets.in(gameId).emit("game-started", gameState);
-    });
-
-    /**
      * Player leaves game
      */
     socket.on("BE-leave-game", ({ gameId, player }) => {
