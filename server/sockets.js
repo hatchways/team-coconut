@@ -106,12 +106,10 @@ sockets.init = function (server) {
     });
 
     /**
-     * Restart Game
+     * Play Again / Non-Host players join new game
      */
-    socket.on("BE-reset-game", (gameId) => {
-      const gameState = Match.startGame(gameId);
-
-      io.sockets.in(gameId).emit("game-started", gameState);
+    socket.on("BE-join-new-game", ({ gameId, newGameId }) => {
+      socket.broadcast.to(gameId).emit("FE-join-new-game", newGameId);
     });
 
     /**

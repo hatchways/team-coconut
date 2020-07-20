@@ -4,7 +4,7 @@ import sockets from "../utils/sockets";
 const GameplayContext = createContext();
 
 function GameplayContextProvider({ children }) {
-  const [gameState, setGameState] = useState();
+  const [gameState, setGameState] = useState(null);
   const [gameReady, setGameReady] = useState(false);
   const [clues, setClues] = useState([]);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
@@ -12,6 +12,8 @@ function GameplayContextProvider({ children }) {
   const [showTypingNotification, setShowTypingNotification] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
   const [isGuesser, setIsGuesser] = useState(false);
+  const [redirect, setRedirect] = useState(false);
+  const [redirectPath, setRedirectPath] = useState("");
 
   useEffect(() => {
     const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
@@ -20,6 +22,10 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("game-started", (gameState) => {
       setGameState(gameState);
+      setRedirect(false);
+      setRedirectPath("");
+      setIsGuesser(false);
+      console.log("First Round : ", gameState);
       // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -53,7 +59,8 @@ function GameplayContextProvider({ children }) {
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
       setShowTypingNotification(false); // if the clue giver was still typing at the end of the first phase
-      if (gameState.state.round === gameState.state.players.length * 2 - 1) {
+      // if (gameState.state.round === gameState.state.players.length * 2 - 1) {
+      if (gameState.state.round === 1) {
         setShowEndGameScreen(true);
       } else {
         setShowNextRoundScreen(true);
@@ -65,6 +72,7 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-move-round", (gameState) => {
       setGameState(gameState);
+      console.log(`Round ${gameState.round} : `, gameState);
       setIsGuesser(false); // reset guesser
       // determine guesser on subsequent rounds
       const currentGuesser = gameState.players.filter(
@@ -116,6 +124,24 @@ function GameplayContextProvider({ children }) {
     sockets.emit("BE-end-game", gameId);
   }
 
+  function leaveGame() {
+    setRedirect(true);
+    setRedirectPath("/create-game");
+  }
+
+  function createNewGame(gameId, newGameId) {
+    sockets.emit("BE-join-new-game", { gameId, newGameId });
+    setRedirect(true);
+    setRedirectPath(`/lobby/${newGameId}`);
+    setShowEndGameScreen(false);
+  }
+
+  const joinNewGame = useCallback((newGameId) => {
+    setRedirect(true);
+    setRedirectPath(`/lobby/${newGameId}`);
+    setShowEndGameScreen(false);
+  }, []);
+
   /**
    * @param {object} gameData = {gameId, players}
    */
@@ -146,6 +172,8 @@ function GameplayContextProvider({ children }) {
         showEndGameScreen,
         showTypingNotification,
         submitDisable,
+        redirect,
+        redirectPath,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
@@ -153,6 +181,9 @@ function GameplayContextProvider({ children }) {
         displayTypingNotification,
         saveGameToDB,
         endGame,
+        leaveGame,
+        createNewGame,
+        joinNewGame,
       }}
     >
       {children}

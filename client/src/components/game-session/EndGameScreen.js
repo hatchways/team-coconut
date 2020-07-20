@@ -1,25 +1,42 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles, Container, Paper, Typography } from "@material-ui/core";
 import { GameplayContext } from "../../context/GameplayContext";
 import { GameContext } from "../../context/GameContext";
 import GenericButton from "../GenericButton";
 import { Redirect, useParams } from "react-router-dom";
+import sockets from "../../utils/sockets";
 
 function EndGameScreen() {
   const classes = useStyles();
-  const { gameState, saveGameToDB, endGame } = useContext(GameplayContext);
+  const {
+    gameState,
+    saveGameToDB,
+    endGame,
+    leaveGame,
+    createNewGame,
+    joinNewGame,
+    redirect,
+    redirectPath,
+  } = useContext(GameplayContext);
   const {
     state: { players },
   } = gameState;
   const { isCurrentUserHost, errors, createGame, joinGame } = useContext(
     GameContext
   );
-  const [redirect, setRedirect] = useState(false);
-  const [redirectNewGame, setRedirectNewGame] = useState(false);
-  const [redirectPath, setRedirectPath] = useState("");
   const { gameId } = useParams();
 
-  function leaveGame() {
+  useEffect(() => {
+    async function joinGameDB(newGameId) {
+      await joinGame(newGameId);
+    }
+    sockets.on("FE-join-new-game", (newGameId) => {
+      joinGameDB(newGameId);
+      joinNewGame(newGameId);
+    });
+  }, [joinGame, joinNewGame]);
+
+  function leaveCurrentGame() {
     // save game state to DB only if host
     if (isCurrentUserHost()) {
       const gameData = {
@@ -29,8 +46,8 @@ function EndGameScreen() {
       saveGameToDB(gameData);
       endGame(gameId);
     }
-    setRedirectPath("/create-game");
-    setRedirect(true);
+    leaveGame();
+    console.log(errors.joinError, redirect, redirectPath);
   }
 
   async function playAgain() {
@@ -41,18 +58,13 @@ function EndGameScreen() {
     };
     saveGameToDB(gameData);
     endGame(gameId);
-
     // create new game
     const newGameId = await createGame();
-    setRedirectPath(`/lobby/${newGameId}`);
-    setRedirectNewGame(true);
+    createNewGame(gameId, newGameId);
+    console.log(errors.joinError, redirect, redirectPath);
   }
 
-  if (redirect) {
-    return <Redirect to={redirectPath} />;
-  }
-
-  if (!errors.joinError && redirectNewGame && redirectPath) {
+  if (!errors.joinError && redirect && redirectPath) {
     return <Redirect to={redirectPath} />;
   }
 
@@ -93,7 +105,7 @@ function EndGameScreen() {
             {isCurrentUserHost() && (
               <GenericButton handleClick={playAgain}>Play Again</GenericButton>
             )}
-            <GenericButton handleClick={leaveGame}>Leave</GenericButton>
+            <GenericButton handleClick={leaveCurrentGame}>Leave</GenericButton>
           </Container>
         </Paper>
       </Container>

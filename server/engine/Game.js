@@ -1,4 +1,4 @@
-const wordArray = require('./Words');
+const wordArray = require("./Words");
 
 class Game {
   GUESS_POINT = 200;
@@ -6,7 +6,7 @@ class Game {
   GAME_TIME = 10000;
 
   constructor() {
-    this.word = '';
+    this.word = "";
     this.round = 0;
     this.wordArray = [];
     this.players = [];
@@ -156,7 +156,7 @@ class Game {
    */
   getPlayerUniqueClues(array) {
     const uniqueClues = array
-      .map((clue) => clue['msg'])
+      .map((clue) => clue["msg"])
       .filter((msg, index, a) => {
         return a.indexOf(msg) === a.lastIndexOf(msg);
       });
