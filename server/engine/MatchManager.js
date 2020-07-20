@@ -1,6 +1,6 @@
-const Game = require("./Game");
-const Player = require("./Player");
-const ClientError = require("../common/ClientError");
+const Game = require('./Game');
+const Player = require('./Player');
+const ClientError = require('../common/ClientError');
 
 class MatchManager {
   constructor() {
@@ -22,7 +22,7 @@ class MatchManager {
    */
   joinRoom(gameId, player) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
     const newPlayer = new Player(player.id, player.name);
@@ -36,7 +36,7 @@ class MatchManager {
    */
   startGame(gameId) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
     const numberOfPlayers = game.getNumberOfPlayers();
@@ -56,7 +56,7 @@ class MatchManager {
    */
   endRound(gameId, answer, clues) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
     const correct = game.checkAnswer(answer);
@@ -77,10 +77,11 @@ class MatchManager {
    */
   moveToNextRound(gameId) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
 
+    game.resetWaitingPlayers();
     game.nextRound();
 
     return game.getState();
@@ -93,7 +94,7 @@ class MatchManager {
    */
   leavePlayer(gameId, player) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
 
@@ -107,7 +108,7 @@ class MatchManager {
    */
   endGame(gameId) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     this.matchManager.delete(gameId);
   }
@@ -120,22 +121,46 @@ class MatchManager {
     return this.matchManager.has(gameId);
   }
 
+  /**
+   * Start Game Timer
+   * @param {string} gameId 
+   * @param {function} callback 
+   */
   startTimer(gameId, callback) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
 
     game.startTimer(callback);
   }
 
+  /**
+   * End Game Timer
+   * @param {string} gameId 
+   */
   endTimer(gameId) {
     if (!this.checkRoomExist(gameId))
-      throw new ClientError("", "Room Not Found", 404);
+      throw new ClientError('', 'Room Not Found', 404);
 
     const game = this.matchManager.get(gameId);
 
     game.endTimer();
+  }
+
+  /**
+   * Add Wating Players For Next Round
+   * @param {string} gameId 
+   * @param {object} player 
+   * @return {number} Number of Wating Players
+   */
+  waitNextRound(gameId, player) {
+    if (!this.checkRoomExist(gameId))
+      throw new ClientError('', 'Room Not Found', 404);
+
+    const game = this.matchManager.get(gameId);
+
+    return game.addWatingPlayer(player);
   }
 }
 

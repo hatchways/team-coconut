@@ -11,7 +11,7 @@ function EndGameScreen() {
   const {
     state: { players },
   } = gameState;
-  const { isCurrentUserHost, errors, createGame, joinGame } = useContext(
+  const { isCurrentUserHost, errors, createGame } = useContext(
     GameContext
   );
   const [redirect, setRedirect] = useState(false);
