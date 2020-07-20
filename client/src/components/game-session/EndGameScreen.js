@@ -21,7 +21,7 @@ function EndGameScreen() {
   const {
     state: { players },
   } = gameState;
-  const { isCurrentUserHost, errors, createGame, joinGame } = useContext(
+  const { isCurrentUserHost, errors, createGame } = useContext(
     GameContext
   );
   const { gameId } = useParams();

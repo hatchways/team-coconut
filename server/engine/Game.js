@@ -10,6 +10,7 @@ class Game {
     this.round = 0;
     this.wordArray = [];
     this.players = [];
+    this.waitingPlayers = [];
     this.maxRound = 0;
     this.timer;
   }
@@ -166,12 +167,35 @@ class Game {
       .map((c) => c.id);
   }
 
+  /**
+   * Start Timer
+   * @param {function} callback 
+   */
   startTimer(callback) {
     this.timer = setTimeout(callback, this.GAME_TIME);
   }
 
+  /**
+   * Stop Timer
+   */
   endTimer() {
     clearTimeout(this.timer);
+  }
+
+  /**
+   * Add Wating Player for Next Round 
+   * @param {object} player 
+   */
+  addWatingPlayer(player) {
+    this.waitingPlayers.push(player);
+    return this.waitingPlayers.length;
+  }
+
+  /**
+   * Reset Wating list
+   */
+  resetWaitingPlayers() {
+    this.waitingPlayers = [];
   }
 }
 

@@ -2,7 +2,6 @@ const MatchManager = require("./engine/MatchManager");
 const Player = require("./engine/Player");
 
 const sockets = {};
-let playersCurrentlyReady = [];
 
 sockets.init = function (server) {
   // Create Match Manager
@@ -89,10 +88,9 @@ sockets.init = function (server) {
      * Move to Next Round
      */
     socket.on("BE-move-round", ({ gameId, playerSocketId }) => {
-      playersCurrentlyReady.push(playerSocketId);
-      if (playersCurrentlyReady.length === 4) {
-        playersCurrentlyReady = []; // reset player ready list for the next round
+      const numberOfPlayers = Match.waitNextRound(gameId, playerSocketId);
 
+      if (numberOfPlayers === 4) {
         const gameState = Match.moveToNextRound(gameId);
 
         // Start Timer
