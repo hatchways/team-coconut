@@ -9,7 +9,7 @@ import { GameplayContext } from "../../context/GameplayContext";
 function GuessPanel() {
   const classes = useStyles();
   const [guess, setGuess] = useForm({ guess: "" });
-  const { clues, sendGuessToBE } = useContext(GameplayContext);
+  const { clues, sendGuessToBE, isGuessPhase } = useContext(GameplayContext);
   const { gameId } = useParams();
 
   function submitGuess(event) {
@@ -29,10 +29,19 @@ function GuessPanel() {
       >
         <Container component="div" maxWidth="xs">
           <form className={classes.form} onSubmit={submitGuess} noValidate>
-            <FormInput label="guess" error="" handleChange={setGuess} />
+            <FormInput
+              label="guess"
+              error=""
+              handleChange={setGuess}
+              isDisabled={!isGuessPhase}
+            />
           </form>
           <div className={classes.submitBtn}>
-            <GenericButton handleClick={submitGuess} isSubmit>
+            <GenericButton
+              handleClick={submitGuess}
+              isSubmit
+              isDisabled={!isGuessPhase}
+            >
               Submit
             </GenericButton>
           </div>

@@ -12,7 +12,7 @@ function NextRoundScreen() {
     state: { players },
   } = gameState;
   const { gameId } = useParams();
-  const [countdown, setCountdown] = useState(1);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     let timerToClose;

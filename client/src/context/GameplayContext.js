@@ -14,6 +14,8 @@ function GameplayContextProvider({ children }) {
   const [isGuesser, setIsGuesser] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const [redirectPath, setRedirectPath] = useState("");
+  const [gameTimer, setGameTimer] = useState(5);
+  const [isGuessPhase, setIsGuessPhase] = useState(false);
 
   useEffect(() => {
     const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
@@ -58,9 +60,9 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
+      setGameTimer(5);
       setShowTypingNotification(false); // if the clue giver was still typing at the end of the first phase
-      // if (gameState.state.round === gameState.state.players.length * 2 - 1) {
-      if (gameState.state.round === 1) {
+      if (gameState.state.round === gameState.state.players.length - 1) {
         setShowEndGameScreen(true);
       } else {
         setShowNextRoundScreen(true);
@@ -72,7 +74,7 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-move-round", (gameState) => {
       setGameState(gameState);
-      console.log(`Round ${gameState.round} : `, gameState);
+      setIsGuessPhase(false);
       setIsGuesser(false); // reset guesser
       // determine guesser on subsequent rounds
       const currentGuesser = gameState.players.filter(
@@ -97,9 +99,9 @@ function GameplayContextProvider({ children }) {
     sockets.emit("BE-send-clue", { gameId, player });
   }
 
-  function sendGuessToBE(gameId, answer, clues) {
+  const sendGuessToBE = useCallback((gameId, answer, clues) => {
     sockets.emit("BE-send-answer", { gameId, answer, clues });
-  }
+  }, []);
 
   const closeNextRoundScreen = useCallback((gameId) => {
     sockets.emit("BE-move-round", {
@@ -107,6 +109,15 @@ function GameplayContextProvider({ children }) {
       playerSocketId: sockets.id,
     });
     setShowNextRoundScreen(false);
+  }, []);
+
+  const decrementTimer = useCallback(() => {
+    setGameTimer((time) => time - 1);
+  }, []);
+
+  const changeGamePhase = useCallback((bool) => {
+    setIsGuessPhase(bool);
+    setGameTimer(5);
   }, []);
 
   const disableSubmitInputs = useCallback((bool) => {
@@ -174,12 +185,16 @@ function GameplayContextProvider({ children }) {
         submitDisable,
         redirect,
         redirectPath,
+        isGuessPhase,
+        gameTimer,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
         sendGuessToBE,
         displayTypingNotification,
         saveGameToDB,
+        decrementTimer,
+        changeGamePhase,
         endGame,
         leaveGame,
         createNewGame,
