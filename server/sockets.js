@@ -1,6 +1,9 @@
 const MatchManager = require("./engine/MatchManager");
 const Player = require("./engine/Player");
+const cookie = require("cookie");
+const jwt = require("jsonwebtoken");
 const { keys } = require("./engine/Words");
+const ClientError = require("./common/ClientError");
 
 const sockets = {};
 
@@ -17,7 +20,20 @@ sockets.init = function (server) {
   /**
    * Socket Connect
    */
-  io.on("connect", (socket) => {
+  io.use((socket, next) => {
+    const cookies = cookie.parse(socket.handshake.headers.cookie);
+    const token = cookies["token"];
+    if (token) {
+      jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+        if (error)
+          return next(new ClientError("", "Authentication Error", 400));
+        socket.decoded = decoded;
+        next();
+      });
+    } else {
+      next(new ClientError("", "Unauthorized", 401));
+    }
+  }).on("connect", (socket) => {
     console.log("connected", socket.id, new Date().toLocaleTimeString());
     socket.on("disconnect", () => {
       console.log("disconnected", socket.id, new Date().toLocaleTimeString());
