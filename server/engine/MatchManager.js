@@ -40,9 +40,11 @@ class MatchManager {
 
     const game = this.matchManager.get(gameId);
     const numberOfPlayers = game.getNumberOfPlayers();
-
+    
     if (numberOfPlayers === 4) {
       game.initGame();
+    } else {
+      throw new ClientError('', 'Only 4 Players can play a game', 500);
     }
 
     return game.getState();
