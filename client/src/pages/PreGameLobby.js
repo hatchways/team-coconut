@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import {
   Container,
@@ -14,7 +14,6 @@ import GenericButton from "../components/GenericButton";
 import useForm from "../utils/hooks/useForm";
 import Notification from "../components/Notification";
 import PlayerStatus from "../components/PlayerStatus";
-import sockets from "../utils/sockets";
 
 function PreGameLobby({ match }) {
   const queryGameId = match.params.gameId;
@@ -28,26 +27,18 @@ function PreGameLobby({ match }) {
     joinGame,
     closeGameNotification,
     isCurrentUserHost,
+    startGame
   } = useContext(GameContext);
   const [playerEmail, setPlayerEmail] = useForm({ email: "" });
-  const { players } = game;
-  const [gameStart, setGameStart] = useState(false);
+  const { players, isStarted } = game;
 
   useEffect(() => {
     if (!game.gameId) {
       joinGame(queryGameId);
     }
-    sockets.on("game-started", () => {
-      setGameStart(true);
-    });
   }, [joinGame, queryGameId, game]);
 
-  function startGame() {
-    setGameStart(true);
-    sockets.emit("start-game", queryGameId);
-  }
-
-  if (gameStart) {
+  if (isStarted) {
     return <Redirect to={`/session/${queryGameId}`} />;
   }
 

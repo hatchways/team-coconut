@@ -7,7 +7,6 @@ import useForm from "../../utils/hooks/useForm";
 function GuessPanel() {
   const classes = useStyles();
   const [guess, setGuess] = useForm({ guess: "" });
-  console.log(guess);
 
   function submitGuess(event) {
     event.preventDefault();

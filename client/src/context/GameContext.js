@@ -4,7 +4,7 @@ import sockets from "../utils/sockets";
 const GameContext = createContext();
 
 const GameContextProvider = ({ children }) => {
-  const [game, setGame] = useState({ gameId: null, players: [] });
+  const [game, setGame] = useState({ gameId: null, isStarted: false, players: [] });
   const [errors, setErrors] = useState({
     inviteError: "",
     joinError: "",
@@ -35,6 +35,11 @@ const GameContextProvider = ({ children }) => {
         msg: `${joinedPlayer} joined the game!`,
       });
     });
+
+    sockets.on("game-started", () => {
+      setGame((game) => ({ ...game, isStarted: true }));
+    });
+
   }, []);
 
   const createGame = async () => {
@@ -145,6 +150,11 @@ const GameContextProvider = ({ children }) => {
     return false;
   };
 
+  const startGame = ()=> {
+    setGame((game) => ({ ...game, isStarted: true }));
+    sockets.emit("start-game", game.gameId);
+  }
+
   return (
     <GameContext.Provider
       value={{
@@ -158,6 +168,7 @@ const GameContextProvider = ({ children }) => {
         closeGameNotification,
         isCurrentUserHost,
         setGameId,
+        startGame
       }}
     >
       {children}

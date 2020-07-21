@@ -5,6 +5,7 @@ import "./App.css";
 
 import { theme } from "./themes/theme";
 import { AuthContext } from "./context/AuthContext";
+import { RTCContextProvider } from "./context/RTCContext";
 
 import LoginOrSignUp from "./pages/LoginOrSignUp";
 import CreateOrJoinGame from "./pages/CreateOrJoinGame";
@@ -56,13 +57,14 @@ function App() {
             component={PreGameLobby}
             auth={auth}
           />
-          <ProtectedRoute
-            exact
-            path="/session/:gameId"
-            component={GameSession}
-            auth={auth}
-          />
-
+          <RTCContextProvider>
+            <ProtectedRoute
+              exact
+              path="/session/:gameId"
+              component={GameSession}
+              auth={auth}
+            />
+          </RTCContextProvider>
           <Route component={PageNotFound} />
         </Switch>
       </BrowserRouter>
