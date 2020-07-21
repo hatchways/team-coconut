@@ -8,7 +8,7 @@ import React, {
 import { GameContext } from "./GameContext";
 import sockets from "../utils/sockets";
 
-const TIME = 5;
+const TIME = 3;
 const GameplayContext = createContext();
 
 function GameplayContextProvider({ children }) {
@@ -40,7 +40,7 @@ function GameplayContextProvider({ children }) {
       setSubmitDisable(false);
       setClues([]);
       setGameTimer(TIME);
-      console.log(gameState.players);
+      console.log("First Round: ", gameState);
       // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -103,6 +103,7 @@ function GameplayContextProvider({ children }) {
       if (currentGuesser[0].id === currentUser) {
         setIsGuesser(true);
       }
+      console.log(`Round ${gameState.round}: `, gameState);
     });
 
     /**

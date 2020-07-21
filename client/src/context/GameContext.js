@@ -46,6 +46,17 @@ const GameContextProvider = ({ children }) => {
       setGame((game) => ({ ...game, isStarted: true }));
     });
 
+    //sockets not able to verify jwt
+    // sockets.on("auth-error", () => {
+    //   localStorage.removeItem("user");
+    //   sockets.on('disconnect')
+    //   sockets.off()
+    // });
+
+    return () => {
+      sockets.on("disconnect");
+      sockets.off();
+    };
   }, []);
 
   const createGame = async () => {

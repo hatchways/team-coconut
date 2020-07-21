@@ -23,20 +23,22 @@ sockets.init = function (server) {
   /**
    * Socket Connect
    */
-  io.use((socket, next) => {
-    const cookies = cookie.parse(socket.handshake.headers.cookie);
-    const token = cookies["token"];
-    if (token) {
-      jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-        if (error)
-          return next(new ClientError("", "Authentication Error", 400));
-        socket.decoded = decoded;
-        next();
-      });
-    } else {
-      next(new ClientError("", "Unauthorized", 401));
-    }
-  }).on("connect", (socket) => {
+  // io.use((socket, next) => {
+  //   const cookies = cookie.parse(socket.handshake.headers.cookie);
+  //   const token = cookies["token"];
+  //   if (token) {
+  //     jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+  //       if (error) {
+  //         socket.emit("auth-error");
+  //       }
+  //       socket.decoded = decoded;
+  //       next();
+  //     });
+  //   } else {
+  //     socket.emit("auth-error");
+  //   }
+  // })
+  io.on("connect", (socket) => {
     console.log("connected", socket.id, new Date().toLocaleTimeString());
     socket.on("disconnect", () => {
       delete socketIdEmail[socket.id]

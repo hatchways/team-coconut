@@ -94,6 +94,8 @@ function AuthContextProvider({ children }) {
       setAuth(false);
       localStorage.removeItem("user");
     } catch (error) {
+      setAuth(false);
+      localStorage.removeItem("user");
       console.error(error);
     }
   }
