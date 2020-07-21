@@ -93,6 +93,7 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-move-round", (gameState) => {
       setGameState(gameState);
+      setClues([]);
       setIsGuessPhase(false);
       setIsGuesser(false); // reset guesser
       // determine guesser on subsequent rounds
