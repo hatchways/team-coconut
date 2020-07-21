@@ -1,4 +1,5 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
+import { GameContext } from './GameContext'
 import sockets from "../utils/sockets";
 
 const GameplayContext = createContext();
@@ -16,6 +17,7 @@ function GameplayContextProvider({ children }) {
   const [redirectPath, setRedirectPath] = useState("");
   const [gameTimer, setGameTimer] = useState(5);
   const [isGuessPhase, setIsGuessPhase] = useState(false);
+  const { joinGame } = useContext(GameContext);
 
   useEffect(() => {
     const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
@@ -62,7 +64,8 @@ function GameplayContextProvider({ children }) {
       setGameState(gameState);
       setGameTimer(5);
       setShowTypingNotification(false); // if the clue giver was still typing at the end of the first phase
-      if (gameState.state.round === gameState.state.players.length - 1) {
+      // if (gameState.state.round === gameState.state.players.length - 1) {
+      if (gameState.state.round === 2) {
         setShowEndGameScreen(true);
       } else {
         setShowNextRoundScreen(true);
@@ -83,6 +86,11 @@ function GameplayContextProvider({ children }) {
       if (currentGuesser[0].id === currentUser) {
         setIsGuesser(true);
       }
+    });
+
+    sockets.on("FE-join-new-game", async (newGameId) => {
+      joinGame(newGameId);
+      joinNewGame(newGameId);
     });
 
     /**
@@ -147,11 +155,11 @@ function GameplayContextProvider({ children }) {
     setShowEndGameScreen(false);
   }
 
-  const joinNewGame = useCallback((newGameId) => {
+  function joinNewGame(newGameId) {
     setRedirect(true);
     setRedirectPath(`/lobby/${newGameId}`);
     setShowEndGameScreen(false);
-  }, []);
+  };
 
   /**
    * @param {object} gameData = {gameId, players}

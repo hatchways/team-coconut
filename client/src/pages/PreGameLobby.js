@@ -34,12 +34,21 @@ function PreGameLobby({ match }) {
   const [gameStart, setGameStart] = useState(false);
 
   useEffect(() => {
+    // reduce memory leak
+    let isGameStart = false;
+
     if (!game.gameId) {
       joinGame(queryGameId);
     }
     sockets.on("game-started", () => {
-      setGameStart(true);
+      if(!isGameStart) {
+        setGameStart(true);
+      }
     });
+
+    return () => {
+      isGameStart = true;
+    }
   }, [joinGame, queryGameId, game]);
 
   function startGame() {

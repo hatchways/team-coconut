@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { makeStyles, Container, Paper, Typography } from "@material-ui/core";
 import { GameplayContext } from "../../context/GameplayContext";
 import { GameContext } from "../../context/GameContext";
 import GenericButton from "../GenericButton";
 import { Redirect, useParams } from "react-router-dom";
-import sockets from "../../utils/sockets";
 
 function EndGameScreen() {
   const classes = useStyles();
@@ -14,27 +13,27 @@ function EndGameScreen() {
     endGame,
     leaveGame,
     createNewGame,
-    joinNewGame,
     redirect,
     redirectPath,
   } = useContext(GameplayContext);
   const {
     state: { players },
   } = gameState;
-  const { isCurrentUserHost, errors, createGame, joinGame } = useContext(
+  const { isCurrentUserHost, errors, createGame } = useContext(
     GameContext
   );
   const { gameId } = useParams();
 
-  useEffect(() => {
-    async function joinGameDB(newGameId) {
-      await joinGame(newGameId);
-    }
-    sockets.on("FE-join-new-game", (newGameId) => {
-      joinGameDB(newGameId);
-      joinNewGame(newGameId);
-    });
-  }, [joinGame, joinNewGame]);
+  // useEffect(() => {
+  //   async function joinGameDB(newGameId) {
+  //     await joinGame(newGameId);
+  //   }
+  //   sockets.on("FE-join-new-game", async (newGameId) => {
+  //     console.log(newGameId);
+  //     await joinGameDB(newGameId);
+  //     joinNewGame(newGameId);
+  //   });
+  // }, []);
 
   function leaveCurrentGame() {
     // save game state to DB only if host

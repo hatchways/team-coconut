@@ -122,10 +122,12 @@ class Game {
 
   /**
    * Join New Player
-   * @param {object} player
+   * @param {object} joinPlayer
    */
-  addPlayer(player) {
-    this.players.push(player);
+  addPlayer(joinPlayer) {
+    const find = this.players.find((player) => player.id === joinPlayer.id);
+    
+    if(!find) this.players.push(joinPlayer);
   }
 
   /**

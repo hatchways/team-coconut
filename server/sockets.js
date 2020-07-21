@@ -38,6 +38,7 @@ sockets.init = function (server) {
 
       //joining room
       socket.join(gameId);
+
       //notify all other users in the room
       socket.broadcast.to(gameId).emit('FE-user-joined', player.email);
     });
@@ -110,15 +111,17 @@ sockets.init = function (server) {
     socket.on('BE-join-new-game', ({ gameId, newGameId }) => {
       socket.broadcast.to(gameId).emit('FE-join-new-game', newGameId);
 
-      io.of('/').in(gameId).clients(function(error, clients) {
-        if (clients.length > 0) {
+      io.of('/')
+        .in(gameId)
+        .clients(function (error, clients) {
+          if (clients.length > 0) {
             console.log('clients in the room: \n');
             console.log(clients);
             clients.forEach(function (socket_id) {
-                io.sockets.sockets[socket_id].leave(gameId);
+              io.sockets.sockets[socket_id].leave(gameId);
             });
-        }
-    });
+          }
+        });
     });
 
     /**
