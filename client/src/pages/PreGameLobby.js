@@ -28,12 +28,11 @@ function PreGameLobby({ match }) {
     joinGame,
     closeGameNotification,
     isCurrentUserHost,
-    startGame
+    startGame,
   } = useContext(GameContext);
   const [playerEmail, setPlayerEmail] = useForm({ email: "" });
   const { players } = game;
-
-  const [gameStart, setGameStart] = useState(false)
+  const [gameStart, setGameStart] = useState(false);
 
   useEffect(() => {
     // reduce memory leak

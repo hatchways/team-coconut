@@ -41,7 +41,7 @@ sockets.init = function (server) {
   io.on("connect", (socket) => {
     console.log("connected", socket.id, new Date().toLocaleTimeString());
     socket.on("disconnect", () => {
-      delete socketIdEmail[socket.id]
+      delete socketIdEmail[socket.id];
       //console.log("disconnected", socket.id, new Date().toLocaleTimeString());
     });
 
@@ -70,12 +70,12 @@ sockets.init = function (server) {
       socketIdEmail[socket.id] = userEmail;
       io.in(gameId).clients((err, clients) => {
         const players = [];
-        clients.forEach(client => {
+        clients.forEach((client) => {
           if (client !== socket.id && socketIdEmail[client]) {
-            players.push({socketId: client, email: socketIdEmail[client]});
+            players.push({ socketId: client, email: socketIdEmail[client] });
           }
         });
-        socket.emit("FE-players-in-room", players)
+        socket.emit("FE-players-in-room", players);
       });
     });
 
@@ -83,9 +83,16 @@ sockets.init = function (server) {
     //socket.emit("get-player-socket-ids");
 
     // initiate call with other players in game
-    socket.on("BE-send-call", ({ callerEmail, playerToCall, caller, callerSignal }) => {
-      io.to(playerToCall).emit("FE-receive-call", { callerEmail, callerSignal, caller });
-    });
+    socket.on(
+      "BE-send-call",
+      ({ callerEmail, playerToCall, caller, callerSignal }) => {
+        io.to(playerToCall).emit("FE-receive-call", {
+          callerEmail,
+          callerSignal,
+          caller,
+        });
+      }
+    );
 
     // accept call and send signal back to caller for them to accept
     socket.on("BE-answer-call", ({ playerEmail, answerSignal, caller }) => {
@@ -101,15 +108,20 @@ sockets.init = function (server) {
      */
     //host starts the game
     socket.on("start-game", (gameId) => {
-      const gameState = Match.startGame(gameId);
+      try {
+        const gameState = Match.startGame(gameId);
 
-      // Start Timer
-      Match.startTimer(gameId, function () {
-        console.log("Time Over!!");
-        socket.in(gameId).emit("FE-time-over", { gameId, cluesSubmitted });
-      });
+        // Start Timer
+        Match.startTimer(gameId, function () {
+          console.log("Time Over!!");
+          socket.in(gameId).emit("FE-time-over", { gameId, cluesSubmitted });
+        });
 
-      io.sockets.in(gameId).emit("game-started", gameState);
+        io.sockets.in(gameId).emit("game-started", gameState);
+      } catch (error) {
+        console.log(error);
+        socket.emit("FE-error-start-game", { msg: error.userMessage });
+      }
     });
 
     /**

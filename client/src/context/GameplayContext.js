@@ -6,6 +6,7 @@ import React, {
   useContext,
 } from "react";
 import { GameContext } from "./GameContext";
+import { AuthContext } from "./AuthContext";
 import sockets from "../utils/sockets";
 
 const TIME = 3;
@@ -25,9 +26,14 @@ function GameplayContextProvider({ children }) {
   const [gameTimer, setGameTimer] = useState(TIME);
   const [isGuessPhase, setIsGuessPhase] = useState(false);
   const { joinGame } = useContext(GameContext);
+  const { auth } = useContext(AuthContext);
+  let currentUser;
+  if (auth) {
+    const { email } = JSON.parse(localStorage.getItem("user"));
+    currentUser = email;
+  }
 
   useEffect(() => {
-    const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
     /**
      * Start Game
      */
@@ -121,7 +127,7 @@ function GameplayContextProvider({ children }) {
       await joinGame(newGameId);
       redirectToNewGame(newGameId);
     });
-  }, [joinGame]);
+  }, [joinGame, currentUser]);
 
   // ---------- ALL FUNCTION DECLARATIONS ---------- //
 
