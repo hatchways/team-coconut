@@ -161,7 +161,9 @@ class Game {
     const uniqueClues = array
       .map((clue) => clue["msg"])
       .filter((msg, index, a) => {
-        return a.indexOf(msg) === a.lastIndexOf(msg);
+        if (msg !== "") {
+          return a.indexOf(msg) === a.lastIndexOf(msg);
+        }
       });
 
     return array

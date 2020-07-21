@@ -55,10 +55,10 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Clues
      */
-    sockets.on("FE-send-clue", ({ player, gameState }) => {
+    sockets.on("FE-send-clue", ({ player, cluesSubmitted }) => {
       setClues((prevClues) => [...prevClues, player]);
       setShowTypingNotification(false);
-      if (clues.length === 3) {
+      if (cluesSubmitted.length === 3) {
         setIsGuessPhase(true);
         setGameTimer(TIME);
         setSubmitDisable(true);
@@ -108,24 +108,24 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Blank Answer If Time Runs Out
      */
-    sockets.on("FE-time-over", (gameId) => {
+    sockets.on("FE-time-over", ({ gameId, cluesSubmitted }) => {
       const answer = ""; // time ran out and the guesser did not submit anything
-      sockets.emit("BE-send-answer", { gameId, answer, clues });
+      sockets.emit("BE-send-answer", { gameId, answer, cluesSubmitted });
     });
 
     /**
      * Join New Game Host Creates
      */
     sockets.on("FE-join-new-game", async (newGameId) => {
-      joinGame(newGameId);
-      joinNewGame(newGameId);
+      await joinGame(newGameId);
+      redirectToNewGame(newGameId);
     });
-  }, [joinGame, clues]);
+  }, [joinGame]);
 
   // ---------- ALL FUNCTION DECLARATIONS ---------- //
 
-  function sendClueToBE(gameId, player, gameState) {
-    sockets.emit("BE-send-clue", { gameId, player, gameState });
+  function sendClueToBE(gameId, player) {
+    sockets.emit("BE-send-clue", { gameId, player });
   }
 
   const sendGuessToBE = useCallback((gameId, answer, clues) => {
@@ -147,6 +147,7 @@ function GameplayContextProvider({ children }) {
   const changeGamePhase = useCallback((bool) => {
     setIsGuessPhase(bool);
     setGameTimer(TIME);
+    setSubmitDisable(true);
   }, []);
 
   const disableSubmitInputs = useCallback((bool) => {
@@ -177,7 +178,7 @@ function GameplayContextProvider({ children }) {
     setShowEndGameScreen(false);
   }
 
-  function joinNewGame(newGameId) {
+  function redirectToNewGame(newGameId) {
     setRedirect(true);
     setRedirectPath(`/lobby/${newGameId}`);
     setShowEndGameScreen(false);
@@ -226,7 +227,6 @@ function GameplayContextProvider({ children }) {
         endGame,
         leaveGame,
         createNewGame,
-        joinNewGame,
       }}
     >
       {children}

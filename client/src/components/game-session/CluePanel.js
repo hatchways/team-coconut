@@ -28,7 +28,7 @@ function CluePanel() {
       msg: clue.clue,
       id: email,
     };
-    sendClueToBE(gameId, player, gameState);
+    sendClueToBE(gameId, player);
   }
 
   function handleOnKeyUp(event) {

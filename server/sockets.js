@@ -6,6 +6,7 @@ const { keys } = require("./engine/Words");
 const ClientError = require("./common/ClientError");
 
 const sockets = {};
+let cluesSubmitted = [];
 
 sockets.init = function (server) {
   // Create Match Manager
@@ -68,7 +69,7 @@ sockets.init = function (server) {
       // Start Timer
       Match.startTimer(gameId, function () {
         console.log("Time Over!!");
-        socket.in(gameId).emit("FE-time-over", gameId);
+        socket.in(gameId).emit("FE-time-over", { gameId, cluesSubmitted });
       });
 
       io.sockets.in(gameId).emit("game-started", gameState);
@@ -77,8 +78,9 @@ sockets.init = function (server) {
     /**
      * Send Clues
      */
-    socket.on("BE-send-clue", ({ gameId, player, gameState }) => {
-      io.sockets.in(gameId).emit("FE-send-clue", { player, gameState });
+    socket.on("BE-send-clue", ({ gameId, player }) => {
+      cluesSubmitted.push(player);
+      io.sockets.in(gameId).emit("FE-send-clue", { player, cluesSubmitted });
     });
 
     /**
@@ -109,6 +111,7 @@ sockets.init = function (server) {
       const numberOfPlayers = Match.waitNextRound(gameId, playerSocketId);
 
       if (numberOfPlayers === 4) {
+        cluesSubmitted = [];
         const gameState = Match.moveToNextRound(gameId);
 
         // Start Timer
