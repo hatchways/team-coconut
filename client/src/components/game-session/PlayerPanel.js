@@ -69,10 +69,6 @@ function PlayerPanel({ gameId }) {
   );
 }
 
-const staticImg =
-  "https://www.bungie.net/common/destiny2_content/icons/28f45711da09ad4b22c67be7bacf038a.png";
-
-
 // Uncomment all borders to see where things line up on the page
 // There could be a better way of laying out where things should be
 // but I am currently unsure - Darren
