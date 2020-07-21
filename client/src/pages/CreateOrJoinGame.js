@@ -18,7 +18,7 @@ function CreateOrJoinGame() {
   const classes = useStyles();
   const { logoutUser } = useContext(AuthContext);
   const [gameId, setGameId] = useState("");
-  const { errors, createGame, joinGame } = useContext(GameContext)
+  const { errors, createGame, joinGame } = useContext(GameContext);
   const [redirect, setRedirect] = useState(false);
 
   async function joinGameSubmit(event) {
@@ -36,7 +36,7 @@ function CreateOrJoinGame() {
 
   //redirect user to lobby if game is created
   if (!errors.joinError && redirect && gameId) {
-    return <Redirect to={`/lobby/${gameId}`} />
+    return <Redirect to={`/lobby/${gameId}`} />;
   }
 
   return (
@@ -65,7 +65,10 @@ function CreateOrJoinGame() {
                 Create Game
               </Typography>
               <SportsEsportsOutlinedIcon className={classes.createIcon} />
-              <GenericButton className={classes.createBtn} handleClick={newGameClick}>
+              <GenericButton
+                className={classes.createBtn}
+                handleClick={newGameClick}
+              >
                 New Game
               </GenericButton>
             </Paper>
@@ -81,7 +84,11 @@ function CreateOrJoinGame() {
                 Join
               </Typography>
               <PeopleAltOutlinedIcon className={classes.joinIcon} />
-              <form className={classes.form} onSubmit={joinGameSubmit} noValidate>
+              <form
+                className={classes.form}
+                onSubmit={joinGameSubmit}
+                noValidate
+              >
                 <FormInput
                   label="game"
                   error={errors.joinError}

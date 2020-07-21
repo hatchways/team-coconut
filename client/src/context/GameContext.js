@@ -92,6 +92,10 @@ const GameContextProvider = ({ children }) => {
         const errorMsg = errors[0].msg;
         setErrors({ joinError: errorMsg });
         throw new Error(errorMsg);
+      } else if (response.status === 404) {
+        const errorMsg = "Please Enter a Game ID";
+        setErrors({ joinError: errorMsg });
+        throw new Error(errorMsg);
       }
       const { _id, players } = await response.json();
       setGame((game) => ({ ...game, gameId: _id, players }));
