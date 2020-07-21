@@ -28,10 +28,12 @@ function PreGameLobby({ match }) {
     joinGame,
     closeGameNotification,
     isCurrentUserHost,
+    startGame
   } = useContext(GameContext);
   const [playerEmail, setPlayerEmail] = useForm({ email: "" });
   const { players } = game;
-  const [gameStart, setGameStart] = useState(false);
+
+  const [gameStart, setGameStart] = useState(false)
 
   useEffect(() => {
     // reduce memory leak
@@ -50,11 +52,6 @@ function PreGameLobby({ match }) {
       isGameStart = true;
     };
   }, [joinGame, queryGameId, game]);
-
-  function startGame() {
-    setGameStart(true);
-    sockets.emit("start-game", queryGameId);
-  }
 
   if (gameStart) {
     return <Redirect to={`/session/${queryGameId}`} />;

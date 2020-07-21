@@ -41,6 +41,11 @@ const GameContextProvider = ({ children }) => {
         msg: `${joinedPlayer} joined the game!`,
       });
     });
+
+    sockets.on("game-started", () => {
+      setGame((game) => ({ ...game, isStarted: true }));
+    });
+
   }, []);
 
   const createGame = async () => {
@@ -155,6 +160,11 @@ const GameContextProvider = ({ children }) => {
     return false;
   };
 
+  const startGame = ()=> {
+    setGame((game) => ({ ...game, isStarted: true }));
+    sockets.emit("start-game", game.gameId);
+  }
+
   return (
     <GameContext.Provider
       value={{
@@ -168,6 +178,7 @@ const GameContextProvider = ({ children }) => {
         closeGameNotification,
         isCurrentUserHost,
         setGameId,
+        startGame
       }}
     >
       {children}

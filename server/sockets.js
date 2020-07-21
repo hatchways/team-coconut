@@ -8,6 +8,8 @@ const ClientError = require("./common/ClientError");
 const sockets = {};
 let cluesSubmitted = [];
 
+const socketIdEmail = {};
+
 sockets.init = function (server) {
   // Create Match Manager
   const Match = new MatchManager();
@@ -37,7 +39,8 @@ sockets.init = function (server) {
   }).on("connect", (socket) => {
     console.log("connected", socket.id, new Date().toLocaleTimeString());
     socket.on("disconnect", () => {
-      console.log("disconnected", socket.id, new Date().toLocaleTimeString());
+      delete socketIdEmail[socket.id]
+      //console.log("disconnected", socket.id, new Date().toLocaleTimeString());
     });
 
     /**
@@ -60,9 +63,41 @@ sockets.init = function (server) {
       socket.broadcast.to(gameId).emit("FE-user-joined", player.email);
     });
 
+    socket.on("BE-join-video-call", ({ gameId, userEmail }) => {
+      socket.join(gameId);
+      socketIdEmail[socket.id] = userEmail;
+      io.in(gameId).clients((err, clients) => {
+        const players = [];
+        clients.forEach(client => {
+          if (client !== socket.id && socketIdEmail[client]) {
+            players.push({socketId: client, email: socketIdEmail[client]});
+          }
+        });
+        socket.emit("FE-players-in-room", players)
+      });
+    });
+
+    // send all player socket ids (except current user) to front end somehow
+    //socket.emit("get-player-socket-ids");
+
+    // initiate call with other players in game
+    socket.on("BE-send-call", ({ callerEmail, playerToCall, caller, callerSignal }) => {
+      io.to(playerToCall).emit("FE-receive-call", { callerEmail, callerSignal, caller });
+    });
+
+    // accept call and send signal back to caller for them to accept
+    socket.on("BE-answer-call", ({ playerEmail, answerSignal, caller }) => {
+      io.to(caller).emit("FE-accept-call-back", {
+        playerEmail,
+        answerSignal,
+        playerAnsweringId: socket.id,
+      });
+    });
+
     /**
      * Start Game
      */
+    //host starts the game
     socket.on("start-game", (gameId) => {
       const gameState = Match.startGame(gameId);
 

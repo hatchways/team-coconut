@@ -6,6 +6,7 @@ import "./App.css";
 import { theme } from "./themes/theme";
 import { AuthContext } from "./context/AuthContext";
 import { GameplayContextProvider } from "./context/GameplayContext";
+import { RTCContextProvider } from "./context/RTCContext";
 
 import LoginOrSignUp from "./pages/LoginOrSignUp";
 import CreateOrJoinGame from "./pages/CreateOrJoinGame";
@@ -38,8 +39,8 @@ function App() {
             {auth ? (
               <Redirect to="/create-game" />
             ) : (
-              <LoginOrSignUp type="register" />
-            )}
+                <LoginOrSignUp type="register" />
+              )}
           </Route>
           <Route path="/login">
             {auth ? <Redirect to={redirectPath} /> : <LoginOrSignUp />}
@@ -51,21 +52,23 @@ function App() {
             component={CreateOrJoinGame}
             auth={auth}
           />
-          <GameplayContextProvider>
             <ProtectedRoute
               exact
               path="/lobby/:gameId"
               component={PreGameLobby}
               auth={auth}
             />
-            <ProtectedRoute
-              exact
-              path="/session/:gameId"
-              component={GameSession}
-              auth={auth}
-            />
+          <GameplayContextProvider>
+            <RTCContextProvider>
+              <ProtectedRoute
+                exact
+                path="/session/:gameId"
+                component={GameSession}
+                auth={auth}
+              />
+            </RTCContextProvider>
           </GameplayContextProvider>
-
+          
           <Route component={PageNotFound} />
         </Switch>
       </BrowserRouter>

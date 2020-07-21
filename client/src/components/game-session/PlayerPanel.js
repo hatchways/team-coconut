@@ -1,17 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Container,
   Grid,
-  Card,
-  CardMedia,
   makeStyles,
   Typography,
+  Card
 } from "@material-ui/core";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { GameplayContext } from "../../context/GameplayContext";
 import TypingNotification from "./TypingNotification";
+import CurrentPlayerVideo from './CurrentPlayerVideo';
+import { RTCContext } from '../../context/RTCContext';
+import PlayerVideo from "./PlayerVideo";
 
-function PlayerPanel() {
+function PlayerPanel({ gameId }) {
   const classes = useStyles();
   const { gameState, showTypingNotification } = useContext(GameplayContext);
   const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
@@ -22,6 +24,10 @@ function PlayerPanel() {
   } else {
     players = gameState.players;
   }
+  const { currentPlayerVideo, initVideoCall, peers } = useContext(RTCContext);
+  useEffect(() => {
+    initVideoCall(gameId);
+  }, [gameId, initVideoCall])
 
   return (
     <Container className={classes.sectionContainer} component="section">
@@ -29,7 +35,11 @@ function PlayerPanel() {
         {players.map((player) => (
           <Grid key={player.id} item xs={6}>
             <Card className={classes.card} raised>
-              <CardMedia className={classes.playerCam} image={staticImg} />
+              {
+                player.id === currentUser
+                  ? <CurrentPlayerVideo videoStream={currentPlayerVideo} />
+                  : <PlayerVideo videoPeer={peers[player.id]} />
+              }
               <div className={classes.playerInfoContainer}>
                 <div>
                   <div className={classes.playerInfo}>
@@ -42,8 +52,8 @@ function PlayerPanel() {
                         {showTypingNotification ? (
                           <TypingNotification />
                         ) : (
-                          <p>Clue</p>
-                        )}
+                            <p>Clue</p>
+                          )}
                       </div>
                     )}
                   </div>
@@ -62,6 +72,10 @@ function PlayerPanel() {
 const staticImg =
   "https://www.bungie.net/common/destiny2_content/icons/28f45711da09ad4b22c67be7bacf038a.png";
 
+
+// Uncomment all borders to see where things line up on the page
+// There could be a better way of laying out where things should be
+// but I am currently unsure - Darren
 const useStyles = makeStyles((theme) => ({
   sectionContainer: {
     height: "100vh",
