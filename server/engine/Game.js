@@ -3,7 +3,7 @@ const wordArray = require("./Words");
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
-  GAME_TIME = 10000;
+  GAME_TIME = 62000;
 
   constructor() {
     this.word = "";
@@ -169,7 +169,7 @@ class Game {
 
   /**
    * Start Timer
-   * @param {function} callback 
+   * @param {function} callback
    */
   startTimer(callback) {
     this.timer = setTimeout(callback, this.GAME_TIME);
@@ -183,8 +183,8 @@ class Game {
   }
 
   /**
-   * Add Wating Player for Next Round 
-   * @param {object} player 
+   * Add Wating Player for Next Round
+   * @param {object} player
    */
   addWatingPlayer(player) {
     this.waitingPlayers.push(player);
