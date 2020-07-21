@@ -41,14 +41,14 @@ function PreGameLobby({ match }) {
       joinGame(queryGameId);
     }
     sockets.on("game-started", () => {
-      if(!isGameStart) {
+      if (!isGameStart) {
         setGameStart(true);
       }
     });
 
     return () => {
       isGameStart = true;
-    }
+    };
   }, [joinGame, queryGameId, game]);
 
   function startGame() {
@@ -119,8 +119,12 @@ function PreGameLobby({ match }) {
             </Container>
           ))}
         <div className={classes.buttonContainer}>
-          {isCurrentUserHost() && (
+          {isCurrentUserHost() ? (
             <GenericButton handleClick={startGame}>Start Game</GenericButton>
+          ) : (
+            <Typography variant="h6" component="p">
+              Waiting for Host...
+            </Typography>
           )}
         </div>
 

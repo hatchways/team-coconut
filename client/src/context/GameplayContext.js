@@ -1,7 +1,14 @@
-import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
-import { GameContext } from './GameContext'
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
+import { GameContext } from "./GameContext";
 import sockets from "../utils/sockets";
 
+const TIME = 5;
 const GameplayContext = createContext();
 
 function GameplayContextProvider({ children }) {
@@ -15,7 +22,7 @@ function GameplayContextProvider({ children }) {
   const [isGuesser, setIsGuesser] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const [redirectPath, setRedirectPath] = useState("");
-  const [gameTimer, setGameTimer] = useState(5);
+  const [gameTimer, setGameTimer] = useState(TIME);
   const [isGuessPhase, setIsGuessPhase] = useState(false);
   const { joinGame } = useContext(GameContext);
 
@@ -26,10 +33,14 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("game-started", (gameState) => {
       setGameState(gameState);
+      setIsGuessPhase(false);
       setRedirect(false);
       setRedirectPath("");
       setIsGuesser(false);
-      console.log("First Round : ", gameState);
+      setSubmitDisable(false);
+      setClues([]);
+      setGameTimer(TIME);
+      console.log(gameState.players);
       // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -44,9 +55,14 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Clues
      */
-    sockets.on("FE-send-clue", (player) => {
+    sockets.on("FE-send-clue", ({ player, gameState }) => {
       setClues((prevClues) => [...prevClues, player]);
       setShowTypingNotification(false);
+      if (clues.length === 3) {
+        setIsGuessPhase(true);
+        setGameTimer(TIME);
+        setSubmitDisable(true);
+      }
     });
 
     /**
@@ -62,7 +78,7 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
-      setGameTimer(5);
+      setGameTimer(TIME);
       setShowTypingNotification(false); // if the clue giver was still typing at the end of the first phase
       // if (gameState.state.round === gameState.state.players.length - 1) {
       if (gameState.state.round === 2) {
@@ -88,23 +104,27 @@ function GameplayContextProvider({ children }) {
       }
     });
 
+    /**
+     * Send Blank Answer If Time Runs Out
+     */
+    sockets.on("FE-time-over", (gameId) => {
+      const answer = ""; // time ran out and the guesser did not submit anything
+      sockets.emit("BE-send-answer", { gameId, answer, clues });
+    });
+
+    /**
+     * Join New Game Host Creates
+     */
     sockets.on("FE-join-new-game", async (newGameId) => {
       joinGame(newGameId);
       joinNewGame(newGameId);
     });
-
-    /**
-     * Restart Game
-     */
-    sockets.on("FE-reset-game", (gameState) => {
-      console.log(gameState);
-    });
-  }, []);
+  }, [joinGame, clues]);
 
   // ---------- ALL FUNCTION DECLARATIONS ---------- //
 
-  function sendClueToBE(gameId, player) {
-    sockets.emit("BE-send-clue", { gameId, player });
+  function sendClueToBE(gameId, player, gameState) {
+    sockets.emit("BE-send-clue", { gameId, player, gameState });
   }
 
   const sendGuessToBE = useCallback((gameId, answer, clues) => {
@@ -125,7 +145,7 @@ function GameplayContextProvider({ children }) {
 
   const changeGamePhase = useCallback((bool) => {
     setIsGuessPhase(bool);
-    setGameTimer(5);
+    setGameTimer(TIME);
   }, []);
 
   const disableSubmitInputs = useCallback((bool) => {
@@ -143,9 +163,10 @@ function GameplayContextProvider({ children }) {
     sockets.emit("BE-end-game", gameId);
   }
 
-  function leaveGame() {
+  function leaveGame(gameId) {
     setRedirect(true);
     setRedirectPath("/create-game");
+    sockets.emit("BE-leave-game", { gameId });
   }
 
   function createNewGame(gameId, newGameId) {
@@ -159,22 +180,20 @@ function GameplayContextProvider({ children }) {
     setRedirect(true);
     setRedirectPath(`/lobby/${newGameId}`);
     setShowEndGameScreen(false);
-  };
+  }
 
   /**
    * @param {object} gameData = {gameId, players}
    */
   async function saveGameToDB(gameData) {
     try {
-      const response = await fetch(`/game/${gameData.gameId}/end`, {
+      await fetch(`/game/${gameData.gameId}/end`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(gameData),
       });
-      const json = await response.json();
-      console.log("Saved Game : ", json); // do something with json object later?
     } catch (error) {
       console.error(error);
     }

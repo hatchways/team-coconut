@@ -11,7 +11,6 @@ import GameHeader from "../components/game-session/GameHeader";
 function GameSession() {
   const {
     gameReady,
-    gameState,
     isGuesser,
     showNextRoundScreen,
     showEndGameScreen,
@@ -28,13 +27,7 @@ function GameSession() {
           alignItems="center"
         >
           {gameReady && (
-            <Grid item>
-              {isGuesser ? (
-                <GuessPanel />
-              ) : (
-                <CluePanel wordToGuess={gameState.word} />
-              )}
-            </Grid>
+            <Grid item>{isGuesser ? <GuessPanel /> : <CluePanel />}</Grid>
           )}
           {gameReady && (
             <Grid item lg>

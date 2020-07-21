@@ -3,7 +3,7 @@ const wordArray = require("./Words");
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
-  GAME_TIME = 62000;
+  GAME_TIME = 10500;
 
   constructor() {
     this.word = "";
@@ -126,8 +126,8 @@ class Game {
    */
   addPlayer(joinPlayer) {
     const find = this.players.find((player) => player.id === joinPlayer.id);
-    
-    if(!find) this.players.push(joinPlayer);
+
+    if (!find) this.players.push(joinPlayer);
   }
 
   /**

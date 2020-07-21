@@ -19,21 +19,8 @@ function EndGameScreen() {
   const {
     state: { players },
   } = gameState;
-  const { isCurrentUserHost, errors, createGame } = useContext(
-    GameContext
-  );
+  const { isCurrentUserHost, errors, createGame } = useContext(GameContext);
   const { gameId } = useParams();
-
-  // useEffect(() => {
-  //   async function joinGameDB(newGameId) {
-  //     await joinGame(newGameId);
-  //   }
-  //   sockets.on("FE-join-new-game", async (newGameId) => {
-  //     console.log(newGameId);
-  //     await joinGameDB(newGameId);
-  //     joinNewGame(newGameId);
-  //   });
-  // }, []);
 
   function leaveCurrentGame() {
     // save game state to DB only if host
@@ -45,8 +32,7 @@ function EndGameScreen() {
       saveGameToDB(gameData);
       endGame(gameId);
     }
-    leaveGame();
-    console.log(errors.joinError, redirect, redirectPath);
+    leaveGame(gameId);
   }
 
   async function playAgain() {
@@ -60,7 +46,6 @@ function EndGameScreen() {
     // create new game
     const newGameId = await createGame();
     createNewGame(gameId, newGameId);
-    console.log(errors.joinError, redirect, redirectPath);
   }
 
   if (!errors.joinError && redirect && redirectPath) {

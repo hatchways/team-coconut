@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import FormInput from "../FormInput";
 import GenericButton from "../GenericButton";
-import { Container, Grid, makeStyles } from "@material-ui/core";
+import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import useForm from "../../utils/hooks/useForm";
 import { GameplayContext } from "../../context/GameplayContext";
 
@@ -37,13 +37,23 @@ function GuessPanel() {
             />
           </form>
           <div className={classes.submitBtn}>
-            <GenericButton
-              handleClick={submitGuess}
-              isSubmit
-              isDisabled={!isGuessPhase}
-            >
-              Submit
-            </GenericButton>
+            {isGuessPhase ? (
+              <GenericButton
+                handleClick={submitGuess}
+                isSubmit
+                isDisabled={!isGuessPhase}
+              >
+                Submit
+              </GenericButton>
+            ) : (
+              <Typography
+                className={classes.waiting}
+                variant="h6"
+                component="p"
+              >
+                Waiting for all Clues...
+              </Typography>
+            )}
           </div>
         </Container>
       </Grid>
@@ -66,6 +76,9 @@ const useStyles = makeStyles((theme) => ({
   submitBtn: {
     width: "max-content",
     margin: "2rem auto 0",
+  },
+  waiting: {
+    color: theme.palette.text.primary,
   },
 }));
 
