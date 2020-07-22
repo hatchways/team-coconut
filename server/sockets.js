@@ -36,8 +36,11 @@ sockets.init = function (server) {
   //     });
   //   } else {
   //     socket.emit("auth-error");
+  //     // socket disconnect
+  //     socket.disconnect();
   //   }
-  // })
+  // });
+
   io.on("connect", (socket) => {
     console.log("connected", socket.id, new Date().toLocaleTimeString());
     socket.on("disconnect", () => {
