@@ -86,6 +86,7 @@ class MatchManager {
     const game = this.matchManager.get(gameId);
 
     game.initClues();
+    game.initTypingStatus();
     game.resetWaitingPlayers();
     game.nextRound();
 
@@ -172,7 +173,6 @@ class MatchManager {
    * Track clues for each player
    * @param {string} gameId
    * @param {object} player
-   * @return {number} Number of Wating Players
    */
   trackClues(gameId, player) {
     if (!this.checkRoomExist(gameId))
@@ -181,6 +181,22 @@ class MatchManager {
     const game = this.matchManager.get(gameId);
 
     game.trackPlayerClue(player);
+
+    return game.getState();
+  }
+
+  /**
+   * Track typing status for each player
+   * @param {string} gameId
+   * @param {string} player
+   */
+  trackTyping(gameId, playerId) {
+    if (!this.checkRoomExist(gameId))
+      throw new ClientError("", "Room Not Found", 404);
+
+    const game = this.matchManager.get(gameId);
+
+    game.trackTypingStatus(playerId);
 
     return game.getState();
   }

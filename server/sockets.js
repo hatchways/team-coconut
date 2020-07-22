@@ -143,9 +143,10 @@ sockets.init = function (server) {
      * Send Clues
      */
     socket.on("BE-display-typing-notification", ({ gameId, playerEmail }) => {
+      const gameState = Match.trackTyping(gameId, playerEmail);
       socket.broadcast
         .to(gameId)
-        .emit("FE-display-typing-notification", playerEmail);
+        .emit("FE-display-typing-notification", gameState);
     });
 
     /**

@@ -18,7 +18,6 @@ function GameplayContextProvider({ children }) {
   const [clues, setClues] = useState([]);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [showEndGameScreen, setShowEndGameScreen] = useState(false);
-  const [showTypingNotification, setShowTypingNotification] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
   const [isGuesser, setIsGuesser] = useState(false);
   const [redirect, setRedirect] = useState(false);
@@ -65,7 +64,6 @@ function GameplayContextProvider({ children }) {
     sockets.on("FE-send-clue", ({ player, cluesSubmitted, gameState }) => {
       setGameState(gameState);
       setClues((prevClues) => [...prevClues, player]);
-      setShowTypingNotification(false);
       if (cluesSubmitted.length === 3) {
         setIsGuessPhase(true);
         setGameTimer(TIME);
@@ -76,9 +74,8 @@ function GameplayContextProvider({ children }) {
     /**
      * Display Typing Notification
      */
-    sockets.on("FE-display-typing-notification", (playerEmail) => {
-      setShowTypingNotification(true);
-      // use playerEmail to which player panel to display the notification?
+    sockets.on("FE-display-typing-notification", (gameState) => {
+      setGameState(gameState);
     });
 
     /**
@@ -87,7 +84,6 @@ function GameplayContextProvider({ children }) {
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
       setGameTimer(TIME);
-      setShowTypingNotification(false); // if the clue giver was still typing at the end of the first phase
       // if (gameState.state.round === gameState.state.players.length - 1) {
       if (gameState.state.round === 2) {
         setShowEndGameScreen(true);
@@ -219,7 +215,6 @@ function GameplayContextProvider({ children }) {
         clues,
         showNextRoundScreen,
         showEndGameScreen,
-        showTypingNotification,
         submitDisable,
         redirect,
         redirectPath,

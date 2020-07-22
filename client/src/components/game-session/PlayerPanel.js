@@ -15,7 +15,7 @@ import PlayerVideo from "./PlayerVideo";
 
 function PlayerPanel({ gameId }) {
   const classes = useStyles();
-  const { gameState, showTypingNotification } = useContext(GameplayContext);
+  const { gameState } = useContext(GameplayContext);
   const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
 
   let players;
@@ -49,7 +49,7 @@ function PlayerPanel({ gameId }) {
                     </Typography>
                     {currentUser !== player.id && (
                       <div className={classes.clue}>
-                        {showTypingNotification ? (
+                        {player.isTyping && !player.clue ? (
                           <TypingNotification />
                         ) : (
                           <p>{player.clue}</p>

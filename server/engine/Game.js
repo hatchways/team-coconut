@@ -21,6 +21,7 @@ class Game {
   initGame() {
     this.initGuesser();
     this.initClues();
+    this.initTypingStatus();
     this.round = 0;
     this.maxRound = this.players.length * 2;
     this.wordArray = this.initWords();
@@ -51,6 +52,15 @@ class Game {
   initClues() {
     this.players.map((player) => {
       player.clue = "";
+    });
+  }
+
+  /**
+   * Initialize player clue property
+   */
+  initTypingStatus() {
+    this.players.map((player) => {
+      player.isTyping = false;
     });
   }
 
@@ -220,6 +230,18 @@ class Game {
     this.players.forEach((p) => {
       if (p.id === player.id) {
         p.clue = player.msg;
+      }
+    });
+  }
+
+  /**
+   * Track Typing Status For Each Player
+   * * @param {string} playerId
+   */
+  trackTypingStatus(playerId) {
+    this.players.forEach((p) => {
+      if (p.id === playerId) {
+        p.isTyping = true;
       }
     });
   }
