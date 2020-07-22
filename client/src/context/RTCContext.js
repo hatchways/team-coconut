@@ -8,10 +8,14 @@ function RTCContextProvider(props) {
   const [peers, setPeers] = useState({});
   const peersRef = useRef([]);
   const currentPlayerVideo = useRef();
+  const [playerVideoOn, setPlayerVideoOn] = useState(false);
+  const [playerAudioOn, setPlayerAudioOn] = useState(false);
 
   const initVideoCall = useCallback((gameId) => {
     try {
       getMediaStream().then(stream => {
+        setPlayerVideoOn(true);
+        setPlayerAudioOn(true);
         currentPlayerVideo.current.srcObject = stream;
         // receive player socket ids from backend and invoke initCall() for each player
         // add each newly created peer to state
@@ -111,6 +115,21 @@ function RTCContextProvider(props) {
     return peer;
   }
 
+  function switchVideo() {
+    setPlayerVideoOn(isOn => {
+      currentPlayerVideo.current.srcObject
+        .getVideoTracks()[0].enabled = !isOn
+      return !isOn;
+    });
+  }
+  function switchAudio() {
+    setPlayerAudioOn(isOn => {
+      currentPlayerVideo.current.srcObject
+        .getAudioTracks()[0].enabled = !isOn
+      return !isOn;
+    });
+  }
+
   async function getMediaStream() {
     try {
       return await navigator.mediaDevices.getUserMedia({
@@ -123,7 +142,17 @@ function RTCContextProvider(props) {
   }
 
   return (
-    <RTCContext.Provider value={{ peers, currentPlayerVideo, initVideoCall }}>
+    <RTCContext.Provider value={
+      {
+        peers,
+        currentPlayerVideo,
+        initVideoCall,
+        playerAudioOn,
+        playerVideoOn,
+        switchVideo,
+        switchAudio
+      }
+    }>
       {props.children}
     </RTCContext.Provider>
   );
