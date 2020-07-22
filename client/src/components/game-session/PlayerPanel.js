@@ -52,7 +52,7 @@ function PlayerPanel({ gameId }) {
                         {showTypingNotification ? (
                           <TypingNotification />
                         ) : (
-                          <p>Clue</p>
+                          <p>{player.clue}</p>
                         )}
                       </div>
                     )}

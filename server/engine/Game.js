@@ -3,7 +3,7 @@ const wordArray = require("./Words");
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
-  GAME_TIME = 20500;
+  GAME_TIME = 60500;
 
   constructor() {
     this.word = "";
@@ -20,6 +20,7 @@ class Game {
    */
   initGame() {
     this.initGuesser();
+    this.initClues();
     this.round = 0;
     this.maxRound = this.players.length * 2;
     this.wordArray = this.initWords();
@@ -42,6 +43,15 @@ class Game {
     });
 
     this.players[0].isGuesser = true;
+  }
+
+  /**
+   * Initialize player clue property
+   */
+  initClues() {
+    this.players.map((player) => {
+      player.clue = "";
+    });
   }
 
   /**
@@ -200,6 +210,18 @@ class Game {
    */
   resetWaitingPlayers() {
     this.waitingPlayers = [];
+  }
+
+  /**
+   * Track Submitted Clue
+   * * @param {object} player
+   */
+  trackPlayerClue(player) {
+    this.players.forEach((p) => {
+      if (p.id === player.id) {
+        p.clue = player.msg;
+      }
+    });
   }
 }
 

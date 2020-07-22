@@ -85,6 +85,7 @@ class MatchManager {
 
     const game = this.matchManager.get(gameId);
 
+    game.initClues();
     game.resetWaitingPlayers();
     game.nextRound();
 
@@ -165,6 +166,23 @@ class MatchManager {
     const game = this.matchManager.get(gameId);
 
     return game.addWatingPlayer(player);
+  }
+
+  /**
+   * Track clues for each player
+   * @param {string} gameId
+   * @param {object} player
+   * @return {number} Number of Wating Players
+   */
+  trackClues(gameId, player) {
+    if (!this.checkRoomExist(gameId))
+      throw new ClientError("", "Room Not Found", 404);
+
+    const game = this.matchManager.get(gameId);
+
+    game.trackPlayerClue(player);
+
+    return game.getState();
   }
 }
 

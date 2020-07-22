@@ -133,7 +133,10 @@ sockets.init = function (server) {
      */
     socket.on("BE-send-clue", ({ gameId, player }) => {
       cluesSubmitted.push(player);
-      io.sockets.in(gameId).emit("FE-send-clue", { player, cluesSubmitted });
+      const gameState = Match.trackClues(gameId, player);
+      io.sockets
+        .in(gameId)
+        .emit("FE-send-clue", { player, cluesSubmitted, gameState });
     });
 
     /**

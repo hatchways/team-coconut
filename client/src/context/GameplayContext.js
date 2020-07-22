@@ -9,7 +9,7 @@ import { GameContext } from "./GameContext";
 import { AuthContext } from "./AuthContext";
 import sockets from "../utils/sockets";
 
-const TIME = 3;
+const TIME = 15;
 const GameplayContext = createContext();
 
 function GameplayContextProvider({ children }) {
@@ -62,7 +62,8 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Clues
      */
-    sockets.on("FE-send-clue", ({ player, cluesSubmitted }) => {
+    sockets.on("FE-send-clue", ({ player, cluesSubmitted, gameState }) => {
+      setGameState(gameState);
       setClues((prevClues) => [...prevClues, player]);
       setShowTypingNotification(false);
       if (cluesSubmitted.length === 3) {
