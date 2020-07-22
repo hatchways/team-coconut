@@ -45,9 +45,17 @@ sockets.init = function (server) {
      */
     .on("connect", (socket) => {
       console.log("connected", socket.id, new Date().toLocaleTimeString());
+
       socket.on("disconnect", () => {
         delete socketIdEmail[socket.id];
         //console.log("disconnected", socket.id, new Date().toLocaleTimeString());
+      });
+
+      /**
+       * Error
+       */
+      socket.on("error", (e) => {
+        console.error(e);
       });
 
       // --------------------------------------------------------------- //
