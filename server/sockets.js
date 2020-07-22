@@ -1,8 +1,8 @@
-const MatchManager = require("./engine/MatchManager");
-const Player = require("./engine/Player");
-const cookie = require("cookie");
-const jwt = require("jsonwebtoken");
-const ClientError = require("./common/ClientError");
+const MatchManager = require('./engine/MatchManager');
+const Player = require('./engine/Player');
+const cookie = require('cookie');
+const jwt = require('jsonwebtoken');
+const ClientError = require('./common/ClientError');
 
 const sockets = {};
 const socketIdEmail = {};
@@ -12,7 +12,7 @@ sockets.init = function (server) {
   const Match = new MatchManager();
 
   // socket.io setup
-  var io = require("socket.io")(server, {
+  var io = require('socket.io')(server, {
     pingInterval: 5000,
     pingTimeout: 10000,
   });
@@ -23,37 +23,36 @@ sockets.init = function (server) {
   io.use((socket, next) => {
     try {
       const cookies = cookie.parse(socket.handshake.headers.cookie);
-      const token = cookies["token"];
+      const token = cookies['token'];
       if (token) {
         jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
           if (error) {
-            next(new ClientError("", "Authentication Error", 401));
+            next(new ClientError('', 'Authentication Error', 401));
           }
           socket.decoded = decoded;
-          console.log(socket.decoded);
           next();
         });
       } else {
-        next(new ClientError("", "Unauthorized", 401));
+        next(new ClientError('', 'Unauthorized', 401));
       }
     } catch (error) {
-      socket.emit("auth-error", { errorMsg: error.userMessage });
+      socket.emit('auth-error', { errorMsg: error.userMessage });
       socket.disconnect();
     }
-  }).on("connect", (socket) => {
-    console.log("connected", socket.id, new Date().toLocaleTimeString());
-    
+  }).on('connect', (socket) => {
+    console.log('connected', socket.id, new Date().toLocaleTimeString());
+
     /**
      * Error
      */
-    socket.on("error", (e) => {
+    socket.on('error', (e) => {
       console.error(e);
     });
 
     /**
      * Disconnect
      */
-    socket.on("disconnect", () => {
+    socket.on('disconnect', () => {
       delete socketIdEmail[socket.id];
       //console.log("disconnected", socket.id, new Date().toLocaleTimeString());
     });
@@ -61,7 +60,7 @@ sockets.init = function (server) {
     /**
      * Join Room
      */
-    socket.on("BE-user-joined", ({ gameId, player }) => {
+    socket.on('BE-user-joined', ({ gameId, player }) => {
       const newPlayer = new Player(player.email, player.name);
 
       if (!Match.checkRoomExist(gameId)) {
@@ -75,13 +74,13 @@ sockets.init = function (server) {
       socket.join(gameId);
 
       //notify all other users in the room
-      io.sockets.in(gameId).emit("FE-user-joined", {
+      io.sockets.in(gameId).emit('FE-user-joined', {
         joinedPlayer: player.email,
         gamePlayers: gameState.players,
       });
     });
 
-    socket.on("BE-join-video-call", ({ gameId, userEmail }) => {
+    socket.on('BE-join-video-call', ({ gameId, userEmail }) => {
       socket.join(gameId);
       socketIdEmail[socket.id] = userEmail;
       io.in(gameId).clients((err, clients) => {
@@ -91,7 +90,7 @@ sockets.init = function (server) {
             players.push({ socketId: client, email: socketIdEmail[client] });
           }
         });
-        socket.emit("FE-players-in-room", players);
+        socket.emit('FE-players-in-room', players);
       });
     });
 
@@ -100,9 +99,9 @@ sockets.init = function (server) {
 
     // initiate call with other players in game
     socket.on(
-      "BE-send-call",
+      'BE-send-call',
       ({ callerEmail, playerToCall, caller, callerSignal }) => {
-        io.to(playerToCall).emit("FE-receive-call", {
+        io.to(playerToCall).emit('FE-receive-call', {
           callerEmail,
           callerSignal,
           caller,
@@ -111,8 +110,8 @@ sockets.init = function (server) {
     );
 
     // accept call and send signal back to caller for them to accept
-    socket.on("BE-answer-call", ({ playerEmail, answerSignal, caller }) => {
-      io.to(caller).emit("FE-accept-call-back", {
+    socket.on('BE-answer-call', ({ playerEmail, answerSignal, caller }) => {
+      io.to(caller).emit('FE-accept-call-back', {
         playerEmail,
         answerSignal,
         playerAnsweringId: socket.id,
@@ -123,85 +122,99 @@ sockets.init = function (server) {
      * Start Game
      */
     //host starts the game
-    socket.on("start-game", (gameId) => {
+    socket.on('start-game', (gameId) => {
       try {
         const gameState = Match.startGame(gameId);
 
         // Start Timer
         Match.startTimer(gameId, function () {
-          console.log("Time Over!!");
-          socket.in(gameId).emit("FE-time-over", { gameId, gameState });
+          console.log('Time Over!!');
+          socket.in(gameId).emit('FE-time-over', { gameId, gameState });
         });
 
-        io.sockets.in(gameId).emit("game-started", gameState);
+        io.sockets.in(gameId).emit('game-started', gameState);
       } catch (error) {
-        socket.emit("FE-error-start-game", { msg: error.userMessage });
+        socket.emit('FE-error-start-game', { msg: error.userMessage });
       }
     });
 
     /**
      * Send Clues
      */
-    socket.on("BE-send-clue", ({ gameId, player }) => {
-      const gameState = Match.trackClues(gameId, player);
+    socket.on('BE-send-clue', ({ gameId, player }) => {
+      try {
+        const gameState = Match.trackClues(gameId, player);
 
-      io.sockets
-        .in(gameId)
-        .emit("FE-send-clue", { player, gameState });
+        io.sockets.in(gameId).emit('FE-send-clue', { player, gameState });
+      } catch (e) {
+        console.error(e);
+      }
     });
 
     /**
      * Send Clues
      */
-    socket.on("BE-display-typing-notification", ({ gameId, playerEmail }) => {
-      const gameState = Match.trackTyping(gameId, playerEmail);
-      socket.broadcast
-        .to(gameId)
-        .emit("FE-display-typing-notification", gameState);
+    socket.on('BE-display-typing-notification', ({ gameId, playerEmail }) => {
+      try {
+        const gameState = Match.trackTyping(gameId, playerEmail);
+        socket.broadcast
+          .to(gameId)
+          .emit('FE-display-typing-notification', gameState);
+      } catch (e) {
+        console.error(e);
+      }
     });
 
     /**
      * End of Round
      */
-    socket.on("BE-send-answer", ({ gameId, answer, clues }) => {
-      const gameState = Match.endRound(gameId, answer, clues);
+    socket.on('BE-send-answer', ({ gameId, answer, clues }) => {
+      try {
+        const gameState = Match.endRound(gameId, answer, clues);
 
-      // End Timer
-      Match.endTimer(gameId);
+        // End Timer
+        Match.endTimer(gameId);
 
-      io.sockets.in(gameId).emit("FE-send-answer", { gameState, gameId });
+        io.sockets.in(gameId).emit('FE-send-answer', { gameState, gameId });
+      } catch (e) {
+        console.error(e);
+      }
     });
 
     /**
      * Move to Next Round
      */
-    socket.on("BE-move-round", ({ gameId, playerSocketId }) => {
-      const numberOfPlayers = Match.waitNextRound(gameId, playerSocketId);
+    socket.on('BE-move-round', ({ gameId, playerSocketId }) => {
+      try {
+        const numberOfPlayers = Match.waitNextRound(gameId, playerSocketId);
 
-      if (numberOfPlayers === 4) {
-        const gameState = Match.moveToNextRound(gameId);
+        if (numberOfPlayers === 4) {
+          const gameState = Match.moveToNextRound(gameId);
 
-        // Start Timer
-        Match.startTimer(gameId, function () {
-          console.log("Time Over!!");
-          socket.in(gameId).emit("FE-time-over", gameId);
-        });
+          // Start Timer
+          Match.startTimer(gameId, function () {
+            console.log('Time Over!!');
+            socket.in(gameId).emit('FE-time-over', gameId);
+          });
 
-        io.sockets.in(gameId).emit("FE-move-round", gameState);
+          io.sockets.in(gameId).emit('FE-move-round', gameState);
+        }
+      } catch (e) {
+        console.error(e);
       }
     });
 
     /**
      * Play Again / Non-Host players join new game
      */
-    socket.on("BE-join-new-game", ({ gameId, newGameId }) => {
-      socket.broadcast.to(gameId).emit("FE-join-new-game", newGameId);
+    socket.on('BE-join-new-game', ({ gameId, newGameId }) => {
+      socket.broadcast.to(gameId).emit('FE-join-new-game', newGameId);
 
-      io.of("/")
+      io.of('/')
         .in(gameId)
         .clients(function (error, clients) {
           if (clients.length > 0) {
-            console.log("clients in the room: \n");
+            console.log('clients in the room: \n');
             console.log(clients);
             clients.forEach(function (socket_id) {
               io.sockets.sockets[socket_id].leave(gameId);
@@ -213,8 +226,8 @@ sockets.init = function (server) {
     /**
      * Player leaves game AFTER the game has ended
      */
-    socket.on("BE-leave-game", ({ gameId }) => {
-      io.of("/")
+    socket.on('BE-leave-game', ({ gameId }) => {
+      io.of('/')
         .in(gameId)
         .clients((error, clients) => {
           clients.forEach((socket_id) => {
@@ -228,11 +241,15 @@ sockets.init = function (server) {
     /**
      * End game
      */
-    socket.on("BE-end-game", (gameId) => {
-      Match.endGame(gameId);
+    socket.on('BE-end-game', (gameId) => {
+      try {
+        Match.endGame(gameId);
+      } catch (e) {
+        console.error(e);
+      }
     });
   });
-  console.log("Sockets Initialized");
+  console.log('Sockets Initialized');
 };
 
 module.exports = sockets;
