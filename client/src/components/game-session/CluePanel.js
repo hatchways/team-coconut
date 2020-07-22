@@ -16,6 +16,8 @@ function CluePanel() {
     disableSubmitInputs,
     displayTypingNotification,
     showNextRoundScreen,
+    displayClueError,
+    toggleClueError,
   } = useContext(GameplayContext);
   const { word: wordToGuess } = gameState;
   const { gameId } = useParams();
@@ -23,12 +25,15 @@ function CluePanel() {
 
   function submitClue(event) {
     event.preventDefault();
-    disableSubmitInputs(true);
-    const player = {
-      msg: clue.clue,
-      id: email,
-    };
-    sendClueToBE(gameId, player);
+    if (clue.clue !== "") {
+      toggleClueError(false);
+      disableSubmitInputs(true);
+      const player = {
+        msg: clue.clue,
+        id: email,
+      };
+      sendClueToBE(gameId, player);
+    } else toggleClueError(true);
   }
 
   function handleOnKeyUp(event) {
@@ -72,7 +77,7 @@ function CluePanel() {
               <form className={classes.form} onSubmit={submitClue} noValidate>
                 <FormInput
                   label="clue"
-                  error=""
+                  error={displayClueError && "Please Enter a Clue"}
                   handleChange={setClue}
                   isDisabled={submitDisable}
                   handleOnKeyUp={handleOnKeyUp}

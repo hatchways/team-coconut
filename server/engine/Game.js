@@ -3,7 +3,7 @@ const wordArray = require("./Words");
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
-  GAME_TIME = 20500;
+  GAME_TIME = 60500;
 
   constructor() {
     this.word = "";
@@ -11,7 +11,6 @@ class Game {
     this.wordArray = [];
     this.players = [];
     this.waitingPlayers = [];
-    this.clues = [];
     this.maxRound = 0;
     this.timer;
   }
@@ -21,6 +20,7 @@ class Game {
    */
   initGame() {
     this.initGuesser();
+    this.initTypingStatus();
     this.round = 0;
     this.maxRound = this.players.length * 2;
     this.wordArray = this.initWords();
@@ -43,6 +43,16 @@ class Game {
     });
 
     this.players[0].isGuesser = true;
+  }
+
+  /**
+   * Initialize player clue property
+   */
+  initTypingStatusAndMsg() {
+    this.players.map((player) => {
+      player.isTyping = false;
+      player.msg = '';
+    });
   }
 
   /**
@@ -73,7 +83,6 @@ class Game {
       word: this.word,
       round: this.round,
       players: this.players,
-      clues: this.clues
     };
   }
 
@@ -206,18 +215,27 @@ class Game {
   }
 
   /**
-   * Add Clue
-   * @param {string} clue 
+   * Track Submitted Clue
+   * * @param {object} player
    */
-  addClue(clue) {
-    this.clues.push(clue);
+  trackPlayerClue(player) {
+    this.players.forEach((p) => {
+      if (p.id === player.id) {
+        p.msg = player.msg;
+      }
+    });
   }
 
   /**
-   * Reset Clues
+   * Track Typing Status For Each Player
+   * * @param {string} playerId
    */
-  resetClues() {
-    this.clues = [];
+  trackTypingStatus(playerId) {
+    this.players.forEach((p) => {
+      if (p.id === playerId) {
+        p.isTyping = true;
+      }
+    });
   }
 }
 

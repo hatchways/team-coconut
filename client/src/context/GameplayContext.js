@@ -6,19 +6,18 @@ import React, {
   useContext,
 } from "react";
 import { GameContext } from "./GameContext";
-import { AuthContext } from "./AuthContext";
 import sockets from "../utils/sockets";
 
-const TIME = 3;
+const TIME = 15;
 const GameplayContext = createContext();
 
 function GameplayContextProvider({ children }) {
   const [gameState, setGameState] = useState(null);
   const [gameReady, setGameReady] = useState(false);
   const [clues, setClues] = useState([]);
+  const [displayClueError, setDisplayClueError] = useState(false);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [showEndGameScreen, setShowEndGameScreen] = useState(false);
-  const [showTypingNotification, setShowTypingNotification] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
   const [isGuesser, setIsGuesser] = useState(false);
   const [redirect, setRedirect] = useState(false);
@@ -26,14 +25,9 @@ function GameplayContextProvider({ children }) {
   const [gameTimer, setGameTimer] = useState(TIME);
   const [isGuessPhase, setIsGuessPhase] = useState(false);
   const { joinGame } = useContext(GameContext);
-  const { auth } = useContext(AuthContext);
-  let currentUser;
-  if (auth) {
-    const { email } = JSON.parse(localStorage.getItem("user"));
-    currentUser = email;
-  }
 
   useEffect(() => {
+    const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
     /**
      * Start Game
      */
@@ -44,7 +38,9 @@ function GameplayContextProvider({ children }) {
       setRedirectPath("");
       setIsGuesser(false);
       setSubmitDisable(false);
+      setShowEndGameScreen(false);
       setClues([]);
+      setDisplayClueError(false);
       setGameTimer(TIME);
       console.log("First Round: ", gameState);
       // determine guesser on first round
@@ -61,10 +57,10 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Clues
      */
-    sockets.on("FE-send-clue", ({ player, cluesSubmitted }) => {
+    sockets.on("FE-send-clue", ({ player, gameState }) => {
+      setGameState(gameState);
       setClues((prevClues) => [...prevClues, player]);
-      setShowTypingNotification(false);
-      if (cluesSubmitted.length === 3) {
+      if (gameState.players.length === 3) {
         setIsGuessPhase(true);
         setGameTimer(TIME);
         setSubmitDisable(true);
@@ -74,9 +70,8 @@ function GameplayContextProvider({ children }) {
     /**
      * Display Typing Notification
      */
-    sockets.on("FE-display-typing-notification", (playerEmail) => {
-      setShowTypingNotification(true);
-      // use playerEmail to which player panel to display the notification?
+    sockets.on("FE-display-typing-notification", (gameState) => {
+      setGameState(gameState);
     });
 
     /**
@@ -85,7 +80,6 @@ function GameplayContextProvider({ children }) {
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
       setGameTimer(TIME);
-      setShowTypingNotification(false); // if the clue giver was still typing at the end of the first phase
       // if (gameState.state.round === gameState.state.players.length - 1) {
       if (gameState.state.round === 2) {
         setShowEndGameScreen(true);
@@ -100,6 +94,7 @@ function GameplayContextProvider({ children }) {
     sockets.on("FE-move-round", (gameState) => {
       setGameState(gameState);
       setClues([]);
+      setDisplayClueError(false);
       setIsGuessPhase(false);
       setIsGuesser(false); // reset guesser
       // determine guesser on subsequent rounds
@@ -115,9 +110,9 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Blank Answer If Time Runs Out
      */
-    sockets.on("FE-time-over", ({ gameId, cluesSubmitted }) => {
+    sockets.on("FE-time-over", ({ gameId, gameState }) => {
       const answer = ""; // time ran out and the guesser did not submit anything
-      sockets.emit("BE-send-answer", { gameId, answer, cluesSubmitted });
+      sockets.emit("BE-send-answer", { gameId, answer, clues: gameState.players });
     });
 
     /**
@@ -127,7 +122,7 @@ function GameplayContextProvider({ children }) {
       await joinGame(newGameId);
       redirectToNewGame(newGameId);
     });
-  }, [joinGame, currentUser]);
+  }, [joinGame]);
 
   // ---------- ALL FUNCTION DECLARATIONS ---------- //
 
@@ -191,6 +186,10 @@ function GameplayContextProvider({ children }) {
     setShowEndGameScreen(false);
   }
 
+  function toggleClueError(bool) {
+    setDisplayClueError(bool);
+  }
+
   /**
    * @param {object} gameData = {gameId, players}
    */
@@ -217,12 +216,12 @@ function GameplayContextProvider({ children }) {
         clues,
         showNextRoundScreen,
         showEndGameScreen,
-        showTypingNotification,
         submitDisable,
         redirect,
         redirectPath,
         isGuessPhase,
         gameTimer,
+        displayClueError,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
@@ -234,6 +233,7 @@ function GameplayContextProvider({ children }) {
         endGame,
         leaveGame,
         createNewGame,
+        toggleClueError,
       }}
     >
       {children}

@@ -4,6 +4,8 @@ class Player {
     this.name = name;
     this.point = 0;
     this.isGuesser = false;
+    this.msg = '';
+    this.isTyping = false;
   }
 
   /**
