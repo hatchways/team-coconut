@@ -40,8 +40,8 @@ function App() {
             {auth ? (
               <Redirect to="/create-game" />
             ) : (
-                <LoginOrSignUp type="register" />
-              )}
+              <LoginOrSignUp type="register" />
+            )}
           </Route>
           <Route path="/login">
             {auth ? <Redirect to={redirectPath} /> : <LoginOrSignUp />}

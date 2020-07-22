@@ -44,6 +44,7 @@ function GameplayContextProvider({ children }) {
       setRedirectPath("");
       setIsGuesser(false);
       setSubmitDisable(false);
+      setShowEndGameScreen(false);
       setClues([]);
       setGameTimer(TIME);
       console.log("First Round: ", gameState);
