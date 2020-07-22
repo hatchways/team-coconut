@@ -16,6 +16,7 @@ function GameplayContextProvider({ children }) {
   const [gameState, setGameState] = useState(null);
   const [gameReady, setGameReady] = useState(false);
   const [clues, setClues] = useState([]);
+  const [displayClueError, setDisplayClueError] = useState(false);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [showEndGameScreen, setShowEndGameScreen] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
@@ -45,6 +46,7 @@ function GameplayContextProvider({ children }) {
       setSubmitDisable(false);
       setShowEndGameScreen(false);
       setClues([]);
+      setDisplayClueError(false);
       setGameTimer(TIME);
       console.log("First Round: ", gameState);
       // determine guesser on first round
@@ -98,6 +100,7 @@ function GameplayContextProvider({ children }) {
     sockets.on("FE-move-round", (gameState) => {
       setGameState(gameState);
       setClues([]);
+      setDisplayClueError(false);
       setIsGuessPhase(false);
       setIsGuesser(false); // reset guesser
       // determine guesser on subsequent rounds
@@ -189,6 +192,10 @@ function GameplayContextProvider({ children }) {
     setShowEndGameScreen(false);
   }
 
+  function toggleClueError(bool) {
+    setDisplayClueError(bool);
+  }
+
   /**
    * @param {object} gameData = {gameId, players}
    */
@@ -220,6 +227,7 @@ function GameplayContextProvider({ children }) {
         redirectPath,
         isGuessPhase,
         gameTimer,
+        displayClueError,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
@@ -231,6 +239,7 @@ function GameplayContextProvider({ children }) {
         endGame,
         leaveGame,
         createNewGame,
+        toggleClueError,
       }}
     >
       {children}
