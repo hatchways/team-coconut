@@ -51,7 +51,7 @@ class Game {
   initTypingStatusAndMsg() {
     this.players.map((player) => {
       player.isTyping = false;
-      player.msg = '';
+      player.clue = "";
     });
   }
 
@@ -220,7 +220,7 @@ class Game {
   trackPlayerClue(player) {
     this.players.forEach((p) => {
       if (p.id === player.id) {
-        p.msg = player.msg;
+        p.clue = player.msg;
       }
     });
   }

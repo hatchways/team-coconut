@@ -143,6 +143,7 @@ const GameContextProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
+      setErrors({ joinError: "" });
       if (response.status === 400) {
         const { errors } = await response.json();
         const errorMsg = errors[0].msg;

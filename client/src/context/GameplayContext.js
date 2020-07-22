@@ -58,7 +58,6 @@ function GameplayContextProvider({ children }) {
      */
     sockets.on("FE-send-clue", ({ gameState }) => {
       setGameState(gameState);
-      // setClues((prevClues) => [...prevClues, player]);
       const cluesSubmitted = [];
       gameState.players.forEach((player) => {
         if (player.clue !== "" && player.isGuesser === false) {
@@ -151,9 +150,9 @@ function GameplayContextProvider({ children }) {
     setGameTimer((time) => time - 1);
   }, []);
 
-  function sendClueToBE(gameId, player, clues) {
+  function sendClueToBE(gameId, player) {
     setClues((prevClues) => [...prevClues, player]);
-    sockets.emit("BE-send-clue", { gameId, player, clues });
+    sockets.emit("BE-send-clue", { gameId, player });
   }
 
   const sendGuessToBE = useCallback((gameId, answer, clues) => {

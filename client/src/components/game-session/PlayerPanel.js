@@ -54,17 +54,14 @@ function PlayerPanel({ gameId }) {
                   <div className={classes.playerInfo}>
                     <Typography variant="h6" component="p">
                       {player.name}
-                      {currentUser === player.id ? " — You" : ": "}
+                      {currentUser === player.id
+                        ? " — You"
+                        : player.isGuesser
+                        ? " — Guesser"
+                        : ": "}
                     </Typography>
                     {currentUser !== player.id && (
                       <div className={classes.clue}>
-                        {/* {player.isTyping && !player.clue ? (
-                          <TypingNotification />
-                        ) : isGuessPhase ? (
-                          <p>Submitted</p>
-                        ) : (
-                          <p>{player.clue}</p>
-                        )} */}
                         {renderPlayerInfo(player)}
                       </div>
                     )}

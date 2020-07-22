@@ -30,7 +30,6 @@ sockets.init = function (server) {
             next(new ClientError("", "Authentication Error", 401));
           }
           socket.decoded = decoded;
-          console.log(socket.decoded);
           next();
         });
       } else {
@@ -138,11 +137,10 @@ sockets.init = function (server) {
       /**
        * Send Clues
        */
-      socket.on("BE-send-clue", ({ gameId, player, clues }) => {
-        console.log(clues);
+      socket.on("BE-send-clue", ({ gameId, player }) => {
         try {
           const gameState = Match.trackClues(gameId, player);
-          io.sockets.in(gameId).emit("FE-send-clue", { player, gameState });
+          io.sockets.in(gameId).emit("FE-send-clue", { gameState });
         } catch (error) {
           console.log(error);
           socket.emit("FE-error-during-game", { msg: error.userMessage });
