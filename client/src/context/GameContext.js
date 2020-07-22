@@ -1,12 +1,5 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-  useContext,
-} from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import sockets from "../utils/sockets";
-import { AuthContext } from "./AuthContext";
 
 const GameContext = createContext();
 
@@ -25,7 +18,6 @@ const GameContextProvider = ({ children }) => {
     open: false,
     msg: "",
   });
-  const { removeLocalStorageUser } = useContext(AuthContext);
 
   //subcribe on events only once
   useEffect(() => {
@@ -95,18 +87,17 @@ const GameContextProvider = ({ children }) => {
     });
 
     // sockets not able to verify jwt
-    sockets.on("auth-error", () => {
-      removeLocalStorageUser();
+    sockets.on("auth-error", (errorMsg) => {
+      console.log(errorMsg);
       sockets.on("disconnect");
       sockets.off();
     });
 
     return () => {
-      removeLocalStorageUser();
       sockets.on("disconnect");
       sockets.off();
     };
-  }, [removeLocalStorageUser]);
+  }, []);
 
   const createGame = async () => {
     try {
@@ -116,9 +107,6 @@ const GameContextProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-      if (response.status === 401) {
-        removeLocalStorageUser();
-      }
       const currentUser = JSON.parse(localStorage.getItem("user"));
       const { _id, players } = await response.json();
       setGame((game) => ({ ...game, gameId: _id, players }));
@@ -147,43 +135,38 @@ const GameContextProvider = ({ children }) => {
     }
   }, []);
 
-  const joinGame = useCallback(
-    async (gameId) => {
-      try {
-        const response = await fetch(`/game/${gameId}/join`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.status === 400) {
-          const { errors } = await response.json();
-          const errorMsg = errors[0].msg;
-          setErrors({ joinError: errorMsg });
-          throw new Error(errorMsg);
-        } else if (response.status === 401) {
-          removeLocalStorageUser();
-        } else if (response.status === 404) {
-          const errorMsg = "Please Enter a Game ID";
-          setErrors({ joinError: errorMsg });
-          throw new Error(errorMsg);
-        }
-        const { _id, players } = await response.json();
-
-        console.log("After DB:", players);
-        setGame((game) => ({ ...game, gameId: _id, players }));
-        //notify other players
-        const currentUser = JSON.parse(localStorage.getItem("user"));
-        sockets.emit("BE-user-joined", {
-          gameId: _id,
-          player: currentUser,
-        });
-      } catch (error) {
-        console.log(error);
+  const joinGame = useCallback(async (gameId) => {
+    try {
+      const response = await fetch(`/game/${gameId}/join`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 400) {
+        const { errors } = await response.json();
+        const errorMsg = errors[0].msg;
+        setErrors({ joinError: errorMsg });
+        throw new Error(errorMsg);
+      } else if (response.status === 404) {
+        const errorMsg = "Please Enter a Game ID";
+        setErrors({ joinError: errorMsg });
+        throw new Error(errorMsg);
       }
-    },
-    [removeLocalStorageUser]
-  );
+      const { _id, players } = await response.json();
+
+      console.log("After DB:", players);
+      setGame((game) => ({ ...game, gameId: _id, players }));
+      //notify other players
+      const currentUser = JSON.parse(localStorage.getItem("user"));
+      sockets.emit("BE-user-joined", {
+        gameId: _id,
+        player: currentUser,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   const sendInvitation = async (email) => {
     const regex = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
