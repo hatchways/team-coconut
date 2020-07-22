@@ -11,6 +11,7 @@ class Game {
     this.wordArray = [];
     this.players = [];
     this.waitingPlayers = [];
+    this.clues = [];
     this.maxRound = 0;
     this.timer;
   }
@@ -59,6 +60,7 @@ class Game {
     this.round = this.round + 1;
     this.setNextGuesser(this.round);
     this.setNextWord(this.round);
+    this.resetClues();
 
     return this.getState();
   }
@@ -71,6 +73,7 @@ class Game {
       word: this.word,
       round: this.round,
       players: this.players,
+      clues: this.clues
     };
   }
 
@@ -200,6 +203,21 @@ class Game {
    */
   resetWaitingPlayers() {
     this.waitingPlayers = [];
+  }
+
+  /**
+   * Add Clue
+   * @param {string} clue 
+   */
+  addClue(clue) {
+    this.clues.push(clue);
+  }
+
+  /**
+   * Reset Clues
+   */
+  resetClues() {
+    this.clues = [];
   }
 }
 

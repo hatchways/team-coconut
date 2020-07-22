@@ -6,8 +6,6 @@ const { keys } = require('./engine/Words');
 const ClientError = require('./common/ClientError');
 
 const sockets = {};
-let cluesSubmitted = [];
-
 const socketIdEmail = {};
 
 sockets.init = function (server) {
@@ -41,7 +39,12 @@ sockets.init = function (server) {
   //   }
   // });
 
+
   io.on("connect", (socket) => {
+    socket.on('error', (error) => {
+    
+    });
+    
     console.log("connected", socket.id, new Date().toLocaleTimeString());
     socket.on("disconnect", () => {
       delete socketIdEmail[socket.id];
@@ -120,7 +123,7 @@ sockets.init = function (server) {
         // Start Timer
         Match.startTimer(gameId, function () {
           console.log("Time Over!!");
-          socket.in(gameId).emit("FE-time-over", { gameId, cluesSubmitted });
+          socket.in(gameId).emit("FE-time-over", { gameId, cluesSubmitted: gameState.clues });
         });
 
         io.sockets.in(gameId).emit("game-started", gameState);
@@ -134,8 +137,8 @@ sockets.init = function (server) {
      * Send Clues
      */
     socket.on('BE-send-clue', ({ gameId, player }) => {
-      cluesSubmitted.push(player);
-      io.sockets.in(gameId).emit('FE-send-clue', { player, cluesSubmitted });
+      const gameState = Match.collectClues(gameId, player);
+      io.sockets.in(gameId).emit('FE-send-clue', { player, cluesSubmitted: gameState.clues });
     });
 
     /**
