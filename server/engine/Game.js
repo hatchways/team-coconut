@@ -20,7 +20,7 @@ class Game {
    */
   initGame() {
     this.initGuesser();
-    this.initTypingStatus();
+    this.initTypingStatusAndMsg();
     this.round = 0;
     this.maxRound = this.players.length * 2;
     this.wordArray = this.initWords();
