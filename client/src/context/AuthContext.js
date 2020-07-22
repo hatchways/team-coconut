@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useCallback } from "react";
 
 const AuthContext = createContext();
 
@@ -100,9 +100,21 @@ function AuthContextProvider({ children }) {
     }
   }
 
+  const removeLocalStorageUser = useCallback(() => {
+    setAuth(false);
+    localStorage.removeItem("user");
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ auth, errors, registerUser, loginUser, logoutUser }}
+      value={{
+        auth,
+        errors,
+        registerUser,
+        loginUser,
+        logoutUser,
+        removeLocalStorageUser,
+      }}
     >
       {children}
     </AuthContext.Provider>
