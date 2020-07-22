@@ -70,7 +70,6 @@ class Game {
     this.round = this.round + 1;
     this.setNextGuesser(this.round);
     this.setNextWord(this.round);
-    this.resetClues();
 
     return this.getState();
   }
