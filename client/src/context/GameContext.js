@@ -45,9 +45,6 @@ const GameContextProvider = ({ children }) => {
               }
             });
           }
-          // console.log("GamePlayers", gamePlayers);
-          // console.log("JoinedPlayer", joinedPlayer);
-          // console.log("Players", players);
           return { ...game, players };
         });
         setGameNotification({
@@ -69,7 +66,7 @@ const GameContextProvider = ({ children }) => {
               }
             });
           }
-
+          console.log(game);
           return { ...game, players };
         });
       }
