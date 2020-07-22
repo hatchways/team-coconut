@@ -29,19 +29,30 @@ function PlayerPanel({ gameId }) {
     initVideoCall(gameId);
   }, [gameId, initVideoCall]);
 
-  function renderPlayerInfo(player) {
+  function renderPlayerInfo(player, playersArr) {
     if (!isGuessPhase) {
       if (player.isTyping && !player.clue) return <TypingNotification />;
       else if (player.clue) return <p>Submitted</p>;
     } else {
-      return <p>{player.clue}</p>;
+      const uniqueClues = playersArr
+        .map((player) => player["clue"])
+        .filter((clue, index, a) => {
+          return a.indexOf(clue) === a.lastIndexOf(clue);
+        });
+      let clueToRender;
+      uniqueClues.forEach((clue) => {
+        if (clue === player.clue) clueToRender = <p>{player.clue}</p>;
+        else
+          return (clueToRender = <p className={classes.invalidClue}>******</p>);
+      });
+      return clueToRender;
     }
   }
 
   return (
     <Container className={classes.sectionContainer} component="section">
       <Grid container spacing={6}>
-        {players.map((player) => (
+        {players.map((player, index, arr) => (
           <Grid key={player.id} item xs={6}>
             <Card className={classes.card} raised>
               {player.id === currentUser ? (
@@ -62,7 +73,7 @@ function PlayerPanel({ gameId }) {
                     </Typography>
                     {currentUser !== player.id && (
                       <div className={classes.clue}>
-                        {renderPlayerInfo(player)}
+                        {renderPlayerInfo(player, arr)}
                       </div>
                     )}
                   </div>
@@ -119,6 +130,9 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 0 0.15rem 1rem",
     fontSize: "1.25rem",
     fontWeight: theme.typography.fontWeightBold,
+  },
+  invalidClue: {
+    color: "red",
   },
   icon: {
     fontSize: theme.icon.small.fontSize,

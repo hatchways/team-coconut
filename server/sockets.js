@@ -148,7 +148,7 @@ sockets.init = function (server) {
       socket.on("BE-send-clue", ({ gameId, player }) => {
         try {
           const gameState = Match.trackClues(gameId, player);
-          io.sockets.in(gameId).emit("FE-send-clue", { gameState });
+          io.sockets.in(gameId).emit("FE-send-clue", { gameState, player });
         } catch (error) {
           console.log(error);
           socket.emit("FE-error-during-game", { msg: error.userMessage });

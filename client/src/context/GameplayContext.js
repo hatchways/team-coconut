@@ -56,8 +56,9 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Clues
      */
-    sockets.on("FE-send-clue", ({ gameState }) => {
+    sockets.on("FE-send-clue", ({ gameState, player }) => {
       setGameState(gameState);
+      setClues((prevClues) => [...prevClues, player]);
       const cluesSubmitted = [];
       gameState.players.forEach((player) => {
         if (player.clue !== "" && player.isGuesser === false) {
@@ -151,7 +152,6 @@ function GameplayContextProvider({ children }) {
   }, []);
 
   function sendClueToBE(gameId, player) {
-    setClues((prevClues) => [...prevClues, player]);
     sockets.emit("BE-send-clue", { gameId, player });
   }
 

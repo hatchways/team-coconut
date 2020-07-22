@@ -9,7 +9,6 @@ function CluePanel() {
   const classes = useStyles();
   const [clue, setClue] = useState("");
   const {
-    clues,
     gameState,
     sendClueToBE,
     submitDisable,
@@ -32,7 +31,7 @@ function CluePanel() {
         msg: clue,
         id: email,
       };
-      sendClueToBE(gameId, player, clues);
+      sendClueToBE(gameId, player);
       setClue("");
     } else toggleClueError(true);
   }
