@@ -70,13 +70,20 @@ const GameContextProvider = ({ children }) => {
               }
             });
           }
-          
+
           return { ...game, players };
         })
       }
     });
 
-    sockets.on('game-started', () => {
+    sockets.on("FE-error-start-game", (errorMsg) => {
+      setGameNotification({
+        open: true,
+        msg: errorMsg.msg,
+      });
+    });
+
+    sockets.on("game-started", () => {
       setGame((game) => ({ ...game, isStarted: true }));
     });
 
@@ -209,7 +216,7 @@ const GameContextProvider = ({ children }) => {
 
   const startGame = () => {
     setGame((game) => ({ ...game, isStarted: true }));
-    sockets.emit('start-game', game.gameId);
+    sockets.emit("start-game", game.gameId);
   };
 
   return (

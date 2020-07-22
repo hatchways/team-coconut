@@ -4,13 +4,13 @@ import {
   Grid,
   makeStyles,
   Typography,
-  Card
+  Card,
 } from "@material-ui/core";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { GameplayContext } from "../../context/GameplayContext";
 import TypingNotification from "./TypingNotification";
-import CurrentPlayerVideo from './CurrentPlayerVideo';
-import { RTCContext } from '../../context/RTCContext';
+import CurrentPlayerVideo from "./CurrentPlayerVideo";
+import { RTCContext } from "../../context/RTCContext";
 import PlayerVideo from "./PlayerVideo";
 
 function PlayerPanel({ gameId }) {
@@ -27,7 +27,7 @@ function PlayerPanel({ gameId }) {
   const { currentPlayerVideo, initVideoCall, peers } = useContext(RTCContext);
   useEffect(() => {
     initVideoCall(gameId);
-  }, [gameId, initVideoCall])
+  }, [gameId, initVideoCall]);
 
   return (
     <Container className={classes.sectionContainer} component="section">
@@ -35,11 +35,11 @@ function PlayerPanel({ gameId }) {
         {players.map((player) => (
           <Grid key={player.id} item xs={6}>
             <Card className={classes.card} raised>
-              {
-                player.id === currentUser
-                  ? <CurrentPlayerVideo videoStream={currentPlayerVideo} />
-                  : <PlayerVideo videoPeer={peers[player.id]} />
-              }
+              {player.id === currentUser ? (
+                <CurrentPlayerVideo videoStream={currentPlayerVideo} />
+              ) : (
+                <PlayerVideo videoPeer={peers[player.id]} />
+              )}
               <div className={classes.playerInfoContainer}>
                 <div>
                   <div className={classes.playerInfo}>
@@ -52,8 +52,8 @@ function PlayerPanel({ gameId }) {
                         {showTypingNotification ? (
                           <TypingNotification />
                         ) : (
-                            <p>Clue</p>
-                          )}
+                          <p>Clue</p>
+                        )}
                       </div>
                     )}
                   </div>

@@ -46,7 +46,7 @@ class MatchManager {
     if (numberOfPlayers === 4) {
       game.initGame();
     } else {
-      throw new ClientError('', 'Only 4 Players can play a game', 500);
+      throw new ClientError("", "Only 4 players can play a game!", 500);
     }
 
     return game.getState();
