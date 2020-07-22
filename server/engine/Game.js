@@ -20,8 +20,7 @@ class Game {
    */
   initGame() {
     this.initGuesser();
-    this.initClues();
-    this.initTypingStatus();
+    this.initTypingStatusAndMsg();
     this.round = 0;
     this.maxRound = this.players.length * 2;
     this.wordArray = this.initWords();
@@ -49,18 +48,10 @@ class Game {
   /**
    * Initialize player clue property
    */
-  initClues() {
-    this.players.map((player) => {
-      player.clue = "";
-    });
-  }
-
-  /**
-   * Initialize player clue property
-   */
-  initTypingStatus() {
+  initTypingStatusAndMsg() {
     this.players.map((player) => {
       player.isTyping = false;
+      player.msg = '';
     });
   }
 
@@ -229,7 +220,7 @@ class Game {
   trackPlayerClue(player) {
     this.players.forEach((p) => {
       if (p.id === player.id) {
-        p.clue = player.msg;
+        p.msg = player.msg;
       }
     });
   }
