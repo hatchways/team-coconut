@@ -32,17 +32,18 @@ function GameplayContextProvider({ children }) {
      * Start Game
      */
     sockets.on("game-started", (gameState) => {
-      setGameState(gameState);
+      setGameState(gameState); // init data needed for game flow
       setIsGuessPhase(false);
-      setRedirect(false);
-      setRedirectPath("");
+      setGameTimer(TIME);
       setIsGuesser(false);
       setSubmitDisable(false);
-      setShowEndGameScreen(false);
-      setClues([]);
       setDisplayClueError(false);
-      setGameTimer(TIME);
-      console.log("First Round: ", gameState);
+      setClues([]);
+      setGameReady(true);
+
+      setRedirect(false); // init data needed for ending the game
+      setRedirectPath("");
+      setShowEndGameScreen(false);
       // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -50,16 +51,24 @@ function GameplayContextProvider({ children }) {
       if (currentGuesser[0].id === currentUser) {
         setIsGuesser(true);
       }
-      // this is effectively a isLoading state variable
-      setGameReady(true);
     });
 
     /**
      * Send Clues
      */
-    sockets.on("FE-send-clue", ({ player, cluesSubmitted, gameState }) => {
+    sockets.on("FE-send-clue", ({ gameState }) => {
       setGameState(gameState);
-      setClues((prevClues) => [...prevClues, player]);
+      // setClues((prevClues) => [...prevClues, player]);
+      const cluesSubmitted = [];
+      gameState.players.forEach((player) => {
+        if (player.clue !== "" && player.isGuesser === false) {
+          const playerWithClue = {
+            id: player.id,
+            msg: player.clue,
+          };
+          cluesSubmitted.push(playerWithClue);
+        }
+      });
       if (cluesSubmitted.length === 3) {
         setIsGuessPhase(true);
         setGameTimer(TIME);
@@ -75,7 +84,7 @@ function GameplayContextProvider({ children }) {
     });
 
     /**
-     * End of Round
+     * Send Answer / End of Round
      */
     sockets.on("FE-send-answer", ({ gameState }) => {
       setGameState(gameState);
@@ -89,6 +98,24 @@ function GameplayContextProvider({ children }) {
     });
 
     /**
+     * Send Blank Answer If Time Runs Out
+     */
+    sockets.on("FE-time-over", ({ gameId, gameState }) => {
+      const answer = ""; // time ran out and the guesser did not submit anything
+      const cluesSubmitted = [];
+      gameState.players.forEach((player) => {
+        if (!player.isGuesser) {
+          const playerWithClue = {
+            id: player.id,
+            msg: player.clue,
+          };
+          cluesSubmitted.push(playerWithClue);
+        }
+      });
+      sockets.emit("BE-send-answer", { gameId, answer, cluesSubmitted });
+    });
+
+    /**
      * Move to Next Round
      */
     sockets.on("FE-move-round", (gameState) => {
@@ -96,7 +123,7 @@ function GameplayContextProvider({ children }) {
       setClues([]);
       setDisplayClueError(false);
       setIsGuessPhase(false);
-      setIsGuesser(false); // reset guesser
+      setIsGuesser(false);
       // determine guesser on subsequent rounds
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -108,14 +135,6 @@ function GameplayContextProvider({ children }) {
     });
 
     /**
-     * Send Blank Answer If Time Runs Out
-     */
-    sockets.on("FE-time-over", ({ gameId, cluesSubmitted }) => {
-      const answer = ""; // time ran out and the guesser did not submit anything
-      sockets.emit("BE-send-answer", { gameId, answer, cluesSubmitted });
-    });
-
-    /**
      * Join New Game Host Creates
      */
     sockets.on("FE-join-new-game", async (newGameId) => {
@@ -124,27 +143,33 @@ function GameplayContextProvider({ children }) {
     });
   }, [joinGame]);
 
-  // ---------- ALL FUNCTION DECLARATIONS ---------- //
+  // --------------------------------------------------------------- //
+  // ------------- START: All Function Declarations ---------------- //
+  // --------------------------------------------------------------- //
 
-  function sendClueToBE(gameId, player) {
-    sockets.emit("BE-send-clue", { gameId, player });
+  const decrementTimer = useCallback(() => {
+    setGameTimer((time) => time - 1);
+  }, []);
+
+  function sendClueToBE(gameId, player, clues) {
+    setClues((prevClues) => [...prevClues, player]);
+    sockets.emit("BE-send-clue", { gameId, player, clues });
   }
 
   const sendGuessToBE = useCallback((gameId, answer, clues) => {
     sockets.emit("BE-send-answer", { gameId, answer, clues });
   }, []);
 
-  const closeNextRoundScreen = useCallback((gameId) => {
-    sockets.emit("BE-move-round", {
+  function displayTypingNotification(gameId, email) {
+    sockets.emit("BE-display-typing-notification", {
       gameId,
-      playerSocketId: sockets.id,
+      playerEmail: email,
     });
-    setShowNextRoundScreen(false);
-  }, []);
+  }
 
-  const decrementTimer = useCallback(() => {
-    setGameTimer((time) => time - 1);
-  }, []);
+  function toggleClueError(bool) {
+    setDisplayClueError(bool);
+  }
 
   const changeGamePhase = useCallback((bool) => {
     setIsGuessPhase(bool);
@@ -156,12 +181,13 @@ function GameplayContextProvider({ children }) {
     setSubmitDisable(bool);
   }, []);
 
-  function displayTypingNotification(gameId, email) {
-    sockets.emit("BE-display-typing-notification", {
+  const closeNextRoundScreen = useCallback((gameId) => {
+    sockets.emit("BE-move-round", {
       gameId,
-      playerEmail: email,
+      playerSocketId: sockets.id,
     });
-  }
+    setShowNextRoundScreen(false);
+  }, []);
 
   function endGame(gameId) {
     sockets.emit("BE-end-game", gameId);
@@ -186,10 +212,6 @@ function GameplayContextProvider({ children }) {
     setShowEndGameScreen(false);
   }
 
-  function toggleClueError(bool) {
-    setDisplayClueError(bool);
-  }
-
   /**
    * @param {object} gameData = {gameId, players}
    */
@@ -206,6 +228,10 @@ function GameplayContextProvider({ children }) {
       console.error(error);
     }
   }
+
+  // --------------------------------------------------------------- //
+  // -------------- END: All Function Declarations ----------------- //
+  // --------------------------------------------------------------- //
 
   return (
     <GameplayContext.Provider

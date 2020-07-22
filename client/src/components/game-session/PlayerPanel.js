@@ -15,7 +15,7 @@ import PlayerVideo from "./PlayerVideo";
 
 function PlayerPanel({ gameId }) {
   const classes = useStyles();
-  const { gameState } = useContext(GameplayContext);
+  const { gameState, isGuessPhase } = useContext(GameplayContext);
   const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
 
   let players;
@@ -28,6 +28,15 @@ function PlayerPanel({ gameId }) {
   useEffect(() => {
     initVideoCall(gameId);
   }, [gameId, initVideoCall]);
+
+  function renderPlayerInfo(player) {
+    if (!isGuessPhase) {
+      if (player.isTyping && !player.clue) return <TypingNotification />;
+      else if (player.clue) return <p>Submitted</p>;
+    } else {
+      return <p>{player.clue}</p>;
+    }
+  }
 
   return (
     <Container className={classes.sectionContainer} component="section">
@@ -49,11 +58,14 @@ function PlayerPanel({ gameId }) {
                     </Typography>
                     {currentUser !== player.id && (
                       <div className={classes.clue}>
-                        {player.isTyping && !player.clue ? (
+                        {/* {player.isTyping && !player.clue ? (
                           <TypingNotification />
+                        ) : isGuessPhase ? (
+                          <p>Submitted</p>
                         ) : (
                           <p>{player.clue}</p>
-                        )}
+                        )} */}
+                        {renderPlayerInfo(player)}
                       </div>
                     )}
                   </div>
@@ -107,8 +119,9 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
   },
   clue: {
-    margin: "0 0 0 1rem",
-    //fontSize: "1rem",
+    margin: "0 0 0.15rem 1rem",
+    fontSize: "1.25rem",
+    fontWeight: theme.typography.fontWeightBold,
   },
   icon: {
     fontSize: theme.icon.small.fontSize,
