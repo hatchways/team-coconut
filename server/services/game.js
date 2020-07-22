@@ -1,6 +1,6 @@
-const { sendEmail } = require("../utils/emailSender");
-const User = require("../models/User");
-const Game = require("../models/Game");
+const { sendEmail } = require('../utils/emailSender');
+const User = require('../models/User');
+const Game = require('../models/Game');
 
 const sendInvitation = async (userId, gameId, email) => {
   const userInviter = await User.findById(userId);
@@ -13,7 +13,7 @@ const sendInvitation = async (userId, gameId, email) => {
   };
   await sendEmail(email, emailTemplateId, emailTemplateData);
 
-  game.players.push({ email: email, status: "Invited" });
+  game.players.push({ email: email, status: 'Invited' });
   await game.save();
   return game;
 };
@@ -21,7 +21,7 @@ const sendInvitation = async (userId, gameId, email) => {
 const createGame = async (userId) => {
   const user = await User.findById(userId);
   const newGame = new Game({
-    players: [{ email: user.email, status: "Joined" }],
+    players: [{ email: user.email, status: 'Joined' }],
   });
   await newGame.save();
 
@@ -34,22 +34,18 @@ const getGame = async (gameId) => {
 };
 
 const joinGame = async (gameId, userId) => {
-  const game = await Game.findById(gameId);
+  // let session = null;
   const user = await User.findById(userId);
-  //TODO check game players limit
-
-  //if player exist(was invited) - switch status
-  //if not - add to players
-  const existsIdx = game.players.findIndex(
-    (player) => player.email === user.email
+  const game = await Game.findByIdAndUpdate(
+    gameId,
+    {
+      $addToSet: { players: { email: user.email, status: 'Joined' } },
+    },
+    { new: true, upsert: true }
   );
-  if (existsIdx === -1) {
-    game.players.push({ email: user.email, status: "Joined" });
-  } else {
-    game.players[existsIdx].status = "Joined";
-  }
-  await game.save();
+
   return game;
+
 };
 
 const saveGame = async (gameId, players) => {
@@ -65,7 +61,7 @@ const saveGame = async (gameId, players) => {
     }
   });
 
-  game.status = "finished";
+  game.status = 'finished';
 
   await game.save();
   return game;
