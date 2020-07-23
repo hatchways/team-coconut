@@ -7,21 +7,30 @@ import {
 } from "@material-ui/core";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
-function PlayerTile({ email, videoPeer }) {
+function PlayerTile({ email, videoPeer: peer }) {
     const classes = useStyles();
     const videoRef = useRef();
+    const audioRef = useRef();
     useEffect(() => {
-        if (videoPeer) {
-            videoPeer.on("stream", stream => {
-                videoRef.current.srcObject = stream;
+        if (peer) {
+            peer.on("stream", stream => {
+                console.log(stream);
+                if (stream.getVideoTracks()[0]) {
+                    videoRef.current.id = stream.id;
+                    videoRef.current.srcObject = stream;
+                } else if (stream.getAudioTracks()[0]) {
+                    audioRef.current.id = stream.id;
+                    audioRef.current.srcObject = stream;
+                }
             });
         }
-    }, [videoPeer]);
+    }, [peer]);
 
     return (
         <Grid item xs={6}>
             <Card className={classes.card} raised>
-                <CardMedia className={classes.playerCam} component="video" ref={videoRef} autoPlay/>
+                <CardMedia className={classes.playerCam} component="video" ref={videoRef} autoPlay />
+                <CardMedia component="audio" ref={audioRef} autoPlay />
                 <div className={classes.playerInfoContainer}>
                     <div className={classes.playerInfo}>
                         {email}:<strong className={classes.clue}>Clue</strong>
