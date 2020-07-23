@@ -7,6 +7,10 @@ import React, {
 } from "react";
 import { GameContext } from "./GameContext";
 import sockets from "../utils/sockets";
+import { Howl } from "howler";
+import startAudio from "../game-audio/start_game.wav";
+import submitClueAudio from "../game-audio/submit_clue.wav";
+import submitAnswerAudio from "../game-audio/submit_answer.wav";
 
 const TIME = 15;
 const GameplayContext = createContext();
@@ -24,6 +28,11 @@ function GameplayContextProvider({ children }) {
   const [redirectPath, setRedirectPath] = useState("");
   const [gameTimer, setGameTimer] = useState(TIME);
   const [isGuessPhase, setIsGuessPhase] = useState(false);
+  const [hint, setHint] = useState({
+    open: true,
+    msg: "Try not to submit the same clue as other players!",
+    severity: "info",
+  });
   const { joinGame } = useContext(GameContext);
 
   useEffect(() => {
@@ -44,6 +53,9 @@ function GameplayContextProvider({ children }) {
       setRedirect(false); // init data needed for ending the game
       setRedirectPath("");
       setShowEndGameScreen(false);
+
+      playSound(startAudio);
+
       // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -57,6 +69,7 @@ function GameplayContextProvider({ children }) {
      * Send Clues
      */
     sockets.on("FE-send-clue", ({ gameState, player }) => {
+      playSound(submitClueAudio);
       setGameState(gameState);
       setClues((prevClues) => [...prevClues, player]);
       const cluesSubmitted = [];
@@ -87,6 +100,7 @@ function GameplayContextProvider({ children }) {
      * Send Answer / End of Round
      */
     sockets.on("FE-send-answer", ({ gameState }) => {
+      playSound(submitAnswerAudio);
       setGameState(gameState);
       setGameTimer(TIME);
       // if (gameState.state.round === gameState.state.players.length - 1) {
@@ -124,6 +138,11 @@ function GameplayContextProvider({ children }) {
       setDisplayClueError(false);
       setIsGuessPhase(false);
       setIsGuesser(false);
+      setHint({
+        open: true,
+        msg: "Try not to submit the same clue as other players!",
+        severity: "info",
+      });
       // determine guesser on subsequent rounds
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -212,6 +231,18 @@ function GameplayContextProvider({ children }) {
     setShowEndGameScreen(false);
   }
 
+  function playSound(sourceAudio) {
+    const sound = new Howl({
+      src: sourceAudio,
+      volume: 0.5,
+    });
+    sound.play();
+  }
+
+  function closeHint() {
+    setHint({ open: false, msg: "", severity: "info" });
+  }
+
   /**
    * @param {object} gameData = {gameId, players}
    */
@@ -248,6 +279,7 @@ function GameplayContextProvider({ children }) {
         isGuessPhase,
         gameTimer,
         displayClueError,
+        hint,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
@@ -260,6 +292,7 @@ function GameplayContextProvider({ children }) {
         leaveGame,
         createNewGame,
         toggleClueError,
+        closeHint,
       }}
     >
       {children}

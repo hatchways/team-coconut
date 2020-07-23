@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
 import {
   Container,
   Paper,
   Typography,
   makeStyles,
   Grid,
-} from '@material-ui/core';
-import { AuthContext } from '../context/AuthContext';
-import { GameContext } from '../context/GameContext';
-import FormInput from '../components/FormInput';
-import GenericButton from '../components/GenericButton';
-import useForm from '../utils/hooks/useForm';
-import Notification from '../components/Notification';
-import PlayerStatus from '../components/PlayerStatus';
-import sockets from '../utils/sockets';
-import { GameplayContext } from '../context/GameplayContext';
+} from "@material-ui/core";
+import { AuthContext } from "../context/AuthContext";
+import { GameContext } from "../context/GameContext";
+import FormInput from "../components/FormInput";
+import GenericButton from "../components/GenericButton";
+import useForm from "../utils/hooks/useForm";
+import Notification from "../components/Notification";
+import PlayerStatus from "../components/PlayerStatus";
+import sockets from "../utils/sockets";
+import { GameplayContext } from "../context/GameplayContext";
 
 function PreGameLobby({ match }) {
   const queryGameId = match.params.gameId;
@@ -33,7 +33,7 @@ function PreGameLobby({ match }) {
     startGame,
     leaveLobby,
   } = useContext(GameContext);
-  const [playerEmail, setPlayerEmail] = useForm({ email: '' });
+  const [playerEmail, setPlayerEmail] = useForm({ email: "" });
   const { players } = game;
   const [gameStart, setGameStart] = useState(false);
   const [gameLeft, setGameLeft] = useState(false);
@@ -45,7 +45,7 @@ function PreGameLobby({ match }) {
     if (!game.gameId) {
       joinGame(queryGameId);
     }
-    sockets.on('game-started', () => {
+    sockets.on("game-started", () => {
       if (!isGameStart) {
         setGameStart(true);
       }
@@ -76,18 +76,16 @@ function PreGameLobby({ match }) {
 
   return (
     <Container className={classes.mainContainer} component="main" maxWidth="sm">
-      <div className={classes.logoutBtn}>
+      <nav className={classes.nav}>
         <div className={classes.leaveBtn}>
           <GenericButton className={classes.leaveBtn} handleClick={leaveClick}>
             Leave Game
           </GenericButton>
         </div>
         <div>
-          <GenericButton className={classes.logoutBtn} handleClick={logoutUser}>
-            Logout
-          </GenericButton>
+          <GenericButton handleClick={logoutUser}>Logout</GenericButton>
         </div>
-      </div>
+      </nav>
       <Paper className={classes.paper} elevation={5}>
         <Typography className={classes.heading} variant="h3" component="p">
           Invite Friends
@@ -143,7 +141,6 @@ function PreGameLobby({ match }) {
             </Typography>
           )}
         </div>
-
         <Notification
           open={gameNotification.open}
           msg={gameNotification.msg}
@@ -156,62 +153,61 @@ function PreGameLobby({ match }) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  leaveBtn: {
-    marginRight: '2rem',
-  },
-  logoutBtn: {
-    display: 'flex',
-    position: 'absolute',
-    top: '0',
-    right: '0',
-    margin: '1.5rem 1.5rem 0 0',
-  },
   mainContainer: {
-    height: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+  },
+  nav: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginBottom: "1rem",
+  },
+  leaveBtn: {
+    marginRight: "1rem",
   },
   paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
   },
   heading: {
-    margin: '3rem auto 0',
-    textAlign: 'center',
+    margin: "3rem auto 0",
+    textAlign: "center",
   },
   subHeading: {
-    margin: '1rem auto 0',
-    textAlign: 'center',
+    margin: "1rem auto 0",
+    textAlign: "center",
   },
   form: {
-    width: '70%',
+    width: "70%",
   },
   invitedPlayerContainer: {
-    marginTop: '2em',
+    marginTop: "2em",
   },
   playerName: {
-    marginLeft: '1rem',
+    marginLeft: "1rem",
   },
   indicator: {
-    marginRight: '2rem',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginRight: "1rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   divider: {
     // styles for standard <hr />, not using Mui Divider Component
-    marginTop: '0.75rem',
-    height: '1px',
-    width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    border: 'none',
+    marginTop: "0.75rem",
+    height: "1px",
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    border: "none",
   },
   buttonContainer: {
-    margin: '4em auto 3em',
-    width: 'max-content',
+    margin: "4em auto 3em",
+    width: "max-content",
   },
 }));
 

@@ -12,7 +12,7 @@ function GenericButton({
   return (
     <Button
       style={{
-        padding: isAdornment ? "0.5em 1em" : "1em 3em",
+        padding: isAdornment ? "0.5em 1em" : "0.75em 2.75em",
         letterSpacing: isAdornment ? "1px" : "2.5px",
         borderRadius: isAdornment ? "2px" : "8px",
       }}

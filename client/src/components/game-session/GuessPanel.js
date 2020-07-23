@@ -5,6 +5,7 @@ import GenericButton from "../GenericButton";
 import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import useForm from "../../utils/hooks/useForm";
 import { GameplayContext } from "../../context/GameplayContext";
+import GameHeader from "./GameHeader";
 
 function GuessPanel() {
   const classes = useStyles();
@@ -20,11 +21,14 @@ function GuessPanel() {
 
   return (
     <Container className={classes.sectionContainer} component="section">
+      <div className={classes.gameHeader}>
+        <GameHeader />
+      </div>
       <Grid
         className={classes.grid}
         container
         direction="column"
-        justify="space-evenly"
+        justify="center"
         alignItems="center"
       >
         <Container component="div" maxWidth="xs">
@@ -66,6 +70,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     height: "100vh",
     minWidth: "450px",
+  },
+  gameHeader: {
+    width: "100%",
+    margin: "0 auto",
   },
   grid: {
     height: "100vh",
