@@ -3,7 +3,7 @@ const wordArray = require("./Words");
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
-  GAME_TIME = 60500;
+  GAME_TIME = 30500;
 
   constructor() {
     this.word = "";
@@ -51,7 +51,7 @@ class Game {
   initTypingStatusAndMsg() {
     this.players.map((player) => {
       player.isTyping = false;
-      player.msg = '';
+      player.clue = "";
     });
   }
 
@@ -220,7 +220,7 @@ class Game {
   trackPlayerClue(player) {
     this.players.forEach((p) => {
       if (p.id === player.id) {
-        p.msg = player.msg;
+        p.clue = player.msg;
       }
     });
   }

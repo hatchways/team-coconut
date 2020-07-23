@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import FormInput from "../FormInput";
-import useForm from "../../utils/hooks/useForm";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
 import GenericButton from "../GenericButton";
 import { GameplayContext } from "../../context/GameplayContext";
@@ -8,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 function CluePanel() {
   const classes = useStyles();
-  const [clue, setClue] = useForm({ clue: "" });
+  const [clue, setClue] = useState("");
   const {
     gameState,
     sendClueToBE,
@@ -25,14 +24,15 @@ function CluePanel() {
 
   function submitClue(event) {
     event.preventDefault();
-    if (clue.clue !== "") {
+    if (clue !== "") {
       toggleClueError(false);
       disableSubmitInputs(true);
       const player = {
-        msg: clue.clue,
+        msg: clue,
         id: email,
       };
       sendClueToBE(gameId, player);
+      setClue("");
     } else toggleClueError(true);
   }
 
@@ -78,7 +78,7 @@ function CluePanel() {
                 <FormInput
                   label="clue"
                   error={displayClueError && "Please Enter a Clue"}
-                  handleChange={setClue}
+                  handleChange={(e) => setClue(e.target.value)}
                   isDisabled={submitDisable}
                   handleOnKeyUp={handleOnKeyUp}
                 />
