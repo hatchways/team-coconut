@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useCallback } from "react";
 
 const AuthContext = createContext();
 
@@ -100,6 +100,11 @@ function AuthContextProvider({ children }) {
     }
   }
 
+  const setAuthAndRemoveUser = useCallback(() => {
+    setAuth(false);
+    localStorage.removeItem("user");
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -108,6 +113,7 @@ function AuthContextProvider({ children }) {
         registerUser,
         loginUser,
         logoutUser,
+        setAuthAndRemoveUser,
       }}
     >
       {children}
