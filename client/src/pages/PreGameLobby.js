@@ -16,6 +16,7 @@ import Notification from "../components/Notification";
 import PlayerStatus from "../components/PlayerStatus";
 import sockets from "../utils/sockets";
 import { GameplayContext } from "../context/GameplayContext";
+import useWindowDimensions from "../utils/hooks/useWindowDimensions";
 
 function PreGameLobby({ match }) {
   const queryGameId = match.params.gameId;
@@ -37,6 +38,7 @@ function PreGameLobby({ match }) {
   const { players } = game;
   const [gameStart, setGameStart] = useState(false);
   const [gameLeft, setGameLeft] = useState(false);
+  const { windowHeight } = useWindowDimensions();
 
   useEffect(() => {
     // reduce memory leak
@@ -75,7 +77,13 @@ function PreGameLobby({ match }) {
   }
 
   return (
-    <Container className={classes.mainContainer} component="main" maxWidth="sm">
+    <Container
+      className={
+        windowHeight < 540 ? classes.mainMobile : classes.mainContainer
+      }
+      component="main"
+      maxWidth="sm"
+    >
       <nav className={classes.nav}>
         <div className={classes.leaveBtn}>
           <GenericButton className={classes.leaveBtn} handleClick={leaveClick}>
@@ -158,6 +166,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
+    padding: "1em 0",
+  },
+  mainMobile: {
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    padding: "1em 0",
   },
   nav: {
     display: "flex",

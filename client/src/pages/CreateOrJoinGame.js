@@ -13,6 +13,7 @@ import { GameContext } from "../context/GameContext";
 import { Redirect } from "react-router-dom";
 import GenericButton from "../components/GenericButton";
 import FormInput from "../components/FormInput";
+import useWindowDimensions from "../utils/hooks/useWindowDimensions";
 
 function CreateOrJoinGame() {
   const classes = useStyles();
@@ -20,6 +21,7 @@ function CreateOrJoinGame() {
   const [gameId, setGameId] = useState("");
   const { errors, createGame, joinGame } = useContext(GameContext);
   const [redirect, setRedirect] = useState(false);
+  const { windowWidth } = useWindowDimensions();
 
   async function joinGameSubmit(event) {
     event.preventDefault();
@@ -40,7 +42,10 @@ function CreateOrJoinGame() {
   }
 
   return (
-    <Container className={classes.mainContainer} component="main">
+    <Container
+      className={windowWidth < 600 ? classes.mainMobile : classes.mainContainer}
+      component="main"
+    >
       <div className={classes.logoutBtn}>
         <GenericButton handleClick={logoutUser}>Logout</GenericButton>
       </div>
@@ -106,12 +111,20 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  mainMobile: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   logoutBtn: {
     marginBottom: "1rem",
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",
     alignItems: "center",
+    padding: "1em 0",
   },
   paper: {
     display: "flex",
