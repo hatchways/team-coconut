@@ -163,7 +163,7 @@ const GameContextProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-      setErrors({ joinError: "" });
+      setErrors({ joinError: '' });
       if (response.status === 400) {
         const { errors } = await response.json();
         const errorMsg = errors[0].msg;
@@ -200,7 +200,6 @@ const GameContextProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-      // const { _id, players } = await response.json();
     } catch (error) {
       console.log(error);
     }
