@@ -81,7 +81,7 @@ function GameplayContextProvider({ children }) {
       setGameState(gameState);
       setGameTimer(TIME);
       // if (gameState.state.round === gameState.state.players.length - 1) {
-      if (gameState.state.round === 2) {
+      if (gameState.state.round === 1) {
         setShowEndGameScreen(true);
       } else {
         setShowNextRoundScreen(true);
@@ -168,9 +168,10 @@ function GameplayContextProvider({ children }) {
   }
 
   function leaveGame(gameId) {
+    const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
     setRedirect(true);
     setRedirectPath("/create-game");
-    sockets.emit("BE-leave-game", { gameId });
+    sockets.emit("BE-leave-game", { gameId, player: currentUser });
   }
 
   function createNewGame(gameId, newGameId) {

@@ -34,7 +34,6 @@ const getGame = async (gameId) => {
 };
 
 const joinGame = async (gameId, userId) => {
-  // let session = null;
   const user = await User.findById(userId);
   const game = await Game.findByIdAndUpdate(
     gameId,
@@ -45,7 +44,6 @@ const joinGame = async (gameId, userId) => {
   );
 
   return game;
-
 };
 
 const saveGame = async (gameId, players) => {
@@ -53,7 +51,7 @@ const saveGame = async (gameId, players) => {
 
   players.map((player) => {
     let playerIndex = game.players.findIndex((p, index) => {
-      return p.email == player.id;
+      return p.email === player.id;
     });
 
     if (playerIndex > -1) {
@@ -67,4 +65,18 @@ const saveGame = async (gameId, players) => {
   return game;
 };
 
-module.exports = { sendInvitation, createGame, getGame, joinGame, saveGame };
+const leaveGame = async (gameId, userId) => {
+  const user = await User.findById(userId);
+  const game = await Game.findById(gameId);
+
+  const idx = game.players.findIndex((p) => p.email === user.email);
+
+  if(idx > -1) {
+    game.players.splice(idx, 1);
+  }
+
+  await game.save();
+  return game;
+}
+
+module.exports = { sendInvitation, createGame, getGame, joinGame, saveGame, leaveGame };

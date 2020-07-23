@@ -9,12 +9,12 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function Notification({open, msg, handleClose}) {
+function Notification({open, msg, handleClose, severity = "success"}) {
     const classes = useStyles();
     return (
         <div className={classes.root}>
             <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="success">
+                <Alert onClose={handleClose} severity={severity}>
                     {msg}
                 </Alert>
             </Snackbar>

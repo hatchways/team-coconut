@@ -226,7 +226,7 @@ sockets.init = function (server) {
     /**
      * Player leaves game AFTER the game has ended
      */
-    socket.on('BE-leave-game', ({ gameId }) => {
+    socket.on('BE-leave-game', ({ gameId, player }) => {
       io.of('/')
         .in(gameId)
         .clients((error, clients) => {
@@ -236,6 +236,7 @@ sockets.init = function (server) {
             }
           });
         });
+      io.sockets.in(gameId).emit('FE-leave-player', player);
     });
 
     /**
