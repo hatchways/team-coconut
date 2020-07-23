@@ -5,6 +5,8 @@ import GenericButton from "../GenericButton";
 import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import useForm from "../../utils/hooks/useForm";
 import { GameplayContext } from "../../context/GameplayContext";
+import submitAudio from "../../game-audio/submit_answer.wav";
+import { Howl } from "howler";
 
 function GuessPanel() {
   const classes = useStyles();
@@ -12,8 +14,17 @@ function GuessPanel() {
   const { clues, sendGuessToBE, isGuessPhase } = useContext(GameplayContext);
   const { gameId } = useParams();
 
+  function playSound(src) {
+    const sound = new Howl({
+      src,
+      volume: 0.5,
+    });
+    sound.play();
+  }
+
   function submitGuess(event) {
     event.preventDefault();
+    playSound(submitAudio);
     const answer = guess.guess;
     sendGuessToBE(gameId, answer, clues);
   }

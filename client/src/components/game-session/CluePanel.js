@@ -4,6 +4,8 @@ import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
 import GenericButton from "../GenericButton";
 import { GameplayContext } from "../../context/GameplayContext";
 import { useParams } from "react-router-dom";
+import submitAudio from "../../game-audio/submit_clue.wav";
+import { Howl } from "howler";
 
 function CluePanel() {
   const classes = useStyles();
@@ -22,9 +24,18 @@ function CluePanel() {
   const { gameId } = useParams();
   const { email } = JSON.parse(localStorage.getItem("user"));
 
+  function playSound(src) {
+    const sound = new Howl({
+      src,
+      volume: 0.5,
+    });
+    sound.play();
+  }
+
   function submitClue(event) {
     event.preventDefault();
     if (clue !== "") {
+      playSound(submitAudio);
       toggleClueError(false);
       disableSubmitInputs(true);
       const player = {

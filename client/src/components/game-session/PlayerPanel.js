@@ -43,7 +43,9 @@ function PlayerPanel({ gameId }) {
       uniqueClues.forEach((clue) => {
         if (clue === player.clue) clueToRender = <p>{player.clue}</p>;
         else
-          return (clueToRender = <p className={classes.invalidClue}>******</p>);
+          return (clueToRender = (
+            <p className={classes.invalidClue}>* * * * * *</p>
+          ));
       });
       return clueToRender;
     }
@@ -79,7 +81,7 @@ function PlayerPanel({ gameId }) {
                   </div>
                   <div className={classes.scoreText}>{player.point} pts</div>
                 </div>
-                <CheckCircleIcon className={classes.icon} />
+                {player.clue && <CheckCircleIcon className={classes.icon} />}
               </div>
             </Card>
           </Grid>
