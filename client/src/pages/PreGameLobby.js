@@ -1,25 +1,27 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import React, { useContext, useEffect, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import {
   Container,
   Paper,
   Typography,
   makeStyles,
   Grid,
-} from "@material-ui/core";
-import { AuthContext } from "../context/AuthContext";
-import { GameContext } from "../context/GameContext";
-import FormInput from "../components/FormInput";
-import GenericButton from "../components/GenericButton";
-import useForm from "../utils/hooks/useForm";
-import Notification from "../components/Notification";
-import PlayerStatus from "../components/PlayerStatus";
-import sockets from "../utils/sockets";
+} from '@material-ui/core';
+import { AuthContext } from '../context/AuthContext';
+import { GameContext } from '../context/GameContext';
+import FormInput from '../components/FormInput';
+import GenericButton from '../components/GenericButton';
+import useForm from '../utils/hooks/useForm';
+import Notification from '../components/Notification';
+import PlayerStatus from '../components/PlayerStatus';
+import sockets from '../utils/sockets';
+import { GameplayContext } from '../context/GameplayContext';
 
 function PreGameLobby({ match }) {
   const queryGameId = match.params.gameId;
   const classes = useStyles();
   const { logoutUser } = useContext(AuthContext);
+  const { leaveGame, redirect } = useContext(GameplayContext);
   const {
     game,
     gameNotification,
@@ -29,10 +31,12 @@ function PreGameLobby({ match }) {
     closeGameNotification,
     isCurrentUserHost,
     startGame,
+    leaveLobby,
   } = useContext(GameContext);
-  const [playerEmail, setPlayerEmail] = useForm({ email: "" });
+  const [playerEmail, setPlayerEmail] = useForm({ email: '' });
   const { players } = game;
   const [gameStart, setGameStart] = useState(false);
+  const [gameLeft, setGameLeft] = useState(false);
 
   useEffect(() => {
     // reduce memory leak
@@ -41,7 +45,7 @@ function PreGameLobby({ match }) {
     if (!game.gameId) {
       joinGame(queryGameId);
     }
-    sockets.on("game-started", () => {
+    sockets.on('game-started', () => {
       if (!isGameStart) {
         setGameStart(true);
       }
@@ -54,6 +58,15 @@ function PreGameLobby({ match }) {
 
   if (gameStart) {
     return <Redirect to={`/session/${queryGameId}`} />;
+  } else if (redirect && gameLeft) {
+    return <Redirect to={`/create-game`} />;
+  }
+
+  async function leaveClick(event) {
+    event.preventDefault();
+    await leaveLobby(queryGameId);
+    leaveGame(queryGameId);
+    setGameLeft(true);
   }
 
   function inviteClick(event) {
@@ -64,9 +77,16 @@ function PreGameLobby({ match }) {
   return (
     <Container className={classes.mainContainer} component="main" maxWidth="sm">
       <div className={classes.logoutBtn}>
-        <GenericButton className={classes.logoutBtn} handleClick={logoutUser}>
-          Logout
-        </GenericButton>
+        <div className={classes.leaveBtn}>
+          <GenericButton className={classes.leaveBtn} handleClick={leaveClick}>
+            Leave Game
+          </GenericButton>
+        </div>
+        <div>
+          <GenericButton className={classes.logoutBtn} handleClick={logoutUser}>
+            Logout
+          </GenericButton>
+        </div>
       </div>
       <Paper className={classes.paper} elevation={5}>
         <Typography className={classes.heading} variant="h3" component="p">
@@ -128,6 +148,7 @@ function PreGameLobby({ match }) {
           open={gameNotification.open}
           msg={gameNotification.msg}
           handleClose={closeGameNotification}
+          severity={gameNotification.severity}
         />
       </Paper>
     </Container>
@@ -135,58 +156,62 @@ function PreGameLobby({ match }) {
 }
 
 const useStyles = makeStyles((theme) => ({
+  leaveBtn: {
+    marginRight: '2rem',
+  },
   logoutBtn: {
-    position: "absolute",
-    top: "0",
-    right: "0",
-    margin: "1.5rem 1.5rem 0 0",
+    display: 'flex',
+    position: 'absolute',
+    top: '0',
+    right: '0',
+    margin: '1.5rem 1.5rem 0 0',
   },
   mainContainer: {
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   paper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "100%",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
   },
   heading: {
-    margin: "3rem auto 0",
-    textAlign: "center",
+    margin: '3rem auto 0',
+    textAlign: 'center',
   },
   subHeading: {
-    margin: "1rem auto 0",
-    textAlign: "center",
+    margin: '1rem auto 0',
+    textAlign: 'center',
   },
   form: {
-    width: "70%",
+    width: '70%',
   },
   invitedPlayerContainer: {
-    marginTop: "2em",
+    marginTop: '2em',
   },
   playerName: {
-    marginLeft: "1rem",
+    marginLeft: '1rem',
   },
   indicator: {
-    marginRight: "2rem",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
+    marginRight: '2rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   divider: {
     // styles for standard <hr />, not using Mui Divider Component
-    marginTop: "0.75rem",
-    height: "1px",
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    border: "none",
+    marginTop: '0.75rem',
+    height: '1px',
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    border: 'none',
   },
   buttonContainer: {
-    margin: "4em auto 3em",
-    width: "max-content",
+    margin: '4em auto 3em',
+    width: 'max-content',
   },
 }));
 

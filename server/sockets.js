@@ -206,6 +206,21 @@ sockets.init = function (server) {
         }
       });
 
+    /**
+     * Player leaves game AFTER the game has ended
+     */
+    socket.on('BE-leave-game', ({ gameId, player }) => {
+      io.of('/')
+        .in(gameId)
+        .clients((error, clients) => {
+          clients.forEach((socket_id) => {
+            if (socket_id === socket.id) {
+              io.sockets.sockets[socket_id].leave(gameId);
+            }
+          });
+        });
+      io.sockets.in(gameId).emit('FE-leave-player', player);
+    });
       /**
        * Play Again / Non-Host players join new game
        */
@@ -223,22 +238,6 @@ sockets.init = function (server) {
             }
           });
       });
-
-      /**
-       * Player leaves game AFTER the game has ended
-       */
-      socket.on("BE-leave-game", ({ gameId }) => {
-        io.of("/")
-          .in(gameId)
-          .clients((error, clients) => {
-            clients.forEach((socket_id) => {
-              if (socket_id === socket.id) {
-                io.sockets.sockets[socket_id].leave(gameId);
-              }
-            });
-          });
-      });
-
       /**
        * End game
        */
