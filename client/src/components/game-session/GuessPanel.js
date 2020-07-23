@@ -72,11 +72,12 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "450px",
   },
   gameHeader: {
+    height: "10%",
     width: "100%",
     margin: "0 auto",
   },
   grid: {
-    height: "100vh",
+    height: "90%",
   },
   form: {
     width: "100%",

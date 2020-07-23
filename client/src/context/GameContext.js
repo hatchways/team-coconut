@@ -1,5 +1,12 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
 import sockets from "../utils/sockets";
+import { AuthContext } from "./AuthContext";
 
 const GameContext = createContext();
 
@@ -19,10 +26,16 @@ const GameContextProvider = ({ children }) => {
     msg: "",
     severity: "success",
   });
+  const { setAuthAndRemoveUser } = useContext(AuthContext);
+
+  let currentUser;
+  if (localStorage.getItem("user")) {
+    const { email } = JSON.parse(localStorage.getItem("user"));
+    currentUser = email;
+  } else setAuthAndRemoveUser();
 
   //subcribe on events only once
   useEffect(() => {
-    const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
     //user joins to the game
     sockets.on("FE-user-joined", ({ joinedPlayer, gamePlayers }) => {
       if (currentUser !== joinedPlayer) {
@@ -117,7 +130,7 @@ const GameContextProvider = ({ children }) => {
       sockets.on("disconnect");
       sockets.off();
     };
-  }, []);
+  }, [currentUser]);
 
   const createGame = async () => {
     try {
@@ -163,7 +176,7 @@ const GameContextProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-      setErrors({ joinError: '' });
+      setErrors({ joinError: "" });
       if (response.status === 400) {
         const { errors } = await response.json();
         const errorMsg = errors[0].msg;

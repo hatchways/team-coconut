@@ -1,15 +1,17 @@
 import React, { useState, useContext } from "react";
 import SettingsIcon from "@material-ui/icons/Settings";
-import VideocamIcon from '@material-ui/icons/Videocam';
-import Mic from '@material-ui/icons/Mic';
+import VideocamIcon from "@material-ui/icons/Videocam";
+import Mic from "@material-ui/icons/Mic";
 import { makeStyles, IconButton, Menu, MenuItem } from "@material-ui/core";
-import Switch from '@material-ui/core/Switch';
-import {RTCContext} from '../context/RTCContext';
+import Switch from "@material-ui/core/Switch";
+import { RTCContext } from "../context/RTCContext";
 
 function Settings() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  const {playerAudioOn, playerVideoOn, switchVideo, switchAudio} = useContext(RTCContext);
+  const { playerAudioOn, playerVideoOn, switchVideo, switchAudio } = useContext(
+    RTCContext
+  );
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -20,7 +22,7 @@ function Settings() {
   };
 
   return (
-    <div>
+    <>
       <IconButton onClick={handleClick}>
         <SettingsIcon className={classes.icon} />
       </IconButton>
@@ -30,31 +32,30 @@ function Settings() {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
+        disableScrollLock
       >
-        <MenuItem
-          disableTouchRipple={true}>
+        <MenuItem disableTouchRipple={true}>
           <VideocamIcon />
           <Switch
             checked={playerVideoOn}
             onChange={switchVideo}
             size="small"
             name="checkedA"
-            inputProps={{ 'aria-label': 'secondary checkbox' }}
+            inputProps={{ "aria-label": "secondary checkbox" }}
           />
         </MenuItem>
-        <MenuItem
-          disableTouchRipple={true}>
+        <MenuItem disableTouchRipple={true}>
           <Mic />
           <Switch
             checked={playerAudioOn}
             onChange={switchAudio}
             size="small"
             name="checkedB"
-            inputProps={{ 'aria-label': 'secondary checkbox' }}
+            inputProps={{ "aria-label": "secondary checkbox" }}
           />
         </MenuItem>
       </Menu>
-    </div>
+    </>
   );
 }
 
@@ -65,6 +66,5 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
 }));
-
 
 export default Settings;

@@ -12,6 +12,7 @@ import TypingNotification from "./TypingNotification";
 import CurrentPlayerVideo from "./CurrentPlayerVideo";
 import { RTCContext } from "../../context/RTCContext";
 import PlayerVideo from "./PlayerVideo";
+import Settings from "../Settings";
 
 function PlayerPanel({ gameId }) {
   const classes = useStyles();
@@ -51,42 +52,47 @@ function PlayerPanel({ gameId }) {
   }
 
   return (
-    <Container className={classes.sectionContainer} component="section">
-      <Grid container spacing={6}>
-        {players.map((player, index, arr) => (
-          <Grid key={player.id} item xs={6}>
-            <Card className={classes.card} raised>
-              {player.id === currentUser ? (
-                <CurrentPlayerVideo videoStream={currentPlayerVideo} />
-              ) : (
-                <PlayerVideo videoPeer={peers[player.id]} />
-              )}
-              <div className={classes.playerInfoContainer}>
-                <div>
-                  <div className={classes.playerInfo}>
-                    <Typography variant="h6" component="p">
-                      {player.name}
-                      {currentUser === player.id
-                        ? " — You"
-                        : player.isGuesser
-                        ? " — Guesser"
-                        : ": "}
-                    </Typography>
-                    {currentUser !== player.id && (
-                      <div className={classes.clue}>
-                        {renderPlayerInfo(player, arr)}
-                      </div>
-                    )}
+    <>
+      <div className={classes.settings}>
+        <Settings />
+      </div>
+      <Container className={classes.sectionContainer} component="section">
+        <Grid container spacing={3}>
+          {players.map((player, index, arr) => (
+            <Grid key={player.id} item xs={6}>
+              <Card className={classes.card} raised>
+                {player.id === currentUser ? (
+                  <CurrentPlayerVideo videoStream={currentPlayerVideo} />
+                ) : (
+                  <PlayerVideo videoPeer={peers[player.id]} />
+                )}
+                <div className={classes.playerInfoContainer}>
+                  <div>
+                    <div className={classes.playerInfo}>
+                      <Typography variant="h6" component="p">
+                        {player.name}
+                        {currentUser === player.id
+                          ? " — You"
+                          : player.isGuesser
+                          ? " — Guesser"
+                          : ": "}
+                      </Typography>
+                      {currentUser !== player.id && (
+                        <div className={classes.clue}>
+                          {renderPlayerInfo(player, arr)}
+                        </div>
+                      )}
+                    </div>
+                    <div className={classes.scoreText}>{player.point} pts</div>
                   </div>
-                  <div className={classes.scoreText}>{player.point} pts</div>
+                  {player.clue && <CheckCircleIcon className={classes.icon} />}
                 </div>
-                {player.clue && <CheckCircleIcon className={classes.icon} />}
-              </div>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </>
   );
 }
 
@@ -95,10 +101,15 @@ function PlayerPanel({ gameId }) {
 // but I am currently unsure - Darren
 const useStyles = makeStyles((theme) => ({
   sectionContainer: {
-    height: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  settings: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    margin: "1em 1em 0 0",
   },
   card: {
     maxWidth: "350px",

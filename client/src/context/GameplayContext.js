@@ -11,8 +11,9 @@ import { Howl } from "howler";
 import startAudio from "../game-audio/start_game.wav";
 import submitClueAudio from "../game-audio/submit_clue.wav";
 import submitAnswerAudio from "../game-audio/submit_answer.wav";
+import { AuthContext } from "./AuthContext";
 
-const TIME = 15;
+const TIME = 30;
 const GameplayContext = createContext();
 
 function GameplayContextProvider({ children }) {
@@ -34,9 +35,15 @@ function GameplayContextProvider({ children }) {
     severity: "info",
   });
   const { joinGame } = useContext(GameContext);
+  const { setAuthAndRemoveUser } = useContext(AuthContext);
+
+  let currentUser;
+  if (localStorage.getItem("user")) {
+    const { email } = JSON.parse(localStorage.getItem("user"));
+    currentUser = email;
+  } else setAuthAndRemoveUser();
 
   useEffect(() => {
-    const { email: currentUser } = JSON.parse(localStorage.getItem("user"));
     /**
      * Start Game
      */
@@ -103,8 +110,7 @@ function GameplayContextProvider({ children }) {
       playSound(submitAnswerAudio);
       setGameState(gameState);
       setGameTimer(TIME);
-      // if (gameState.state.round === gameState.state.players.length - 1) {
-      if (gameState.state.round === 1) {
+      if (gameState.state.round === gameState.state.players.length - 1) {
         setShowEndGameScreen(true);
       } else {
         setShowNextRoundScreen(true);
@@ -160,7 +166,7 @@ function GameplayContextProvider({ children }) {
       await joinGame(newGameId);
       redirectToNewGame(newGameId);
     });
-  }, [joinGame]);
+  }, [joinGame, currentUser]);
 
   // --------------------------------------------------------------- //
   // ------------- START: All Function Declarations ---------------- //

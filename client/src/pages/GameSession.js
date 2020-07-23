@@ -28,7 +28,7 @@ function GameSession({ match }) {
 
   return (
     <>
-      <main style={{ height: "100vh" }}>
+      <main style={{ height: "100vh", position: "relative" }}>
         <Grid
           container
           direction="row"

@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
   },
   grid: {
-    height: "100vh",
+    height: "90%",
   },
   heading: {
     textTransform: "uppercase",

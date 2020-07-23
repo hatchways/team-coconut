@@ -3,7 +3,7 @@ const wordArray = require("./Words");
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
-  GAME_TIME = 30500;
+  GAME_TIME = 64500;
 
   constructor() {
     this.word = "";
