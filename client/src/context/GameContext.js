@@ -163,7 +163,7 @@ const GameContextProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
       });
-      setErrors({ joinError: "" });
+      setErrors({ joinError: '' });
       if (response.status === 400) {
         const { errors } = await response.json();
         const errorMsg = errors[0].msg;
@@ -194,13 +194,12 @@ const GameContextProvider = ({ children }) => {
    */
   const leaveLobby = useCallback(async (gameId) => {
     try {
-      const response = await fetch(`/game/${gameId}/leave`, {
+      await fetch(`/game/${gameId}/leave`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      const { _id, players } = await response.json();
     } catch (error) {
       console.log(error);
     }
@@ -270,7 +269,7 @@ const GameContextProvider = ({ children }) => {
         isCurrentUserHost,
         setGameId,
         startGame,
-        leaveLobby
+        leaveLobby,
       }}
     >
       {children}
