@@ -13,9 +13,10 @@ import PageNotFound from "./pages/PageNotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PreGameLobby from "./pages/PreGameLobby";
 import GameSession from "./pages/GameSession";
+import fetchIntercept from 'fetch-intercept';
 
 function App() {
-  const { auth } = useContext(AuthContext);
+  const { auth, setAuthAndRemoveUser } = useContext(AuthContext);
   const [redirectPath, setRedirectPath] = useState("/create-game");
 
   const path = window.location.pathname;
@@ -25,7 +26,25 @@ function App() {
     if (!["/login", "/register"].includes(path)) {
       setRedirectPath(path);
     }
-  }, [path]);
+
+    //401 interceptor
+    const unregister = fetchIntercept.register({
+      response: function (response) {
+        console.log("interceptor")
+        if (response.status === 401) {
+          console.log("response intercept 401")
+          setAuthAndRemoveUser();
+        }
+        return response;
+      },
+    });
+
+    return () => {
+      //unregister the interceptor
+      unregister()
+    }
+
+  }, [path, setAuthAndRemoveUser]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -38,8 +57,8 @@ function App() {
             {auth ? (
               <Redirect to="/create-game" />
             ) : (
-              <LoginOrSignUp type="register" />
-            )}
+                <LoginOrSignUp type="register" />
+              )}
           </Route>
           <Route path="/login">
             {auth ? <Redirect to={redirectPath} /> : <LoginOrSignUp />}
