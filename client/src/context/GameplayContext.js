@@ -28,6 +28,11 @@ function GameplayContextProvider({ children }) {
   const [redirectPath, setRedirectPath] = useState("");
   const [gameTimer, setGameTimer] = useState(TIME);
   const [isGuessPhase, setIsGuessPhase] = useState(false);
+  const [hint, setHint] = useState({
+    open: true,
+    msg: "Try not to submit the same clue as other players!",
+    severity: "info",
+  });
   const { joinGame } = useContext(GameContext);
 
   useEffect(() => {
@@ -133,6 +138,11 @@ function GameplayContextProvider({ children }) {
       setDisplayClueError(false);
       setIsGuessPhase(false);
       setIsGuesser(false);
+      setHint({
+        open: true,
+        msg: "Try not to submit the same clue as other players!",
+        severity: "info",
+      });
       // determine guesser on subsequent rounds
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -229,6 +239,10 @@ function GameplayContextProvider({ children }) {
     sound.play();
   }
 
+  function closeHint() {
+    setHint({ open: false, msg: "", severity: "info" });
+  }
+
   /**
    * @param {object} gameData = {gameId, players}
    */
@@ -265,6 +279,7 @@ function GameplayContextProvider({ children }) {
         isGuessPhase,
         gameTimer,
         displayClueError,
+        hint,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,
@@ -277,6 +292,7 @@ function GameplayContextProvider({ children }) {
         leaveGame,
         createNewGame,
         toggleClueError,
+        closeHint,
       }}
     >
       {children}

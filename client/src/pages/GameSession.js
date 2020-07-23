@@ -7,7 +7,6 @@ import { GameplayContext } from "../context/GameplayContext";
 import { GameContext } from "../context/GameContext";
 import NextRoundScreen from "../components/game-session/NextRoundScreen";
 import EndGameScreen from "../components/game-session/EndGameScreen";
-import GameHeader from "../components/game-session/GameHeader";
 
 function GameSession({ match }) {
   const {
@@ -17,7 +16,10 @@ function GameSession({ match }) {
     showEndGameScreen,
   } = useContext(GameplayContext);
 
-  const { game: { players }, getGame } = useContext(GameContext);
+  const {
+    game: { players },
+    getGame,
+  } = useContext(GameContext);
 
   const gameId = match.params.gameId;
   useEffect(() => {
@@ -26,8 +28,7 @@ function GameSession({ match }) {
 
   return (
     <>
-      <main>
-        <GameHeader />
+      <main style={{ height: "100vh" }}>
         <Grid
           container
           direction="row"

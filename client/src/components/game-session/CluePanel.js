@@ -4,6 +4,8 @@ import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
 import GenericButton from "../GenericButton";
 import { GameplayContext } from "../../context/GameplayContext";
 import { useParams } from "react-router-dom";
+import GameHeader from "./GameHeader";
+import Notification from "../Notification";
 
 function CluePanel() {
   const classes = useStyles();
@@ -17,6 +19,8 @@ function CluePanel() {
     showNextRoundScreen,
     displayClueError,
     toggleClueError,
+    hint,
+    closeHint,
   } = useContext(GameplayContext);
   const { word: wordToGuess } = gameState;
   const { gameId } = useParams();
@@ -43,6 +47,9 @@ function CluePanel() {
 
   return (
     <Container className={classes.sectionContainer} component="section">
+      <div className={classes.gameHeader}>
+        <GameHeader />
+      </div>
       <Grid
         className={classes.grid}
         container
@@ -96,6 +103,12 @@ function CluePanel() {
           )}
         </Container>
       </Grid>
+      <Notification
+        open={hint.open}
+        msg={hint.msg}
+        handleClose={closeHint}
+        severity={hint.severity}
+      />
     </Container>
   );
 }
@@ -105,6 +118,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     height: "100vh",
     minWidth: "450px",
+  },
+  gameHeader: {
+    width: "100%",
+    margin: "0 auto",
   },
   grid: {
     height: "100vh",
