@@ -7,6 +7,10 @@ import React, {
 } from "react";
 import { GameContext } from "./GameContext";
 import sockets from "../utils/sockets";
+import { Howl } from "howler";
+import startAudio from "../game-audio/start_game.wav";
+import submitClueAudio from "../game-audio/submit_clue.wav";
+import submitAnswerAudio from "../game-audio/submit_answer.wav";
 
 const TIME = 15;
 const GameplayContext = createContext();
@@ -44,6 +48,9 @@ function GameplayContextProvider({ children }) {
       setRedirect(false); // init data needed for ending the game
       setRedirectPath("");
       setShowEndGameScreen(false);
+
+      playSound(startAudio);
+
       // determine guesser on first round
       const currentGuesser = gameState.players.filter(
         (player) => player.isGuesser === true
@@ -57,6 +64,7 @@ function GameplayContextProvider({ children }) {
      * Send Clues
      */
     sockets.on("FE-send-clue", ({ gameState, player }) => {
+      playSound(submitClueAudio);
       setGameState(gameState);
       setClues((prevClues) => [...prevClues, player]);
       const cluesSubmitted = [];
@@ -87,6 +95,7 @@ function GameplayContextProvider({ children }) {
      * Send Answer / End of Round
      */
     sockets.on("FE-send-answer", ({ gameState }) => {
+      playSound(submitAnswerAudio);
       setGameState(gameState);
       setGameTimer(TIME);
       // if (gameState.state.round === gameState.state.players.length - 1) {
@@ -210,6 +219,14 @@ function GameplayContextProvider({ children }) {
     setRedirect(true);
     setRedirectPath(`/lobby/${newGameId}`);
     setShowEndGameScreen(false);
+  }
+
+  function playSound(sourceAudio) {
+    const sound = new Howl({
+      src: sourceAudio,
+      volume: 0.5,
+    });
+    sound.play();
   }
 
   /**

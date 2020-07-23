@@ -40,13 +40,12 @@ function PlayerPanel({ gameId }) {
           return a.indexOf(clue) === a.lastIndexOf(clue);
         });
       let clueToRender;
-      uniqueClues.forEach((clue) => {
-        if (clue === player.clue) clueToRender = <p>{player.clue}</p>;
-        else
-          return (clueToRender = (
-            <p className={classes.invalidClue}>* * * * * *</p>
-          ));
-      });
+      for (let i = 0; i < uniqueClues.length; i++) {
+        if (uniqueClues[i] === player.clue) {
+          return (clueToRender = <p>{player.clue}</p>);
+        }
+        clueToRender = <p className={classes.invalidClue}>* * * * * *</p>;
+      }
       return clueToRender;
     }
   }
