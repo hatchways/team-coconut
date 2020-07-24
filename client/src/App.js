@@ -15,7 +15,7 @@ import PageNotFound from "./pages/PageNotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PreGameLobby from "./pages/PreGameLobby";
 import GameSession from "./pages/GameSession";
-import fetchIntercept from 'fetch-intercept';
+import fetchIntercept from "fetch-intercept";
 
 function App() {
   const { auth, setAuthAndRemoveUser } = useContext(AuthContext);
@@ -32,9 +32,7 @@ function App() {
     //401 interceptor
     const unregister = fetchIntercept.register({
       response: function (response) {
-        console.log("interceptor")
         if (response.status === 401) {
-          console.log("response intercept 401")
           setAuthAndRemoveUser();
         }
         return response;
@@ -43,9 +41,8 @@ function App() {
 
     return () => {
       //unregister the interceptor
-      unregister()
-    }
-
+      unregister();
+    };
   }, [path, setAuthAndRemoveUser]);
 
   return (
@@ -59,8 +56,8 @@ function App() {
             {auth ? (
               <Redirect to="/create-game" />
             ) : (
-                <LoginOrSignUp type="register" />
-              )}
+              <LoginOrSignUp type="register" />
+            )}
           </Route>
           <Route path="/login">
             {auth ? <Redirect to={redirectPath} /> : <LoginOrSignUp />}
