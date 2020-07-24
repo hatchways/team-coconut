@@ -22,9 +22,8 @@ module.exports = class AuthService {
   }
 
   async signInUser({ email }) {
-    const user = await User.findOne({ email }, 'email name');
+    const user = await User.findOne({ email }, "email name");
     const { token, cookieConfig } = this._createTokenAndCookieConfig(user._id);
-    console.log(user);
     return { user, token, cookieConfig };
   }
 

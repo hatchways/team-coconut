@@ -13,13 +13,15 @@ import { GameContext } from "../context/GameContext";
 import { Redirect } from "react-router-dom";
 import GenericButton from "../components/GenericButton";
 import FormInput from "../components/FormInput";
+import useWindowDimensions from "../utils/hooks/useWindowDimensions";
 
 function CreateOrJoinGame() {
   const classes = useStyles();
   const { logoutUser } = useContext(AuthContext);
   const [gameId, setGameId] = useState("");
-  const { errors, createGame, joinGame } = useContext(GameContext)
+  const { errors, createGame, joinGame } = useContext(GameContext);
   const [redirect, setRedirect] = useState(false);
+  const { windowWidth } = useWindowDimensions();
 
   async function joinGameSubmit(event) {
     event.preventDefault();
@@ -36,66 +38,68 @@ function CreateOrJoinGame() {
 
   //redirect user to lobby if game is created
   if (!errors.joinError && redirect && gameId) {
-    return <Redirect to={`/lobby/${gameId}`} />
+    return <Redirect to={`/lobby/${gameId}`} />;
   }
 
   return (
-    <div>
-      <Container className={classes.mainContainer} component="main">
-        <div className={classes.logoutBtn}>
-          <GenericButton className={classes.logoutBtn} handleClick={logoutUser}>
-            Logout
-          </GenericButton>
-        </div>
-        <Grid
-          container
-          spacing={3}
-          direction="row"
-          justify="space-evenly"
-          alignItems="center"
-        >
-          <Grid item xs={12} sm={6}>
-            <Paper className={classes.paper} elevation={5}>
-              <Typography
-                className={classes.heading}
-                variant="h3"
-                component="h3"
-                align="center"
-              >
-                Create Game
-              </Typography>
-              <SportsEsportsOutlinedIcon className={classes.createIcon} />
-              <GenericButton className={classes.createBtn} handleClick={newGameClick}>
-                New Game
-              </GenericButton>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper className={classes.paper} elevation={5}>
-              <Typography
-                className={classes.heading}
-                variant="h3"
-                component="h3"
-                align="center"
-              >
-                Join
-              </Typography>
-              <PeopleAltOutlinedIcon className={classes.joinIcon} />
-              <form className={classes.form} onSubmit={joinGameSubmit} noValidate>
-                <FormInput
-                  label="game"
-                  error={errors.joinError}
-                  handleChange={(e) => setGameId(e.target.value)}
-                  hasAdornment
-                  adornmentText="Join"
-                  onClick={joinGameSubmit}
-                />
-              </form>
-            </Paper>
-          </Grid>
+    <Container
+      className={windowWidth < 600 ? classes.mainMobile : classes.mainContainer}
+      component="main"
+    >
+      <div className={classes.logoutBtn}>
+        <GenericButton handleClick={logoutUser}>Logout</GenericButton>
+      </div>
+      <Grid
+        container
+        spacing={3}
+        direction="row"
+        justify="space-evenly"
+        alignItems="center"
+      >
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper} elevation={5}>
+            <Typography
+              className={classes.heading}
+              variant="h3"
+              component="h3"
+              align="center"
+            >
+              Create Game
+            </Typography>
+            <SportsEsportsOutlinedIcon className={classes.createIcon} />
+            <GenericButton
+              className={classes.createBtn}
+              handleClick={newGameClick}
+            >
+              New Game
+            </GenericButton>
+          </Paper>
         </Grid>
-      </Container>
-    </div>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper} elevation={5}>
+            <Typography
+              className={classes.heading}
+              variant="h3"
+              component="h3"
+              align="center"
+            >
+              Join
+            </Typography>
+            <PeopleAltOutlinedIcon className={classes.joinIcon} />
+            <form className={classes.form} onSubmit={joinGameSubmit} noValidate>
+              <FormInput
+                label="game"
+                error={errors.joinError}
+                handleChange={(e) => setGameId(e.target.value)}
+                hasAdornment
+                adornmentText="Join"
+                onClick={joinGameSubmit}
+              />
+            </form>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
@@ -103,14 +107,24 @@ const useStyles = makeStyles((theme) => ({
   mainContainer: {
     height: "100vh",
     display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  mainMobile: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
   },
   logoutBtn: {
-    position: "absolute",
-    top: "0",
-    right: "0",
-    margin: "1.5rem 1.5rem 0 0",
+    marginBottom: "1rem",
+    width: "100%",
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: "1em 0",
   },
   paper: {
     display: "flex",

@@ -64,7 +64,7 @@ function LoginOrSignUp({ type }) {
             handleChange={setCredentials}
           />
           <div className={classes.buttonContainer}>
-            <GenericButton handleClick={handleSubmit}>
+            <GenericButton handleClick={handleSubmit} isSubmit>
               {type === "register" ? "Sign Up" : "Sign In"}
             </GenericButton>
           </div>

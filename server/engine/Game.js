@@ -1,15 +1,18 @@
-const wordArray = require('./Words');
+const wordArray = require("./Words");
 
 class Game {
   GUESS_POINT = 200;
   CLUE_POINT = 100;
+  GAME_TIME = 64500;
 
   constructor() {
-    this.word = '';
+    this.word = "";
     this.round = 0;
     this.wordArray = [];
     this.players = [];
+    this.waitingPlayers = [];
     this.maxRound = 0;
+    this.timer;
   }
 
   /**
@@ -17,6 +20,7 @@ class Game {
    */
   initGame() {
     this.initGuesser();
+    this.initTypingStatusAndMsg();
     this.round = 0;
     this.maxRound = this.players.length * 2;
     this.wordArray = this.initWords();
@@ -31,7 +35,7 @@ class Game {
   }
 
   /**
-   * Initializae player isGuesser property 
+   * Initializae player isGuesser property
    */
   initGuesser() {
     this.players.map((player) => {
@@ -42,11 +46,21 @@ class Game {
   }
 
   /**
+   * Initialize player clue property
+   */
+  initTypingStatusAndMsg() {
+    this.players.map((player) => {
+      player.isTyping = false;
+      player.clue = "";
+    });
+  }
+
+  /**
    * Check Guesser's Answer
    * @param {string} answer
    */
   checkAnswer(answer) {
-    return this.word === answer;
+    return this.word.toLowerCase() === answer.toLowerCase();
   }
 
   /**
@@ -119,10 +133,12 @@ class Game {
 
   /**
    * Join New Player
-   * @param {object} player
+   * @param {object} joinPlayer
    */
-  addPlayer(player) {
-    this.players.push(player);
+  addPlayer(joinPlayer) {
+    const find = this.players.find((player) => player.id === joinPlayer.id);
+
+    if (!find) this.players.push(joinPlayer);
   }
 
   /**
@@ -154,14 +170,71 @@ class Game {
    */
   getPlayerUniqueClues(array) {
     const uniqueClues = array
-      .map((clue) => clue['msg'])
+      .map((clue) => clue["msg"])
       .filter((msg, index, a) => {
-        return a.indexOf(msg) === a.lastIndexOf(msg);
+        if (msg !== "") {
+          return a.indexOf(msg) === a.lastIndexOf(msg);
+        }
       });
 
     return array
       .filter((clue) => uniqueClues.includes(clue.msg))
       .map((c) => c.id);
+  }
+
+  /**
+   * Start Timer
+   * @param {function} callback
+   */
+  startTimer(callback) {
+    this.timer = setTimeout(callback, this.GAME_TIME);
+  }
+
+  /**
+   * Stop Timer
+   */
+  endTimer() {
+    clearTimeout(this.timer);
+  }
+
+  /**
+   * Add Wating Player for Next Round
+   * @param {object} player
+   */
+  addWatingPlayer(player) {
+    this.waitingPlayers.push(player);
+    return this.waitingPlayers.length;
+  }
+
+  /**
+   * Reset Wating list
+   */
+  resetWaitingPlayers() {
+    this.waitingPlayers = [];
+  }
+
+  /**
+   * Track Submitted Clue
+   * * @param {object} player
+   */
+  trackPlayerClue(player) {
+    this.players.forEach((p) => {
+      if (p.id === player.id) {
+        p.clue = player.msg;
+      }
+    });
+  }
+
+  /**
+   * Track Typing Status For Each Player
+   * * @param {string} playerId
+   */
+  trackTypingStatus(playerId) {
+    this.players.forEach((p) => {
+      if (p.id === playerId) {
+        p.isTyping = true;
+      }
+    });
   }
 }
 

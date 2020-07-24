@@ -94,18 +94,27 @@ function AuthContextProvider({ children }) {
       setAuth(false);
       localStorage.removeItem("user");
     } catch (error) {
+      setAuth(false);
+      localStorage.removeItem("user");
       console.error(error);
     }
   }
 
-  const setAuthAndRemoveUser = useCallback(()=>{
+  const setAuthAndRemoveUser = useCallback(() => {
     setAuth(false);
     localStorage.removeItem("user");
-  },[]);
+  }, []);
 
   return (
     <AuthContext.Provider
-      value={{ auth, errors, registerUser, loginUser, logoutUser, setAuthAndRemoveUser }}
+      value={{
+        auth,
+        errors,
+        registerUser,
+        loginUser,
+        logoutUser,
+        setAuthAndRemoveUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

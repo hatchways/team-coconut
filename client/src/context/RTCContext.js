@@ -25,7 +25,7 @@ function RTCContextProvider(props) {
           peersRef.current.push({
             peerId: socketId,
             peer: peer,
-            email: email
+            email: email,
           });
           peers[email] = peer;
         });
@@ -35,7 +35,9 @@ function RTCContextProvider(props) {
       // add caller to list of peers to render and peersRef
       // invoke answerCall() to accept caller signal and send returning signal to caller
       sockets.on("FE-receive-call", ({ callerEmail, callerSignal, caller }) => {
-        const peerRefIdx = peersRef.current.findIndex(p => p.email === callerEmail);
+        const peerRefIdx = peersRef.current.findIndex(
+          (p) => p.email === callerEmail
+        );
         if (peerRefIdx !== -1) {
           peersRef.current[peerRefIdx].peer.signal(callerSignal);
         } else {
@@ -43,7 +45,7 @@ function RTCContextProvider(props) {
           peersRef.current.push({
             peerId: caller,
             peer: peerToAnswer,
-            email: callerEmail
+            email: callerEmail,
           });
 
           setPeers((prevPeers) => ({
@@ -51,72 +53,85 @@ function RTCContextProvider(props) {
             [callerEmail]: peerToAnswer,
           }));
         }
-
       });
 
       // look through each peer in peersRef and accept each individual returning signal/call back
-      sockets.on("FE-accept-call-back", ({ playerEmail, answerSignal, playerAnsweringId }) => {
-        const peerToAccept = peersRef.current.find(
-          (peer) => peer.peerId === playerAnsweringId
-        );
-        // accept returned call
-        peerToAccept.peer.signal(answerSignal);
-      });
+      sockets.on(
+        "FE-accept-call-back",
+        ({ playerEmail, answerSignal, playerAnsweringId }) => {
+          const peerToAccept = peersRef.current.find(
+            (peer) => peer.peerId === playerAnsweringId
+          );
+          // accept returned call
+          peerToAccept.peer.signal(answerSignal);
+        }
+      );
 
-      const user = JSON.parse(localStorage.getItem('user'));
-      sockets.emit("BE-join-video-call", { gameId, userEmail: user.email })
+      const user = JSON.parse(localStorage.getItem("user"));
+      sockets.emit("BE-join-video-call", { gameId, userEmail: user.email });
     } catch (error) {
       console.error(error);
     }
   }, []);
 
   function initCall(playerToCall, caller, email) {
-    const user = JSON.parse(localStorage.getItem("user"))
+    const user = JSON.parse(localStorage.getItem("user"));
     const peer = new Peer({
       initiator: true,
       trickle: false,
     });
 
     peer.on("signal", (callerSignal) => {
-      sockets.emit("BE-send-call", { callerEmail: user.email, playerToCall, caller, callerSignal });
+      sockets.emit("BE-send-call", {
+        callerEmail: user.email,
+        playerToCall,
+        caller,
+        callerSignal,
+      });
     });
     peer.on("error", (err) => {
-      console.log("peer initiator error", err)
-    })
+      console.log("peer initiator error", err);
+    });
     peer.on("close", () => {
-      peersRef.current = peersRef.current.filter(p => p.peerId !== playerToCall);
-      setPeers(peers=>{
+      peersRef.current = peersRef.current.filter(
+        (p) => p.peerId !== playerToCall
+      );
+      setPeers((peers) => {
         delete peers[email];
         return peers;
       });
-    })
+    });
 
     return peer;
   }
 
   function answerCall(callerSignal, caller, callerEmail) {
-    const user = JSON.parse(localStorage.getItem("user"))
+    const user = JSON.parse(localStorage.getItem("user"));
     const peer = new Peer({
       initiator: false,
       trickle: false,
-      stream: currentPlayerVideo.current.srcObject
+      stream: currentPlayerVideo.current.srcObject,
     });
 
-    peer.on("signal", answerSignal => {
+    peer.on("signal", (answerSignal) => {
       // accept initiated call
-      sockets.emit("BE-answer-call", { playerEmail: user.email, answerSignal, caller });
+      sockets.emit("BE-answer-call", {
+        playerEmail: user.email,
+        answerSignal,
+        caller,
+      });
     });
     peer.on("error", (err) => {
-      console.log("peer non initiator error", err)
-    })
+      console.log("peer non initiator error", err);
+    });
     peer.on("close", () => {
-      console.log("peer non initiator closed", caller)
-      peersRef.current = peersRef.current.filter(p => p.peerId !== caller);
-      setPeers(peers=>{
+      console.log("peer non initiator closed", caller);
+      peersRef.current = peersRef.current.filter((p) => p.peerId !== caller);
+      setPeers((peers) => {
         delete peers[callerEmail];
         return peers;
       });
-    })
+    });
 
     peer.signal(callerSignal);
 
@@ -124,44 +139,47 @@ function RTCContextProvider(props) {
   }
 
   function switchVideo() {
-    setPlayerVideoOn(isOn => {
+    setPlayerVideoOn((isOn) => {
       if (currentPlayerVideo.current.srcObject) {
-        peersRef.current.forEach(peerRef => {
+        peersRef.current.forEach((peerRef) => {
           peerRef.peer.removeStream(currentPlayerVideo.current.srcObject);
         });
         currentPlayerVideo.current.srcObject = null;
       } else {
-        getMediaStream({ video: true, audio: false }).then((stream) => {
-          currentPlayerVideo.current.srcObject = stream;
-          peersRef.current.forEach(peerRef => {
-            peerRef.peer.addStream(stream);
+        getMediaStream({ video: true, audio: false })
+          .then((stream) => {
+            currentPlayerVideo.current.srcObject = stream;
+            peersRef.current.forEach((peerRef) => {
+              peerRef.peer.addStream(stream);
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            return false;
           });
-        }).catch((err) => {
-          console.log(err)
-          return false;
-        });
       }
       return !isOn;
     });
-
   }
   function switchAudio() {
-    setPlayerAudioOn(isOn => {
+    setPlayerAudioOn((isOn) => {
       if (currentPlayerAudio.current) {
-        peersRef.current.forEach(peerRef => {
+        peersRef.current.forEach((peerRef) => {
           peerRef.peer.removeStream(currentPlayerAudio.current);
         });
         currentPlayerAudio.current = null;
       } else {
-        getMediaStream({ video: false, audio: true }).then((stream) => {
-          currentPlayerAudio.current = stream;
-          peersRef.current.forEach(peerRef => {
-            peerRef.peer.addStream(stream);
+        getMediaStream({ video: false, audio: true })
+          .then((stream) => {
+            currentPlayerAudio.current = stream;
+            peersRef.current.forEach((peerRef) => {
+              peerRef.peer.addStream(stream);
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            return false;
           });
-        }).catch((err) => {
-          console.log(err)
-          return false;
-        });
       }
       return !isOn;
     });
@@ -172,8 +190,8 @@ function RTCContextProvider(props) {
   }
 
   return (
-    <RTCContext.Provider value={
-      {
+    <RTCContext.Provider
+      value={{
         peers,
         currentPlayerVideo: currentPlayerVideo,
         initVideoCall,
@@ -181,8 +199,8 @@ function RTCContextProvider(props) {
         playerVideoOn,
         switchVideo,
         switchAudio,
-      }
-    }>
+      }}
+    >
       {props.children}
     </RTCContext.Provider>
   );
