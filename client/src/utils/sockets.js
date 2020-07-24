@@ -1,5 +1,5 @@
 import io from 'socket.io-client'
-const sockets = io('http://localhost:3001');
+const sockets = io('/');
 console.log('socket connected')
 export default sockets;
 
