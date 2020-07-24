@@ -1,19 +1,55 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import FormInput from "../FormInput";
-import useForm from "../../utils/hooks/useForm";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
 import GenericButton from "../GenericButton";
+import { GameplayContext } from "../../context/GameplayContext";
+import { useParams } from "react-router-dom";
+import GameHeader from "./GameHeader";
+import Notification from "../Notification";
 
 function CluePanel() {
   const classes = useStyles();
-  const [clue, setClue] = useForm({ clue: "" });
+  const [clue, setClue] = useState("");
+  const {
+    gameState,
+    sendClueToBE,
+    submitDisable,
+    disableSubmitInputs,
+    displayTypingNotification,
+    showNextRoundScreen,
+    displayClueError,
+    toggleClueError,
+    hint,
+    closeHint,
+  } = useContext(GameplayContext);
+  const { word: wordToGuess } = gameState;
+  const { gameId } = useParams();
+  const { email } = JSON.parse(localStorage.getItem("user"));
 
   function submitClue(event) {
     event.preventDefault();
-    console.log(`submitted ${clue.clue}`);
+    if (clue !== "") {
+      toggleClueError(false);
+      disableSubmitInputs(true);
+      const player = {
+        msg: clue,
+        id: email,
+      };
+      sendClueToBE(gameId, player);
+      setClue("");
+    } else toggleClueError(true);
   }
+
+  function handleOnKeyUp(event) {
+    event.preventDefault();
+    displayTypingNotification(gameId, email);
+  }
+
   return (
     <Container className={classes.sectionContainer} component="section">
+      <div className={classes.gameHeader}>
+        <GameHeader />
+      </div>
       <Grid
         className={classes.grid}
         container
@@ -29,26 +65,50 @@ function CluePanel() {
             component="p"
             align="center"
           >
-            The Secret Word
+            {showNextRoundScreen ? "Picking Word..." : "The Secret Word"}
           </Typography>
-          <Typography
-            className={classes.wordToGuess}
-            color="textPrimary"
-            variant="h4"
-            component="p"
-          >
-            Word to Guess
-          </Typography>
+          {wordToGuess && (
+            <Typography
+              className={classes.wordToGuess}
+              color="textPrimary"
+              variant="h4"
+              component="p"
+            >
+              {wordToGuess.charAt(0).toUpperCase() + wordToGuess.slice(1)}
+            </Typography>
+          )}
         </Container>
         <Container component="div" maxWidth="xs">
-          <form className={classes.form} onSubmit={submitClue} noValidate>
-            <FormInput label="clue" error="" handleChange={setClue} />
-          </form>
-          <div className={classes.submitBtn}>
-            <GenericButton handleClick={submitClue}>Submit</GenericButton>
-          </div>
+          {!showNextRoundScreen && (
+            <>
+              <form className={classes.form} onSubmit={submitClue} noValidate>
+                <FormInput
+                  label="clue"
+                  error={displayClueError && "Please Enter a Clue"}
+                  handleChange={(e) => setClue(e.target.value)}
+                  isDisabled={submitDisable}
+                  handleOnKeyUp={handleOnKeyUp}
+                />
+              </form>
+              <div className={classes.submitBtn}>
+                <GenericButton
+                  handleClick={submitClue}
+                  isSubmit
+                  isDisabled={submitDisable}
+                >
+                  Submit
+                </GenericButton>
+              </div>
+            </>
+          )}
         </Container>
       </Grid>
+      <Notification
+        open={hint.open}
+        msg={hint.msg}
+        handleClose={closeHint}
+        severity={hint.severity}
+      />
     </Container>
   );
 }
@@ -59,8 +119,12 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
     minWidth: "450px",
   },
+  gameHeader: {
+    width: "100%",
+    margin: "0 auto",
+  },
   grid: {
-    height: "100vh",
+    height: "90%",
   },
   heading: {
     textTransform: "uppercase",

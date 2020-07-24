@@ -29,6 +29,9 @@ export const theme = createMuiTheme({
     fontWeight: "800",
     color: white,
   },
+  gameOverText: {
+    fontSize: "3em",
+  },
   gradient: {
     blue: {
       background:
@@ -38,6 +41,9 @@ export const theme = createMuiTheme({
       background:
         "linear-gradient(90deg, rgba(255,108,32,1) 0%, rgba(255,143,2,1) 100%)",
     },
+  },
+  modal: {
+    background: "#323232",
   },
   icon: {
     small: {

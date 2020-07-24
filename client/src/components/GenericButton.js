@@ -1,18 +1,26 @@
 import React from "react";
 import { Button, makeStyles } from "@material-ui/core";
 
-function GenericButton({ children, handleClick, isAdornment }) {
+function GenericButton({
+  children,
+  handleClick,
+  isSubmit,
+  isDisabled,
+  isAdornment,
+}) {
   const classes = useStyles();
   return (
     <Button
       style={{
-        padding: isAdornment ? "0.5em 1em" : "1em 3em",
+        padding: isAdornment ? "0.5em 1em" : "0.75em 2.75em",
         letterSpacing: isAdornment ? "1px" : "2.5px",
         borderRadius: isAdornment ? "2px" : "8px",
       }}
       className={classes.button}
       variant="contained"
       onClick={handleClick}
+      type={isSubmit ? "submit" : "button"}
+      disabled={isDisabled}
     >
       {children}
     </Button>
