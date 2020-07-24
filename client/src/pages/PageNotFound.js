@@ -1,25 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { Typography, makeStyles } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import GenericButton from "../components/GenericButton";
 
 function PageNotFound() {
   const classes = useStyles();
+  const [redirect, setRedirect] = useState(false);
+  const [redirectPath, setRedirectPath] = useState("");
+  function returnToLogin() {
+    setRedirect(true);
+    setRedirectPath("/");
+  }
+
+  if (redirect && redirectPath) {
+    window.location.href = redirectPath;
+  }
+
   return (
-    <>
+    <div className={classes.redirect}>
       <Typography
         style={{
-          margin: "2rem",
           color: "#FFFFFF",
+          marginBottom: "1rem",
         }}
         variant="h3"
         component="p"
       >
-        404 Page not Found
+        Oops! 404 Page not Found
       </Typography>
-      <Link className={classes.redirect} to="/login">
-        Back to Homepage
-      </Link>
-    </>
+      <GenericButton handleClick={returnToLogin}>Go Back</GenericButton>
+    </div>
   );
 }
 
@@ -27,13 +36,8 @@ const useStyles = makeStyles((theme) => ({
   redirect: {
     margin: "0 0 0 2rem",
     padding: "1em 3em",
-    borderRadius: "2px",
     color: theme.palette.text.primary,
-    letterSpacing: theme.spacing(0.15),
-    textDecoration: "none",
-    textTransform: "uppercase",
     fontWeight: theme.typography.fontWeightBold,
-    background: theme.gradient.orange.background,
   },
 }));
 
