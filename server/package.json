@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "nodemon ./bin/www",
+    "start": "node ./bin/www",
+    "prepare-client":"cd ../client && npm install && npm run build",
+    "heroku-postbuild":"npm run prepare-client",
     "debug": "nodemon  --inspect ./bin/www",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --exit --timeout 30000"
   },
