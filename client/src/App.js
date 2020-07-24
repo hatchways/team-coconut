@@ -32,7 +32,6 @@ function App() {
     //401 interceptor
     const unregister = fetchIntercept.register({
       response: function (response) {
-        console.log("interceptor")
         if (response.status === 401) {
           console.log("response intercept 401")
           setAuthAndRemoveUser();

@@ -11,7 +11,7 @@ import { GameplayContext } from "../../context/GameplayContext";
 import TypingNotification from "./TypingNotification";
 import CurrentPlayerVideo from "./CurrentPlayerVideo";
 import { RTCContext } from "../../context/RTCContext";
-import PlayerVideo from "./PlayerVideo";
+import PlayerVideoAudio from "./PlayerVideoAudio";
 import Settings from "../Settings";
 
 function PlayerPanel({ gameId }) {
@@ -64,7 +64,7 @@ function PlayerPanel({ gameId }) {
                 {player.id === currentUser ? (
                   <CurrentPlayerVideo videoStream={currentPlayerVideo} />
                 ) : (
-                  <PlayerVideo videoPeer={peers[player.id]} />
+                  <PlayerVideoAudio peerMedia={peers[player.id]} />
                 )}
                 <div className={classes.playerInfoContainer}>
                   <div>
