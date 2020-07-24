@@ -38,7 +38,7 @@ function CreateOrJoinGame() {
 
   //redirect user to lobby if game is created
   if (!errors.joinError && redirect && gameId) {
-    return <Redirect to={`/lobby/${gameId}`} />;
+    return <Redirect to={{pathname: `/lobby/${gameId}`, state:{from:'create-name'}}} />;
   }
 
   return (

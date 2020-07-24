@@ -49,7 +49,7 @@ function EndGameScreen() {
   }
 
   if (!errors.joinError && redirect && redirectPath) {
-    return <Redirect to={redirectPath} />;
+    return <Redirect to={{pathname: redirectPath, state: { from: 'end-game' }}} />;
   }
 
   return (
