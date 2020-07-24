@@ -110,7 +110,9 @@ function CluePanel() {
               component="p"
               align="center"
             >
-              The Guesser tried: {answer}
+              {answer === gameState.state.word
+                ? "The guesser was correct!"
+                : `The Guesser tried: ${answer}`}
             </Typography>
           )}
         </Container>

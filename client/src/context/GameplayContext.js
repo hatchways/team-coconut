@@ -22,6 +22,7 @@ function GameplayContextProvider({ children }) {
   const [clues, setClues] = useState([]);
   const [answer, setAnswer] = useState("");
   const [displayClueError, setDisplayClueError] = useState(false);
+  const [displayGuessError, setDisplayGuessError] = useState(false);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [showEndGameScreen, setShowEndGameScreen] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
@@ -55,6 +56,7 @@ function GameplayContextProvider({ children }) {
       setIsGuesser(false);
       setSubmitDisable(false);
       setDisplayClueError(false);
+      setDisplayGuessError(false);
       setClues([]);
       setGameReady(true);
       setAnswer("");
@@ -145,6 +147,7 @@ function GameplayContextProvider({ children }) {
       setGameState(gameState);
       setClues([]);
       setDisplayClueError(false);
+      setDisplayGuessError(false);
       setIsGuessPhase(false);
       setIsGuesser(false);
       setAnswer("");
@@ -196,6 +199,10 @@ function GameplayContextProvider({ children }) {
 
   function toggleClueError(bool) {
     setDisplayClueError(bool);
+  }
+
+  function toggleGuessError(bool) {
+    setDisplayGuessError(bool);
   }
 
   const changeGamePhase = useCallback((bool) => {
@@ -288,6 +295,7 @@ function GameplayContextProvider({ children }) {
         isGuessPhase,
         gameTimer,
         displayClueError,
+        displayGuessError,
         hint,
         answer,
         closeNextRoundScreen,
@@ -302,6 +310,7 @@ function GameplayContextProvider({ children }) {
         leaveGame,
         createNewGame,
         toggleClueError,
+        toggleGuessError,
         closeHint,
       }}
     >
