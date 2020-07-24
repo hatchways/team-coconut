@@ -4,7 +4,7 @@ import {
     makeStyles
 } from "@material-ui/core";
 
-function PlayerVideoAudio({ peer: peerMedia }) {
+function PlayerVideoAudio({ peerMedia }) {
     const classes = useStyles();
     const videoRef = useRef();
     const audioRef = useRef();
