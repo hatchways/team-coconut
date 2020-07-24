@@ -76,8 +76,6 @@ function PreGameLobby({ match }) {
     sendInvitation(playerEmail.email);
   }
 
-  console.log(players)
-
   return (
     <Container
       className={
