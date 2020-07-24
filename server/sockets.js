@@ -1,3 +1,4 @@
+const Game = require("./models/Game");
 const MatchManager = require("./engine/MatchManager");
 const Player = require("./engine/Player");
 const cookie = require("cookie");
