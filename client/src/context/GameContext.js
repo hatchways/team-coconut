@@ -14,8 +14,6 @@ const GameContextProvider = ({ children }) => {
   const [game, setGame] = useState({
     gameId: null,
     players: [],
-    round: 0,
-    word: '',
   });
   const [errors, setErrors] = useState({
     inviteError: '',
@@ -113,10 +111,6 @@ const GameContextProvider = ({ children }) => {
       });
     });
 
-    sockets.on('game-started', () => {
-      setGame((game) => ({ ...game, isStarted: true }));
-    });
-
     // sockets not able to verify jwt
     sockets.on('auth-error', (errorMsg) => {
       console.log(errorMsg);
@@ -186,8 +180,6 @@ const GameContextProvider = ({ children }) => {
         throw new Error(errorMsg);
       }
       const { _id, players } = await response.json();
-
-      console.log('After DB:', players);
       setGame((game) => ({ ...game, gameId: _id, players }));
       //notify other players
       const currentUser = JSON.parse(localStorage.getItem('user'));
@@ -262,8 +254,7 @@ const GameContextProvider = ({ children }) => {
   };
 
   const startGame = () => {
-    setGame((game) => ({ ...game, isStarted: true }));
-    sockets.emit('start-game', game.gameId);
+    sockets.emit("start-game", game.gameId);
   };
 
   return (

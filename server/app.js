@@ -13,6 +13,7 @@ const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
 const authRouter = require("./routes/auth");
 const gameRouter = require("./routes/game")
+const path = require("path")
 
 const { json, urlencoded } = express;
 
@@ -23,6 +24,10 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
+
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname, '../client/build')));
+}
 
 // MongoDB config
 const mongoUri = process.env.MONGO_DB_ATLAS_URI;
@@ -39,6 +44,10 @@ app.use("/", indexRouter);
 app.use("/ping", pingRouter);
 app.use("/auth", authRouter);
 app.use("/game", gameRouter);
+
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
 
 // error handler
 app.use(errorMiddleware);

@@ -1,3 +1,4 @@
+const Game = require("./models/Game");
 const MatchManager = require("./engine/MatchManager");
 const Player = require("./engine/Player");
 const cookie = require("cookie");
@@ -178,7 +179,7 @@ sockets.init = function (server) {
           const gameState = Match.endRound(gameId, answer, clues);
           // End Timer
           Match.endTimer(gameId);
-          io.sockets.in(gameId).emit("FE-send-answer", { gameState, gameId });
+          io.sockets.in(gameId).emit("FE-send-answer", { gameState, answer });
         } catch (error) {
           console.log(error);
           socket.emit("FE-error-during-game", { msg: error.userMessage });
@@ -206,21 +207,21 @@ sockets.init = function (server) {
         }
       });
 
-    /**
-     * Player leaves game AFTER the game has ended
-     */
-    socket.on('BE-leave-game', ({ gameId, player }) => {
-      io.of('/')
-        .in(gameId)
-        .clients((error, clients) => {
-          clients.forEach((socket_id) => {
-            if (socket_id === socket.id) {
-              io.sockets.sockets[socket_id].leave(gameId);
-            }
+      /**
+       * Player leaves game AFTER the game has ended
+       */
+      socket.on("BE-leave-game", ({ gameId, player }) => {
+        io.of("/")
+          .in(gameId)
+          .clients((error, clients) => {
+            clients.forEach((socket_id) => {
+              if (socket_id === socket.id) {
+                io.sockets.sockets[socket_id].leave(gameId);
+              }
+            });
           });
-        });
-      io.sockets.in(gameId).emit('FE-leave-player', player);
-    });
+        io.sockets.in(gameId).emit("FE-leave-player", player);
+      });
       /**
        * Play Again / Non-Host players join new game
        */
