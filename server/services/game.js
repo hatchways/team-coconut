@@ -34,15 +34,20 @@ const getGame = async (gameId) => {
 };
 
 const joinGame = async (gameId, userId) => {
+  const game = await Game.findById(gameId);
   const user = await User.findById(userId);
-  const game = await Game.findByIdAndUpdate(
-    gameId,
-    {
-      $addToSet: { players: { email: user.email, status: 'Joined' } },
-    },
-    { new: true, upsert: true }
-  );
 
+  //if player exist(was invited) - switch status
+  //if not - add to players
+  const existsIdx = game.players.findIndex(
+    (player) => player.email === user.email
+  );
+  if (existsIdx === -1) {
+    game.players.push({ email: user.email, status: "Joined" });
+  } else {
+    game.players[existsIdx].status = "Joined";
+  }
+  await game.save();
   return game;
 };
 
