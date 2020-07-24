@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import sockets from '../utils/sockets';
 import { AuthContext } from './AuthContext';
-import createHistory from 'history/createBrowserHistory';
 
 const GameContext = createContext();
 
@@ -38,12 +37,7 @@ const GameContextProvider = ({ children }) => {
   useEffect(() => {
     //user joins to the game
     sockets.on('FE-user-joined', ({ joinedPlayer, gamePlayers }) => {
-      const history = createHistory();
-
-      if (
-        history.location.state.from !== 'end-game' &&
-        currentUser !== joinedPlayer
-      ) {
+      if (currentUser !== joinedPlayer) {
         setGame((game) => {
           let players = [...game.players];
           const idx = players.findIndex(
@@ -71,17 +65,6 @@ const GameContextProvider = ({ children }) => {
           msg: `${joinedPlayer} joined the game!`,
           severity: 'success',
         });
-      } else if (
-        history.location &&
-        history.location.state &&
-        history.location.state.from &&
-        history.location.state.from === 'end-game'
-      ) {
-        let state = { ...history.location.state };
-        state.from = '';
-        history.replace({ ...history.location, state });
-
-        window.location.reload();
       } else {
         // player who query DB fater. He arrived later than last player.
         // He has no information current game players list.

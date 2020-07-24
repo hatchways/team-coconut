@@ -3,7 +3,7 @@ import { makeStyles, Container, Paper, Typography } from "@material-ui/core";
 import { GameplayContext } from "../../context/GameplayContext";
 import { GameContext } from "../../context/GameContext";
 import GenericButton from "../GenericButton";
-import { Redirect, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 
 function EndGameScreen() {
   const classes = useStyles();
@@ -49,7 +49,7 @@ function EndGameScreen() {
   }
 
   if (!errors.joinError && redirect && redirectPath) {
-    return <Redirect to={{pathname: redirectPath, state: { from: 'end-game' }}} />;
+    window.location.href = redirectPath;
   }
 
   return (
