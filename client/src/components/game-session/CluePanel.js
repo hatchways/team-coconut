@@ -21,6 +21,7 @@ function CluePanel() {
     toggleClueError,
     hint,
     closeHint,
+    answer,
   } = useContext(GameplayContext);
   const { word: wordToGuess } = gameState;
   const { gameId } = useParams();
@@ -65,7 +66,7 @@ function CluePanel() {
             component="p"
             align="center"
           >
-            {showNextRoundScreen ? "Picking Word..." : "The Secret Word"}
+            {showNextRoundScreen ? "Picking New Word..." : "The Secret Word"}
           </Typography>
           {wordToGuess && (
             <Typography
@@ -79,7 +80,7 @@ function CluePanel() {
           )}
         </Container>
         <Container component="div" maxWidth="xs">
-          {!showNextRoundScreen && (
+          {!showNextRoundScreen ? (
             <>
               <form className={classes.form} onSubmit={submitClue} noValidate>
                 <FormInput
@@ -88,6 +89,7 @@ function CluePanel() {
                   handleChange={(e) => setClue(e.target.value)}
                   isDisabled={submitDisable}
                   handleOnKeyUp={handleOnKeyUp}
+                  maxLength={18}
                 />
               </form>
               <div className={classes.submitBtn}>
@@ -100,6 +102,16 @@ function CluePanel() {
                 </GenericButton>
               </div>
             </>
+          ) : (
+            <Typography
+              className={classes.heading}
+              color="textPrimary"
+              variant="h6"
+              component="p"
+              align="center"
+            >
+              The Guesser tried: {answer}
+            </Typography>
           )}
         </Container>
       </Grid>

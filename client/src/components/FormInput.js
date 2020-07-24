@@ -17,6 +17,7 @@ function FormInput({
   adornmentText,
   onClick,
   isDisabled,
+  maxLength,
   handleOnKeyUp,
   ...props
 }) {
@@ -36,6 +37,7 @@ function FormInput({
           fullWidth
           disabled={isDisabled}
           onKeyUp={handleOnKeyUp}
+          inputProps={{ maxLength: maxLength }}
           endAdornment={
             hasAdornment && (
               <InputAdornment position="end">

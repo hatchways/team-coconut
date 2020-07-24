@@ -20,6 +20,7 @@ function GameplayContextProvider({ children }) {
   const [gameState, setGameState] = useState(null);
   const [gameReady, setGameReady] = useState(false);
   const [clues, setClues] = useState([]);
+  const [answer, setAnswer] = useState("");
   const [displayClueError, setDisplayClueError] = useState(false);
   const [showNextRoundScreen, setShowNextRoundScreen] = useState(false);
   const [showEndGameScreen, setShowEndGameScreen] = useState(false);
@@ -56,6 +57,7 @@ function GameplayContextProvider({ children }) {
       setDisplayClueError(false);
       setClues([]);
       setGameReady(true);
+      setAnswer("");
 
       setRedirect(false); // init data needed for ending the game
       setRedirectPath("");
@@ -106,7 +108,8 @@ function GameplayContextProvider({ children }) {
     /**
      * Send Answer / End of Round
      */
-    sockets.on("FE-send-answer", ({ gameState }) => {
+    sockets.on("FE-send-answer", ({ gameState, answer }) => {
+      setAnswer(answer);
       playSound(submitAnswerAudio);
       setGameState(gameState);
       setGameTimer(TIME);
@@ -144,6 +147,7 @@ function GameplayContextProvider({ children }) {
       setDisplayClueError(false);
       setIsGuessPhase(false);
       setIsGuesser(false);
+      setAnswer("");
       setHint({
         open: true,
         msg: "Try not to submit the same clue as other players!",
@@ -156,7 +160,6 @@ function GameplayContextProvider({ children }) {
       if (currentGuesser[0].id === currentUser) {
         setIsGuesser(true);
       }
-      console.log(`Round ${gameState.round}: `, gameState);
     });
 
     /**
@@ -177,7 +180,7 @@ function GameplayContextProvider({ children }) {
   }, []);
 
   function sendClueToBE(gameId, player) {
-    sockets.emit("BE-send-clue", { gameId, player });
+    sockets.emit("BE-send-clue", { gameId, player, answer });
   }
 
   const sendGuessToBE = useCallback((gameId, answer, clues) => {
@@ -286,6 +289,7 @@ function GameplayContextProvider({ children }) {
         gameTimer,
         displayClueError,
         hint,
+        answer,
         closeNextRoundScreen,
         disableSubmitInputs,
         sendClueToBE,

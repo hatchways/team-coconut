@@ -10,7 +10,14 @@ import GameHeader from "./GameHeader";
 function GuessPanel() {
   const classes = useStyles();
   const [guess, setGuess] = useForm({ guess: "" });
-  const { clues, sendGuessToBE, isGuessPhase } = useContext(GameplayContext);
+  const {
+    answer,
+    gameState,
+    clues,
+    sendGuessToBE,
+    isGuessPhase,
+    showNextRoundScreen,
+  } = useContext(GameplayContext);
   const { gameId } = useParams();
 
   function submitGuess(event) {
@@ -32,33 +39,50 @@ function GuessPanel() {
         alignItems="center"
       >
         <Container component="div" maxWidth="xs">
-          <form className={classes.form} onSubmit={submitGuess} noValidate>
-            <FormInput
-              label="guess"
-              error=""
-              handleChange={setGuess}
-              isDisabled={!isGuessPhase}
-            />
-          </form>
-          <div className={classes.submitBtn}>
-            {isGuessPhase ? (
-              <GenericButton
-                handleClick={submitGuess}
-                isSubmit
-                isDisabled={!isGuessPhase}
-              >
-                Submit
-              </GenericButton>
-            ) : (
-              <Typography
-                className={classes.waiting}
-                variant="h6"
-                component="p"
-              >
-                Waiting for all Clues...
-              </Typography>
-            )}
-          </div>
+          {!showNextRoundScreen ? (
+            <>
+              <form className={classes.form} onSubmit={submitGuess} noValidate>
+                <FormInput
+                  label="guess"
+                  error=""
+                  handleChange={setGuess}
+                  isDisabled={!isGuessPhase}
+                />
+              </form>
+              <div className={classes.submitBtn}>
+                {isGuessPhase ? (
+                  <GenericButton
+                    handleClick={submitGuess}
+                    isSubmit
+                    isDisabled={!isGuessPhase}
+                  >
+                    Submit
+                  </GenericButton>
+                ) : (
+                  <Typography
+                    className={classes.waiting}
+                    variant="h6"
+                    component="p"
+                  >
+                    Waiting for all Clues...
+                  </Typography>
+                )}
+              </div>
+            </>
+          ) : (
+            <Typography
+              color="textPrimary"
+              variant="h4"
+              component="p"
+              align="center"
+            >
+              {answer === gameState.state.word
+                ? "You Got It!"
+                : `The word was ${gameState.state.word
+                    .charAt(0)
+                    .toUpperCase()}${gameState.state.word.slice(1)}`}
+            </Typography>
+          )}
         </Container>
       </Grid>
     </Container>
