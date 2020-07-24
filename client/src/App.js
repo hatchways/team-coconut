@@ -85,10 +85,10 @@ function App() {
                   component={GameSession}
                   auth={auth}
                 />
-                <Route component={PageNotFound} />
               </RTCContextProvider>
             </GameplayContextProvider>
           </GameContextProvider>
+          <Route component={PageNotFound} />
         </Switch>
       </BrowserRouter>
     </MuiThemeProvider>
