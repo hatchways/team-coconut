@@ -1,5 +1,4 @@
 const Game = require("./models/Game");
-const { use } = require("chai");
 
 const sockets = {};
 
