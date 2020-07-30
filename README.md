@@ -43,7 +43,7 @@ The game is **deployed** at: https://play-just-one.herokuapp.com/
 1. Create a new account or login to the application. You can either host a game or join an existing game with a game ID (given to you by the host) or you can join through an invite link in an email. 
 ![register](https://github.com/hatchways/team-coconut/blob/dev/client/public/gifs/login-signup.gif)
 
-2. You can invite someone by linking them the game ID in the lobby. Then they can enter the link in the join section of /create-game.
+2. You can invite someone by linking them the game ID in the lobby.
 ![game ID invite](https://github.com/hatchways/team-coconut/blob/dev/client/public/gifs/gameId-invite.gif)
 
 3. You have an option to email someone an invite link.
