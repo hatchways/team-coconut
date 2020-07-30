@@ -18,17 +18,39 @@ The game is **deployed** at: https://play-just-one.herokuapp.com/
 
 ---
 
+## Features
+
+**User authentication**
+- Users are created and stored in a MongoDB collection. 
+- On login, a jsonwebtoken is given to the user in an httpOnly cookie
+- Verify the jwt on every subsequent request, otherwise redirect to login route
+- The jwt is also checked on socket connections through a socket.io middleware
+
+**Video chat**
+- Used the [simple-peer](https://github.com/feross/simple-peer) library to implement WebRTC protocols for handling user streaming data
+- Used Socket.io to handle signalling events between each client to establish peer to peer connections
+- Established a [mesh network](https://en.wikipedia.org/wiki/Mesh_networking) through socket.io signalling events and simple-peer library methods to create group video calls (in short, all clients need to create connections to one another — not have client 1 -> client 2 -> client 3 -> client 4 -> client 1)
+
+**Real time multiplayer gameplay**
+- All game logic for a particular game instance is handled in server memory
+- Used several socket.io events and React's Context API to maintain a consistent gameplay experience and to display all relevant information in the UI
+
+---
+
 ## Demo
 
 **Login/Sign up and Creating/Joining Games**
 1. Create a new account or login to the application. You can either host a game or join an existing game with a game ID (given to you by the host) or you can join through an invite link in an email. 
 ![register](https://github.com/hatchways/team-coconut/blob/dev/client/public/gifs/login-signup.gif)
 
-2. You can only start a game when **four players** are in the pre-game lobby, no more, no less. 
-![create game](https://github.com/hatchways/team-coconut/blob/dev/client/public/gifs/create-game.gif)
+2. You can invite someone by linking them the game ID in the lobby. Then they can enter the link in the join section of /create-game
+![game ID invite](https://github.com/hatchways/team-coconut/blob/dev/client/public/gifs/gameId-invite.gif)
 
 3. You have an option to email someone an invite link.
 ![email invite](https://github.com/hatchways/team-coconut/blob/dev/client/public/gifs/email-invite.gif)
+
+4. You can only start a game when **four players** are in the pre-game lobby, no more, no less. 
+![create game](https://github.com/hatchways/team-coconut/blob/dev/client/public/gifs/create-game.gif)
 
 ---
 
