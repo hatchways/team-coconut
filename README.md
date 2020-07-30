@@ -11,6 +11,8 @@ The game is **deployed** at: https://justone-game.herokuapp.com/
 - Node.js
 - WebRTC
 - Socket.io
+- Material UI
+- HowlerJS
 
 **Contributors:** [Insaf Khamzin](https://github.com/InsafKhamzin), [Hyunse Kim](https://github.com/Hyunse), [Darren Mabbayad](https://github.com/darrenMabbayad)
 
