@@ -2,7 +2,7 @@
 
 JustOne is a word guessing game that is essentially a clone of [the real JustOne game](https://justone-the-game.com/index.php?lang=en) with the same ruleset and also has login/signup and real-time video chat features. 
 
-The game is **deployed** at: https://justone-game.herokuapp.com/
+The game is **deployed** at: https://play-just-one.herokuapp.com/
 
 **Technologies Used**
 - MongoDB
