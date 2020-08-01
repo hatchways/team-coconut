@@ -21,12 +21,12 @@ sockets.init = function (server) {
   /**
    * Socket Authentication
    */
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     try {
       const cookies = cookie.parse(socket.handshake.headers.cookie);
       const token = cookies['token'];
       if (token) {
-        jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+        await jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
           if (error) {
             throw new ClientError('', 'Authentication Error', 401);
           }
@@ -37,6 +37,7 @@ sockets.init = function (server) {
         throw new ClientError('', 'Unauthorized', 401);
       }
     } catch (error) {
+      console.log('Could not authorize');
       socket.emit('auth-error', { errorMsg: error.userMessage });
       socket.disconnect();
     }
@@ -49,7 +50,7 @@ sockets.init = function (server) {
 
       socket.on('disconnect', () => {
         delete socketIdEmail[socket.id];
-        //console.log("disconnected", socket.id, new Date().toLocaleTimeString());
+        console.log('disconnected', socket.id, new Date().toLocaleTimeString());
       });
 
       /**

@@ -33,6 +33,9 @@ const GameContextProvider = ({ children }) => {
 
   //subcribe on events only once
   useEffect(() => {
+    //open sockets on login
+    sockets.open();
+
     //user joins to the game
     sockets.on('FE-user-joined', ({ joinedPlayer, gamePlayers }) => {
       if (currentUser !== joinedPlayer) {
@@ -112,13 +115,13 @@ const GameContextProvider = ({ children }) => {
     // sockets not able to verify jwt
     sockets.on('auth-error', errorMsg => {
       console.log(errorMsg);
-      sockets.on('disconnect');
-      sockets.off();
+      sockets.disconnect();
+      sockets.emit('disconnect');
     });
 
     return () => {
+      sockets.disconnect();
       sockets.emit('disconnect');
-      sockets.off();
     };
   }, [currentUser]);
 
