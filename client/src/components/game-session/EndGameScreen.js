@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
-import { makeStyles, Container, Paper, Typography } from "@material-ui/core";
-import { GameplayContext } from "../../context/GameplayContext";
-import { GameContext } from "../../context/GameContext";
-import GenericButton from "../GenericButton";
-import {  useParams } from "react-router-dom";
+import React, { useContext } from 'react';
+import { makeStyles, Container, Paper, Typography } from '@material-ui/core';
+import { GameplayContext } from '../../context/GameplayContext';
+import { GameContext } from '../../context/GameContext';
+import GenericButton from '../GenericButton';
+import { useParams } from 'react-router-dom';
 
 function EndGameScreen() {
   const classes = useStyles();
@@ -49,34 +49,36 @@ function EndGameScreen() {
   }
 
   if (!errors.joinError && redirect && redirectPath) {
-    window.location.href = redirectPath;
+    setTimeout(() => {
+      window.location.href = redirectPath;
+    }, 500);
   }
 
   return (
     <div className={classes.overlay}>
-      <Container className={classes.endGameContainer} component="div">
+      <Container className={classes.endGameContainer} component='div'>
         <Paper className={classes.endGamePaper} elevation={12}>
           <div className={classes.gameOverText}>
             <strong className={classes.strongText}>Game </strong> Over
           </div>
-          <Container component="div">
+          <Container component='div'>
             {players.map((player, index) => (
               <div key={player.id}>
-                <Container className={classes.scoreSection} component="section">
+                <Container className={classes.scoreSection} component='section'>
                   <Typography
                     className={classes.scoreText}
-                    variant="h4"
-                    component="p"
+                    variant='h4'
+                    component='p'
                   >
                     <strong className={classes.strongText}>
-                      # {index + 1}{" "}
-                    </strong>{" "}
+                      # {index + 1}{' '}
+                    </strong>{' '}
                     {player.name}
                   </Typography>
                   <Typography
                     className={classes.strongText}
-                    variant="h4"
-                    component="p"
+                    variant='h4'
+                    component='p'
                   >
                     {player.point} pts
                   </Typography>
@@ -85,7 +87,7 @@ function EndGameScreen() {
               </div>
             ))}
           </Container>
-          <Container className={classes.endGameBtns} component="div">
+          <Container className={classes.endGameBtns} component='div'>
             {isCurrentUserHost() && (
               <GenericButton handleClick={playAgain}>Play Again</GenericButton>
             )}
@@ -97,18 +99,18 @@ function EndGameScreen() {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   overlay: {
-    background: "rgba(0,0,0,0.5)",
-    position: "absolute",
-    height: "100vh",
-    width: "100vw",
+    background: 'rgba(0,0,0,0.5)',
+    position: 'absolute',
+    height: '100vh',
+    width: '100vw',
     top: 0,
     left: 0,
   },
   gameOverText: {
-    margin: "0 auto 2rem",
-    width: "max-content",
+    margin: '0 auto 2rem',
+    width: 'max-content',
     fontSize: theme.gameOverText.fontSize,
     fontWeight: theme.typography.fontWeightBold,
   },
@@ -117,38 +119,38 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
   },
   endGameContainer: {
-    height: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scoreSection: {
-    display: "flex",
-    padding: "0",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    padding: '0',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   scoreText: {
     fontWeight: theme.typography.fontWeightBold,
   },
   divider: {
     // styles for standard <hr />, not using Mui Divider Component
-    margin: "0.75rem 0 2rem",
-    height: "1px",
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    border: "none",
+    margin: '0.75rem 0 2rem',
+    height: '1px',
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    border: 'none',
   },
   endGamePaper: {
-    width: "50%",
-    padding: "2.5rem 1.5rem 3rem",
-    border: "solid white 2px",
+    width: '50%',
+    padding: '2.5rem 1.5rem 3rem',
+    border: 'solid white 2px',
   },
   endGameBtns: {
-    display: "flex",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    marginTop: "3rem",
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    marginTop: '3rem',
   },
 }));
 

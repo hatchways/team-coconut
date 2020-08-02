@@ -33,13 +33,16 @@ const GameContextProvider = ({ children }) => {
 
   //subcribe on events only once
   useEffect(() => {
+    //open sockets on login
+    sockets.open();
+
     //user joins to the game
     sockets.on('FE-user-joined', ({ joinedPlayer, gamePlayers }) => {
       if (currentUser !== joinedPlayer) {
-        setGame((game) => {
+        setGame(game => {
           let players = [...game.players];
           const idx = players.findIndex(
-            (player) => player.email === joinedPlayer
+            player => player.email === joinedPlayer
           );
           if (idx !== -1) {
             players[idx].status = 'Joined';
@@ -48,8 +51,8 @@ const GameContextProvider = ({ children }) => {
           }
 
           if (gamePlayers.length !== players.length) {
-            gamePlayers.forEach((s) => {
-              const i = players.findIndex((p) => s.id === p.email);
+            gamePlayers.forEach(s => {
+              const i = players.findIndex(p => s.id === p.email);
 
               if (i === -1) {
                 players.push({ email: s.id, status: 'Joined' });
@@ -66,12 +69,12 @@ const GameContextProvider = ({ children }) => {
       } else {
         // player who query DB fater. He arrived later than last player.
         // He has no information current game players list.
-        setGame((game) => {
+        setGame(game => {
           let players = [...game.players];
 
           if (gamePlayers.length !== players.length) {
-            gamePlayers.forEach((s) => {
-              const i = players.findIndex((p) => s.id === p.email);
+            gamePlayers.forEach(s => {
+              const i = players.findIndex(p => s.id === p.email);
 
               if (i === -1) {
                 players.push({ email: s.id, status: 'Joined' });
@@ -83,13 +86,11 @@ const GameContextProvider = ({ children }) => {
       }
     });
 
-    sockets.on('FE-leave-player', (leftPlayer) => {
+    sockets.on('FE-leave-player', leftPlayer => {
       if (currentUser !== leftPlayer) {
-        setGame((game) => {
+        setGame(game => {
           let players = [...game.players];
-          const idx = players.findIndex(
-            (player) => player.email === leftPlayer
-          );
+          const idx = players.findIndex(player => player.email === leftPlayer);
           if (idx !== -1) {
             players.splice(idx, 1);
           }
@@ -104,7 +105,7 @@ const GameContextProvider = ({ children }) => {
       }
     });
 
-    sockets.on('FE-error-start-game', (errorMsg) => {
+    sockets.on('FE-error-start-game', errorMsg => {
       setGameNotification({
         open: true,
         msg: errorMsg.msg,
@@ -112,15 +113,15 @@ const GameContextProvider = ({ children }) => {
     });
 
     // sockets not able to verify jwt
-    sockets.on('auth-error', (errorMsg) => {
+    sockets.on('auth-error', errorMsg => {
       console.log(errorMsg);
-      sockets.on('disconnect');
-      sockets.off();
+      sockets.disconnect();
+      sockets.emit('disconnect');
     });
 
     return () => {
-      sockets.on('disconnect');
-      sockets.off();
+      sockets.disconnect();
+      sockets.emit('disconnect');
     };
   }, [currentUser]);
 
@@ -134,7 +135,7 @@ const GameContextProvider = ({ children }) => {
       });
       const currentUser = JSON.parse(localStorage.getItem('user'));
       const { _id, players } = await response.json();
-      setGame((game) => ({ ...game, gameId: _id, players }));
+      setGame(game => ({ ...game, gameId: _id, players }));
       sockets.emit('BE-user-joined', {
         gameId: _id,
         player: currentUser,
@@ -145,7 +146,7 @@ const GameContextProvider = ({ children }) => {
     }
   };
 
-  const getGame = useCallback(async (gameId) => {
+  const getGame = useCallback(async gameId => {
     try {
       const response = await fetch(`/game/${gameId}`, {
         method: 'GET',
@@ -154,13 +155,13 @@ const GameContextProvider = ({ children }) => {
         },
       });
       const { _id, players } = await response.json();
-      setGame((game) => ({ ...game, gameId: _id, players }));
+      setGame(game => ({ ...game, gameId: _id, players }));
     } catch (error) {
       console.log(error);
     }
   }, []);
 
-  const joinGame = useCallback(async (gameId) => {
+  const joinGame = useCallback(async gameId => {
     try {
       const response = await fetch(`/game/${gameId}/join`, {
         method: 'POST',
@@ -180,7 +181,7 @@ const GameContextProvider = ({ children }) => {
         throw new Error(errorMsg);
       }
       const { _id, players } = await response.json();
-      setGame((game) => ({ ...game, gameId: _id, players }));
+      setGame(game => ({ ...game, gameId: _id, players }));
       //notify other players
       const currentUser = JSON.parse(localStorage.getItem('user'));
       sockets.emit('BE-user-joined', {
@@ -195,7 +196,7 @@ const GameContextProvider = ({ children }) => {
   /**
    * Leave Lobby
    */
-  const leaveLobby = useCallback(async (gameId) => {
+  const leaveLobby = useCallback(async gameId => {
     try {
       await fetch(`/game/${gameId}/leave`, {
         method: 'POST',
@@ -208,14 +209,14 @@ const GameContextProvider = ({ children }) => {
     }
   }, []);
 
-  const sendInvitation = async (email) => {
+  const sendInvitation = async email => {
     const regex = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!regex.test(email)) {
       setErrors({ inviteError: 'Invalid email' });
       return;
     }
 
-    const exists = game.players.find((player) => player.email === email);
+    const exists = game.players.find(player => player.email === email);
     if (exists) {
       setErrors({ inviteError: 'Player already invited' });
       return;
@@ -229,15 +230,15 @@ const GameContextProvider = ({ children }) => {
         body: JSON.stringify({ email }),
       });
       const { players } = await response.json();
-      setGame((game) => ({ ...game, players }));
+      setGame(game => ({ ...game, players }));
       setErrors({ inviteError: '' });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const setGameId = (gameId) => {
-    setGame((game) => ({ ...game, gameId }));
+  const setGameId = gameId => {
+    setGame(game => ({ ...game, gameId }));
   };
 
   const closeGameNotification = () => {
@@ -254,7 +255,7 @@ const GameContextProvider = ({ children }) => {
   };
 
   const startGame = () => {
-    sockets.emit("start-game", game.gameId);
+    sockets.emit('start-game', game.gameId);
   };
 
   return (
