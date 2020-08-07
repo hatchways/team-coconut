@@ -7,6 +7,7 @@ import {
   Card,
 } from "@material-ui/core";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
 import { GameplayContext } from "../../context/GameplayContext";
 import TypingNotification from "./TypingNotification";
 import CurrentPlayerVideo from "./CurrentPlayerVideo";
@@ -36,7 +37,7 @@ function PlayerPanel({ gameId }) {
       else if (player.clue) return <p>Submitted</p>;
     } else {
       const uniqueClues = playersArr
-        .map((player) => player["clue"])
+        .map(player => player["clue"])
         .filter((clue, index, a) => {
           return a.indexOf(clue) === a.lastIndexOf(clue);
         });
@@ -62,9 +63,15 @@ function PlayerPanel({ gameId }) {
             <Grid key={player.id} item xs={6}>
               <Card className={classes.card} raised>
                 {player.id === currentUser ? (
-                  <CurrentPlayerVideo videoStream={currentPlayerVideo} />
+                  <div className={classes.videoContainer}>
+                    <PersonOutlineIcon className={classes.avatarIcon} />
+                    <CurrentPlayerVideo videoStream={currentPlayerVideo} />
+                  </div>
                 ) : (
-                  <PlayerVideoAudio peerMedia={peers[player.id]} />
+                  <div className={classes.videoContainer}>
+                    <PersonOutlineIcon className={classes.avatarIcon} />
+                    <PlayerVideoAudio peerMedia={peers[player.id]} />
+                  </div>
                 )}
                 <div className={classes.playerInfoContainer}>
                   <div>
@@ -96,10 +103,7 @@ function PlayerPanel({ gameId }) {
   );
 }
 
-// Uncomment all borders to see where things line up on the page
-// There could be a better way of laying out where things should be
-// but I am currently unsure - Darren
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   sectionContainer: {
     display: "flex",
     justifyContent: "center",
@@ -116,17 +120,14 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
     borderRadius: theme.shape.borderRadius,
   },
-  playerCam: {
-    minWidth: "250px",
-    height: "250px",
-    backgroundSize: "contain",
-    borderBottom: "solid 1px rgba(255,255,255,0.15)",
-  },
   playerInfoContainer: {
     margin: "0.75rem 1.5rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  videoContainer: {
+    position: "relative",
   },
   playerInfo: {
     display: "flex",
@@ -148,6 +149,15 @@ const useStyles = makeStyles((theme) => ({
   },
   icon: {
     fontSize: theme.icon.small.fontSize,
+  },
+  avatarIcon: {
+    padding: 0,
+    margin: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    transform: "translate(70%, 35%)",
+    fontSize: theme.icon.extraLarge.fontSize,
   },
 }));
 

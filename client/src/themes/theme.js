@@ -52,6 +52,9 @@ export const theme = createMuiTheme({
     large: {
       fontSize: "100px",
     },
+    extraLarge: {
+      fontSize: "150px",
+    },
   },
   overrides: {
     MuiOutlinedInput: {

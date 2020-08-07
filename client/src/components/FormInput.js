@@ -35,6 +35,7 @@ function FormInput({
           type={label}
           onChange={handleChange}
           fullWidth
+          autoComplete="off"
           disabled={isDisabled}
           onKeyUp={handleOnKeyUp}
           inputProps={{ maxLength: maxLength }}
@@ -54,7 +55,7 @@ function FormInput({
   );
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   inputLabel: {
     marginTop: "2em",
     marginBottom: "0.5em",
