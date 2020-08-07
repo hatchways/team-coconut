@@ -115,7 +115,7 @@ function GameplayContextProvider({ children }) {
       playSound(submitAnswerAudio);
       setGameState(gameState);
       setGameTimer(TIME);
-      if (gameState.state.round === 0) {
+      if (gameState.state.round === gameState.state.players.length * 2 - 1) {
         setShowEndGameScreen(true);
       } else {
         setShowNextRoundScreen(true);
