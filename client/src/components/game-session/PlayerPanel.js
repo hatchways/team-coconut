@@ -7,13 +7,13 @@ import {
   Card,
 } from "@material-ui/core";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
 import { GameplayContext } from "../../context/GameplayContext";
 import TypingNotification from "./TypingNotification";
 import CurrentPlayerVideo from "./CurrentPlayerVideo";
 import { RTCContext } from "../../context/RTCContext";
 import PlayerVideoAudio from "./PlayerVideoAudio";
 import Settings from "../Settings";
+import Avatar from "../../icons/Avatar.png";
 
 function PlayerPanel({ gameId }) {
   const classes = useStyles();
@@ -63,13 +63,11 @@ function PlayerPanel({ gameId }) {
             <Grid key={player.id} item xs={6}>
               <Card className={classes.card} raised>
                 {player.id === currentUser ? (
-                  <div className={classes.videoContainer}>
-                    <PersonOutlineIcon className={classes.avatarIcon} />
+                  <div className={classes.avatar}>
                     <CurrentPlayerVideo videoStream={currentPlayerVideo} />
                   </div>
                 ) : (
-                  <div className={classes.videoContainer}>
-                    <PersonOutlineIcon className={classes.avatarIcon} />
+                  <div className={classes.avatar}>
                     <PlayerVideoAudio peerMedia={peers[player.id]} />
                   </div>
                 )}
@@ -120,14 +118,17 @@ const useStyles = makeStyles(theme => ({
     margin: "0 auto",
     borderRadius: theme.shape.borderRadius,
   },
+  avatar: {
+    backgroundImage: `url(${Avatar})`,
+    backgroundSize: "100px 100px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
   playerInfoContainer: {
     margin: "0.75rem 1.5rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  videoContainer: {
-    position: "relative",
   },
   playerInfo: {
     display: "flex",
@@ -149,15 +150,6 @@ const useStyles = makeStyles(theme => ({
   },
   icon: {
     fontSize: theme.icon.small.fontSize,
-  },
-  avatarIcon: {
-    padding: 0,
-    margin: 0,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    transform: "translate(70%, 35%)",
-    fontSize: theme.icon.extraLarge.fontSize,
   },
 }));
 
